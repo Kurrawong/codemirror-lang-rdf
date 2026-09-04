@@ -1,0 +1,64 @@
+{
+  "$comment": [
+    "Conformance entries this grammar cannot decide, with the reason for each.",
+    "",
+    "All are negative syntax tests. Lezer is an error-tolerant grammar for",
+    "painting and navigation; deciding whether a query is *valid* belongs to a",
+    "parser that also resolves scopes, arities and code points. Over-accepting",
+    "here costs a reader nothing — the document still colours and folds",
+    "correctly — whereas encoding these would make the grammar larger, slower,",
+    "and in two cases ambiguous.",
+    "",
+    "The list is asserted exactly: an entry that starts passing must be removed",
+    "here, and an entry that stops passing is a failing build. Add one only",
+    "with a reason that says why the grammar cannot decide it."
+  ],
+  "sparql11-query": {
+    "test_43": "GROUP BY with SELECT * — a scoping rule over the whole query, not a shape.",
+    "test_44": "A projected variable not in the GROUP BY — scoping.",
+    "test_45": "The same alias bound twice in a projection — requires comparing two bindings.",
+    "test_60": "BIND scoping: the bound variable is already in scope.",
+    "test_61a": "BIND scoping, as above.",
+    "test_62a": "BIND scoping, as above.",
+    "test_65": "Subquery projection scoping.",
+    "test_bad_values_too_few": "VALUES row shorter than its variable list — an arity count, not a shape.",
+    "test_bad_values_too_many": "VALUES row longer than its variable list — as above.",
+    "test_codepoint_invalid_escaped_bad_06": "An escape naming an invalid code point: needs code-point arithmetic."
+  },
+  "sparql11-update": {
+    "test_43": "A variable in DELETE DATA. The 1.1 grammar reaches this through TriplesTemplate; the prohibition is a separate constraint in the spec text.",
+    "test_44": "A variable in INSERT DATA, as above.",
+    "test_50": "A blank node in DELETE WHERE — a constraint in the spec text, not in the grammar.",
+    "test_51": "A blank node in a DELETE template, as above.",
+    "test_52": "A blank node in DELETE DATA, as above.",
+    "test_54": "The same blank-node label reused across two operations in a sequence — requires tracking labels between operations."
+  },
+  "sparql11-fed": {},
+  "sparql12-syntax": {
+    "duplicated-values-variable": "The same variable twice in a VALUES list — requires comparing the list to itself.",
+    "group-by-scope-bad-1": "GROUP BY scoping.",
+    "group-by-scope-bad-2": "GROUP BY scoping.",
+    "group-by-scope-bad-3": "GROUP BY scoping.",
+    "nested-aggregate-functions": "An aggregate inside an aggregate — the grammar's Expression is uniform, and forbidding this needs to know where an aggregate already is."
+  },
+  "sparql12-codepoint-escapes": {
+    "surrogate-esc-01-bad": "Lone or misordered surrogate escapes: needs code-point arithmetic across two UCHARs.",
+    "surrogate-esc-02-bad": "As above.",
+    "surrogate-esc-03-bad": "As above.",
+    "surrogate-esc-04-bad": "As above.",
+    "surrogate-esc-05-bad": "As above."
+  },
+  "sparql12-lang-basedir": {},
+  "sparql12-version": {},
+  "sparql12-triple-terms-positive": {},
+  "sparql12-triple-terms-negative": {
+    "annotated-reifier-path": "An annotation on an object reached through a property path. The restriction distinguishes a bare-predicate verb from a property path, and a single IRI is both, so an LR grammar cannot decide which production applies without an ambiguity split — see README.",
+    "annotated-reifier-optional": "As above (`?` path modifier).",
+    "annotated-anonreifier-path": "As above.",
+    "annotated-anonreifier-optional": "As above.",
+    "annotated-anonreifier-alternate-path": "As above (`|` path alternative).",
+    "annotated-reifier-reifier-alternate-path": "As above.",
+    "nested-annotated-path-anonreifier": "As above, with the path inside an annotation block.",
+    "nested-annotated-path-reifier": "As above."
+  }
+}

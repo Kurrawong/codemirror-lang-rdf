@@ -1,0 +1,478 @@
+// SPARQL 1.2 (query and update) and SRL, in one grammar with two entry points.
+//
+// `SparqlUnit` is the SPARQL 1.2 grammar's QueryUnit/UpdateUnit; `SrlUnit` is
+// an SRL rule set. They share every production below the rule body, which is
+// the reason they are one file: SPARQL and SRL can then never disagree about
+// what a term is, and `codemirror-lang-srl` is a `parser.configure({ top })`
+// away rather than a second grammar to keep in step.
+//
+// Keywords are case-insensitive and are not reserved: `SELECT` is a keyword,
+// `select:x` is a prefixed name and `?select` is a variable. That is handled by
+// lexing one `Word` token and specializing it in `keywords.ts`, so the keyword
+// list lives in one place and mixed casing (`SeLeCt`) works like any other.
+//
+// Production names follow the W3C grammar. See README.md for the pinned spec
+// revisions and for the one place SRL's names had to differ.
+
+@top SparqlUnit { Prologue (Query | Update)? }
+@top SrlUnit { RuleSet }
+
+@skip { whitespace | Comment }
+
+// ------------------------------------------------------------------ prologue
+
+Prologue { (BaseDecl | PrefixDecl | VersionDecl)* }
+BaseDecl { KwBASE IRIRef }
+PrefixDecl { KwPREFIX PNameNS IRIRef }
+VersionDecl { KwVERSION VersionSpecifier }
+
+// --------------------------------------------------------------------- query
+
+Query { (SelectQuery | ConstructQuery | DescribeQuery | AskQuery) ValuesClause? }
+
+SelectQuery { SelectClause DatasetClause* WhereClause SolutionModifier }
+SubSelect { SelectClause WhereClause SolutionModifier ValuesClause? }
+
+SelectClause {
+  KwSELECT (KwDISTINCT | KwREDUCED)? ((Var | ExpressionAs)+ | "*")
+}
+ExpressionAs { "(" Expression KwAS Var ")" }
+
+ConstructQuery {
+  KwCONSTRUCT (
+    ConstructTemplate DatasetClause* WhereClause SolutionModifier |
+    DatasetClause* KwWHERE "{" TriplesTemplate? "}" SolutionModifier
+  )
+}
+
+DescribeQuery { KwDESCRIBE (varOrIri+ | "*") DatasetClause* WhereClause? SolutionModifier }
+AskQuery { KwASK DatasetClause* WhereClause SolutionModifier }
+
+DatasetClause { KwFROM (DefaultGraphClause | NamedGraphClause) }
+DefaultGraphClause { iri }
+NamedGraphClause { KwNAMED iri }
+
+WhereClause { KwWHERE? GroupGraphPattern }
+
+SolutionModifier { GroupClause? HavingClause? OrderClause? limitOffsetClauses? }
+GroupClause { KwGROUP KwBY GroupCondition+ }
+GroupCondition { BuiltInCall | FunctionCall | "(" Expression (KwAS Var)? ")" | Var }
+HavingClause { KwHAVING havingCondition+ }
+havingCondition { Constraint }
+OrderClause { KwORDER KwBY OrderCondition+ }
+OrderCondition { (KwASC | KwDESC) BrackettedExpression | Constraint | Var }
+limitOffsetClauses { LimitClause OffsetClause? | OffsetClause LimitClause? }
+LimitClause { KwLIMIT Integer }
+OffsetClause { KwOFFSET Integer }
+ValuesClause { KwVALUES DataBlock }
+
+// -------------------------------------------------------------------- update
+
+// [29] is recursive — `Update ::= Prologue (Update1 (';' Update)?)?` — and the
+// recursion is load-bearing twice over: a prologue may appear after each `;`,
+// and a *trailing* `;` is allowed while `;;` is not. Flattening this to
+// `(";" Prologue update1?)*` accepts `;;`, which the suite rejects.
+Update { update1 (";" updateTail?)? }
+updateTail { Prologue update1 (";" updateTail?)? }
+
+update1 {
+  Load | Clear | Drop | Add | Move | Copy | Create |
+  InsertData | DeleteData | DeleteWhere | Modify
+}
+
+Load { KwLOAD KwSILENT? iri (KwINTO GraphRef)? }
+Clear { KwCLEAR KwSILENT? graphRefAll }
+Drop { KwDROP KwSILENT? graphRefAll }
+Create { KwCREATE KwSILENT? GraphRef }
+Add { KwADD KwSILENT? graphOrDefault KwTO graphOrDefault }
+Move { KwMOVE KwSILENT? graphOrDefault KwTO graphOrDefault }
+Copy { KwCOPY KwSILENT? graphOrDefault KwTO graphOrDefault }
+InsertData { KwINSERT KwDATA QuadData }
+DeleteData { KwDELETE KwDATA QuadData }
+DeleteWhere { KwDELETE KwWHERE QuadPattern }
+Modify {
+  (KwWITH iri)? (DeleteClause InsertClause? | InsertClause) UsingClause* KwWHERE GroupGraphPattern
+}
+DeleteClause { KwDELETE QuadPattern }
+InsertClause { KwINSERT QuadPattern }
+UsingClause { KwUSING (iri | KwNAMED iri) }
+
+graphOrDefault { KwDEFAULT | KwGRAPH? iri }
+GraphRef { KwGRAPH iri }
+graphRefAll { GraphRef | KwDEFAULT | KwNAMED | KwALL }
+
+QuadPattern { "{" Quads "}" }
+QuadData { "{" Quads "}" }
+Quads { TriplesTemplate? (QuadsNotTriples "."? TriplesTemplate?)* }
+QuadsNotTriples { KwGRAPH varOrIri "{" TriplesTemplate? "}" }
+TriplesTemplate { TriplesSameSubject ("." TriplesTemplate?)? }
+
+// ------------------------------------------------------------ graph patterns
+
+GroupGraphPattern { "{" (SubSelect | GroupGraphPatternSub) "}" }
+GroupGraphPatternSub { TriplesBlock? (graphPatternNotTriples "."? TriplesBlock?)* }
+TriplesBlock { TriplesSameSubjectPath ("." TriplesBlock?)? }
+
+graphPatternNotTriples {
+  GroupOrUnionGraphPattern | OptionalGraphPattern | MinusGraphPattern |
+  GraphGraphPattern | ServiceGraphPattern | Filter | Bind | InlineData
+}
+
+OptionalGraphPattern { KwOPTIONAL GroupGraphPattern }
+GraphGraphPattern { KwGRAPH varOrIri GroupGraphPattern }
+ServiceGraphPattern { KwSERVICE KwSILENT? varOrIri GroupGraphPattern }
+MinusGraphPattern { KwMINUS GroupGraphPattern }
+GroupOrUnionGraphPattern { GroupGraphPattern (KwUNION GroupGraphPattern)* }
+Bind { KwBIND "(" Expression KwAS Var ")" }
+InlineData { KwVALUES DataBlock }
+Filter { KwFILTER Constraint }
+
+DataBlock { InlineDataOneVar | InlineDataFull }
+InlineDataOneVar { Var "{" DataBlockValue* "}" }
+InlineDataFull { (Nil | "(" Var* ")") "{" ("(" DataBlockValue* ")" | Nil)* "}" }
+DataBlockValue { iri | RDFLiteral | NumericLiteral | BooleanLiteral | KwUNDEF | TripleTermData }
+
+Constraint { BrackettedExpression | BuiltInCall | FunctionCall }
+FunctionCall { iri ArgList }
+ArgList { Nil | "(" KwDISTINCT? Expression ("," Expression)* ")" }
+ExpressionList { Nil | "(" Expression ("," Expression)* ")" }
+
+ConstructTemplate { "{" ConstructTriples? "}" }
+ConstructTriples { TriplesSameSubject ("." ConstructTriples?)? }
+
+// -------------------------------------------------------------------- triples
+
+TriplesSameSubject {
+  varOrTerm PropertyListNotEmpty |
+  triplesNode PropertyListNotEmpty? |
+  ReifiedTriple PropertyListNotEmpty?
+}
+
+PropertyListNotEmpty { Verb ObjectList (";" (Verb ObjectList)?)* }
+Verb { varOrIri | KwA }
+ObjectList { Object ("," Object)* }
+Object { graphNode Annotation? }
+
+TriplesSameSubjectPath {
+  varOrTerm PropertyListPathNotEmpty |
+  triplesNodePath PropertyListPathNotEmpty? |
+  ReifiedTriple PropertyListPathNotEmpty?
+}
+
+PropertyListPathNotEmpty {
+  (VerbPath | VerbSimple) ObjectListPath (";" ((VerbPath | VerbSimple) ObjectList)?)*
+}
+VerbPath { Path }
+VerbSimple { Var }
+ObjectListPath { ObjectPath ("," ObjectPath)* }
+ObjectPath { graphNodePath AnnotationPath? }
+
+Path { PathAlternative }
+PathAlternative { PathSequence ("|" PathSequence)* }
+PathSequence { PathEltOrInverse ("/" PathEltOrInverse)* }
+PathElt { PathPrimary PathMod? }
+PathEltOrInverse { PathElt | "^" PathElt }
+PathMod { "?" | "*" | "+" }
+PathPrimary { iri | KwA | NotOp PathNegatedPropertySet | "(" Path ")" }
+PathNegatedPropertySet {
+  PathOneInPropertyPath | "(" (PathOneInPropertyPath ("|" PathOneInPropertyPath)*)? ")"
+}
+PathOneInPropertyPath { iri | KwA | "^" (iri | KwA) }
+
+triplesNode { Collection | BlankNodePropertyList }
+BlankNodePropertyList { "[" PropertyListNotEmpty "]" }
+triplesNodePath { CollectionPath | BlankNodePropertyListPath }
+BlankNodePropertyListPath { "[" PropertyListPathNotEmpty "]" }
+Collection { "(" graphNode+ ")" }
+CollectionPath { "(" graphNodePath+ ")" }
+graphNode { varOrTerm | triplesNode | ReifiedTriple }
+graphNodePath { varOrTerm | triplesNodePath | ReifiedTriple }
+
+varOrTerm { Var | iri | RDFLiteral | NumericLiteral | BooleanLiteral | BlankNode | Nil | TripleTerm }
+varOrIri { Var | iri }
+Var { Var1 | Var2 }
+
+// ---------------------------------------------------- RDF 1.2 term additions
+
+// A literal can never be a subject, in any of the four bracketed forms, and
+// the three restricted forms each drop something more: `VALUES` data may not
+// nest a triple term in subject position, and an expression's triple term may
+// hold neither a nested triple term nor a blank node.
+
+ReifiedTriple { "<<" rtSubject Verb rtObject Reifier? ">>" }
+rtSubject { Var | iri | BlankNode | ReifiedTriple | TripleTerm }
+rtObject {
+  Var | iri | RDFLiteral | NumericLiteral | BooleanLiteral | BlankNode | TripleTerm | ReifiedTriple
+}
+
+Reifier { "~" varOrReifierId? }
+varOrReifierId { Var | iri | BlankNode }
+
+TripleTerm { "<<(" ttSubject Verb ttObject ")>>" }
+ttSubject { Var | iri | BlankNode | TripleTerm }
+ttObject { Var | iri | RDFLiteral | NumericLiteral | BooleanLiteral | BlankNode | TripleTerm }
+
+TripleTermData { "<<(" ttdSubject (iri | KwA) ttdObject ")>>" }
+ttdSubject { iri | BlankNode }
+ttdObject { iri | RDFLiteral | NumericLiteral | BooleanLiteral | BlankNode | TripleTermData }
+
+Annotation { (Reifier | AnnotationBlock)+ }
+AnnotationBlock { "{|" PropertyListNotEmpty "|}" }
+AnnotationPath { (Reifier | AnnotationBlockPath)+ }
+AnnotationBlockPath { "{|" PropertyListPathNotEmpty "|}" }
+
+ExprTripleTerm { "<<(" etSubject Verb etObject ")>>" }
+etSubject { Var | iri }
+etObject { Var | iri | RDFLiteral | NumericLiteral | BooleanLiteral | ExprTripleTerm }
+
+// ----------------------------------------------------------------- expressions
+
+Expression { ConditionalOrExpression }
+ConditionalOrExpression { ConditionalAndExpression (OrOp ConditionalAndExpression)* }
+ConditionalAndExpression { valueLogical (AndOp valueLogical)* }
+valueLogical { RelationalExpression }
+RelationalExpression {
+  numericExpression (
+    CompareOp numericExpression |
+    KwIN ExpressionList |
+    KwNOT KwIN ExpressionList
+  )?
+}
+numericExpression { AdditiveExpression }
+
+// [115]'s signed-literal alternative is why the numeric tokens carry their
+// sign: `?x -1` is an addition whose right operand is the literal `-1`, while
+// `?x - 1` is an addition with an operator. Both must parse.
+AdditiveExpression {
+  MultiplicativeExpression (
+    ArithOp MultiplicativeExpression |
+    (NumericLiteralPositive | NumericLiteralNegative) (MulOp UnaryExpression)*
+  )*
+}
+MultiplicativeExpression { UnaryExpression (MulOp UnaryExpression)* }
+UnaryExpression { (NotOp | ArithOp) primaryExpression | primaryExpression }
+primaryExpression {
+  BrackettedExpression | BuiltInCall | IriOrFunction |
+  RDFLiteral | NumericLiteral | BooleanLiteral | Var | ExprTripleTerm
+}
+BrackettedExpression { "(" Expression ")" }
+IriOrFunction { iri ArgList? }
+
+// The built-in calls, grouped by arity as the spec's list reads once the
+// parentheses are stripped. Keeping the arity in the grammar means
+// `STRLEN(?a, ?b)` is a parse error rather than something for a later pass.
+BuiltInCall {
+  Aggregate |
+  FunctionName0 Nil |
+  FunctionName1 "(" Expression ")" |
+  FunctionName2 "(" Expression "," Expression ")" |
+  FunctionName3 "(" Expression "," Expression "," Expression ")" |
+  FunctionNameList ExpressionList |
+  KwBOUND "(" Var ")" |
+  KwBNODE ("(" Expression ")" | Nil) |
+  KwSUBSTR "(" Expression "," Expression ("," Expression)? ")" |
+  KwREGEX "(" Expression "," Expression ("," Expression)? ")" |
+  KwREPLACE "(" Expression "," Expression "," Expression ("," Expression)? ")" |
+  ExistsFunc |
+  NotExistsFunc
+}
+
+FunctionName0 { KwRAND | KwNOW | KwUUID | KwSTRUUID }
+
+FunctionName1 {
+  KwSTR | KwLANG | KwDATATYPE | KwIRI | KwURI | KwABS | KwCEIL | KwFLOOR | KwROUND |
+  KwSTRLEN | KwUCASE | KwLCASE | KwENCODE_FOR_URI | KwYEAR | KwMONTH | KwDAY |
+  KwHOURS | KwMINUTES | KwSECONDS | KwTIMEZONE | KwTZ | KwMD5 | KwSHA1 | KwSHA256 |
+  KwSHA384 | KwSHA512 | KwISIRI | KwISURI | KwISBLANK | KwISLITERAL | KwISNUMERIC |
+  KwISTRIPLE | KwSUBJECT | KwPREDICATE | KwOBJECT | KwLANGDIR | KwHASLANG | KwHASLANGDIR
+}
+
+FunctionName2 {
+  KwLANGMATCHES | KwCONTAINS | KwSTRSTARTS | KwSTRENDS | KwSTRBEFORE | KwSTRAFTER |
+  KwSTRLANG | KwSTRDT | KwSAMETERM
+}
+
+FunctionName3 { KwIF | KwSTRLANGDIR | KwTRIPLE }
+
+FunctionNameList { KwCONCAT | KwCOALESCE }
+
+ExistsFunc { KwEXISTS GroupGraphPattern }
+NotExistsFunc { KwNOT KwEXISTS GroupGraphPattern }
+
+Aggregate {
+  KwCOUNT "(" KwDISTINCT? ("*" | Expression) ")" |
+  (KwSUM | KwMIN | KwMAX | KwAVG | KwSAMPLE) "(" KwDISTINCT? Expression ")" |
+  KwGROUP_CONCAT "(" KwDISTINCT? Expression (";" KwSEPARATOR "=" String)? ")"
+}
+
+// ---------------------------------------------------------------------- terms
+
+RDFLiteral { String (LangDir | Datatype)? }
+Datatype { "^^" iri }
+NumericLiteral { NumericLiteralUnsigned | NumericLiteralPositive | NumericLiteralNegative }
+NumericLiteralUnsigned { Integer | Decimal | Double }
+NumericLiteralPositive { IntegerPositive | DecimalPositive | DoublePositive }
+NumericLiteralNegative { IntegerNegative | DecimalNegative | DoubleNegative }
+BooleanLiteral { KwTRUE | KwFALSE }
+iri { IRIRef | PrefixedName }
+PrefixedName { PNameLN | PNameNS }
+BlankNode { BlankNodeLabel | Anon }
+
+// ------------------------------------------------------------------------ SRL
+//
+// SRL: `RULE iri? HeadTemplate 'WHERE' 'DATA'? BodyPattern`, plus ground
+// `DATA` blocks, plus the rule-tuples extension. There is no `IF`/`THEN` and no
+// `FOR`/`IN` clause: both were removed from the grammar upstream
+// (w3c/data-shapes commits 58fdfc6 and cfbcd3c, 2026-08-24).
+
+RuleSet { (BaseDecl | PrefixDecl | VersionDecl | Rule | SrlDataBlock)* }
+
+Rule { KwRULE iri? HeadTemplate KwWHERE KwDATA? BodyPattern }
+
+// A dot-separated list rather than `ConstructTriples | TupleTemplate` repeated:
+// ConstructTriples consumes its own dots, so the two together are ambiguous.
+HeadTemplate { "{" (headItem ("." headItem?)*)? "}" }
+headItem { TupleTemplate | TriplesSameSubject }
+
+BodyPattern { "{" srlGroupBody "}" }
+srlGroupBody { TriplesBlock? (srlPatternItem "."? TriplesBlock?)* }
+srlPatternItem { Negation | Filter | Assignment | TuplePattern }
+
+Negation { KwNOT KwDATA? BodyPattern }
+Assignment { KwSET "(" Var AssignOp Expression ")" }
+
+SrlDataBlock { KwDATA DataTemplate }
+DataTemplate { "{" TriplesTemplate? "}" }
+
+TuplePattern { KwTUPLE "(" varOrTerm ("," varOrTerm)* ")" }
+TupleTemplate { KwTUPLE "(" varOrTerm ("," varOrTerm)* ")" }
+
+// --------------------------------------------------------------------- tokens
+
+@external specialize { Word } keyword from "./keywords" {
+  KwBASE, KwPREFIX, KwVERSION,
+  KwSELECT, KwDISTINCT, KwREDUCED, KwAS, KwCONSTRUCT, KwWHERE, KwDESCRIBE, KwASK,
+  KwFROM, KwNAMED, KwGROUP, KwBY, KwHAVING, KwORDER, KwASC, KwDESC, KwLIMIT,
+  KwOFFSET, KwVALUES, KwOPTIONAL, KwGRAPH, KwSERVICE, KwSILENT, KwBIND, KwUNDEF,
+  KwMINUS, KwUNION, KwFILTER,
+  KwLOAD, KwINTO, KwCLEAR, KwDROP, KwCREATE, KwADD, KwMOVE, KwCOPY, KwTO,
+  KwINSERT, KwDELETE, KwDATA, KwWITH, KwUSING, KwDEFAULT, KwALL,
+  KwA, KwTRUE, KwFALSE,
+  KwSTR, KwLANG, KwLANGMATCHES, KwDATATYPE, KwBOUND, KwIRI, KwURI, KwBNODE,
+  KwRAND, KwABS, KwCEIL, KwFLOOR, KwROUND, KwCONCAT, KwSTRLEN, KwUCASE, KwLCASE,
+  KwENCODE_FOR_URI, KwCONTAINS, KwSTRSTARTS, KwSTRENDS, KwSTRBEFORE, KwSTRAFTER,
+  KwYEAR, KwMONTH, KwDAY, KwHOURS, KwMINUTES, KwSECONDS, KwTIMEZONE, KwTZ,
+  KwNOW, KwUUID, KwSTRUUID, KwMD5, KwSHA1, KwSHA256, KwSHA384, KwSHA512,
+  KwCOALESCE, KwIF, KwSTRLANG, KwSTRDT, KwSAMETERM, KwISIRI, KwISURI, KwISBLANK,
+  KwISLITERAL, KwISNUMERIC, KwREGEX, KwSUBSTR, KwREPLACE, KwEXISTS, KwNOT, KwIN,
+  KwCOUNT, KwSUM, KwMIN, KwMAX, KwAVG, KwSAMPLE, KwGROUP_CONCAT, KwSEPARATOR,
+  KwTRIPLE, KwISTRIPLE, KwSUBJECT, KwPREDICATE, KwOBJECT,
+  KwLANGDIR, KwHASLANG, KwHASLANGDIR, KwSTRLANGDIR,
+  KwRULE, KwSET, KwTUPLE
+}
+
+@tokens {
+  whitespace { $[ \t\r\n]+ }
+  Comment { "#" ![\n\r]* }
+
+  // One token for every bare word; `keywords.ts` turns the ones that are
+  // keywords into their own terms, case-insensitively. `-` and `.` are left
+  // out so a bare word can never swallow an operator or a statement dot.
+  Word { PN_CHARS_BASE $[A-Za-z0-9_]* }
+
+  IRIRef { "<" (![ - <>\"{}|^`\\] | UCHAR)* ">" }
+
+  PNameNS { PN_PREFIX? ":" }
+  PNameLN { PNameNS PN_LOCAL }
+
+  BlankNodeLabel { "_:" (PN_CHARS_U | $[0-9]) ((PN_CHARS | ".")* PN_CHARS)? }
+  Anon { "[" $[ \t\r\n]* "]" }
+  Nil { "(" $[ \t\r\n]* ")" }
+
+  Var1 { "?" VARNAME }
+  Var2 { "$" VARNAME }
+  VARNAME { (PN_CHARS_U | $[0-9]) (PN_CHARS_U | $[0-9] | $[·] | $[̀-ͯ] | $[‿-⁀])* }
+
+  LangDir { "@" LANGTAG_PRIMARY ("-" $[a-zA-Z0-9]+)* ("--" ("ltr" | "rtl"))? }
+  LANGTAG_PRIMARY {
+    $[a-zA-Z] $[a-zA-Z]? $[a-zA-Z]? $[a-zA-Z]? $[a-zA-Z]? $[a-zA-Z]? $[a-zA-Z]? $[a-zA-Z]?
+  }
+
+  Integer { $[0-9]+ }
+  Decimal { $[0-9]* "." $[0-9]+ }
+  Double { $[0-9]+ "." $[0-9]* EXPONENT | "." $[0-9]+ EXPONENT | $[0-9]+ EXPONENT }
+  IntegerPositive { "+" Integer }
+  DecimalPositive { "+" Decimal }
+  DoublePositive { "+" Double }
+  IntegerNegative { "-" Integer }
+  DecimalNegative { "-" Decimal }
+  DoubleNegative { "-" Double }
+  EXPONENT { $[eE] $[+\-]? $[0-9]+ }
+
+  String {
+    "\"" (![\"\\\n\r] | ECHAR | UCHAR)* "\"" |
+    "'" (!['\\\n\r] | ECHAR | UCHAR)* "'" |
+    "\"\"\"" (![\"\\] | "\\" _ | "\"" ![\"] | "\"\"" ![\"])* "\"\"\"" |
+    "'''" (!['\\] | "\\" _ | "'" !['] | "''" !['])* "'''"
+  }
+  VersionSpecifier {
+    "\"" (![\"\\\n\r] | ECHAR | UCHAR)* "\"" |
+    "'" (!['\\\n\r] | ECHAR | UCHAR)* "'"
+  }
+
+  ECHAR { "\\" $[tbnrf\"'\\] }
+  UCHAR { "\\u" HEX HEX HEX HEX | "\\U" HEX HEX HEX HEX HEX HEX HEX HEX }
+  HEX { $[0-9A-Fa-f] }
+
+  PN_CHARS_BASE {
+    $[A-Za-z] |
+    $[À-Ö] | $[Ø-ö] | $[ø-˿] |
+    $[Ͱ-ͽ] | $[Ϳ-῿] | $[‌-‍] |
+    $[⁰-↏] | $[Ⰰ-⿯] | $[、-퟿] |
+    $[豈-﷏] | $[ﷰ-�]
+  }
+  PN_CHARS_U { PN_CHARS_BASE | "_" }
+  PN_CHARS { PN_CHARS_U | "-" | $[0-9] | $[·] | $[̀-ͯ] | $[‿-⁀] }
+  PN_PREFIX { PN_CHARS_BASE ((PN_CHARS | ".")* PN_CHARS)? }
+  PN_LOCAL {
+    (PN_CHARS_U | ":" | $[0-9] | PLX) ((PN_CHARS | "." | ":" | PLX)* (PN_CHARS | ":" | PLX))?
+  }
+  PLX { PERCENT | PN_LOCAL_ESC }
+  PERCENT { "%" HEX HEX }
+  PN_LOCAL_ESC { "\\" $[_~.!$&'()*+,;=/?#@%\-] }
+
+  OrOp { "||" }
+  AndOp { "&&" }
+  CompareOp { "=" | "!=" | "<=" | ">=" | "<" | ">" }
+  ArithOp { "+" | "-" }
+  MulOp { "*" | "/" }
+  NotOp { "!" }
+  AssignOp { ":=" }
+
+  "<<" ">>" "<<(" ")>>" "{|" "|}" "^^" "~" "^" "|" "?"
+  "{" "}" "[" "]" "(" ")" ";" "," "." "*" "+" "="
+
+  // More specific patterns first: Lezer token precedence overrides longest
+  // match, so this order spells out "the longer alternative wins".
+  //
+  // Only genuinely ambiguous pairs are listed. A precedence is a *global*
+  // resolution — it beats Lezer's per-state tokenisation — so declaring one
+  // between tokens that merely look alike breaks the states where the other
+  // one was the only valid choice. `*` is the cautionary tale: with
+  // `@precedence { MulOp, "*" }` in place, `SELECT *` lexed its star as
+  // multiplication and every `SELECT *` query failed to parse.
+  // AssignOp before PNameNS: `:=` must not lex as an empty prefix followed
+  // by `=`, which is what SRL's `SET ( ?v := … )` turned into.
+  @precedence { PNameLN, AssignOp, PNameNS, Word }
+  @precedence { DoublePositive, DecimalPositive, IntegerPositive, DoubleNegative, DecimalNegative, IntegerNegative, ArithOp, "+" }
+  // `[ :p 1 ]` may have `+1` as its object while `[ :p+ 1 ]` has `+` as a path
+  // modifier, so those two really are valid at the same position.
+  @precedence { Double, Decimal, Integer, "." }
+  @precedence { Var1, "?" }
+  @precedence { IRIRef, "<<(", "<<" }
+  @precedence { ")>>", Nil, ")" }
+  @precedence { OrOp, "|" }
+  @precedence { Anon, "[" }
+}
+
+@detectDelim

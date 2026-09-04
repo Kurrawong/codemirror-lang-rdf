@@ -145,3 +145,44 @@ export function tokenTags(parser: LRParser, text: string): TaggedToken[] {
 export function tagOf(parser: LRParser, text: string, token: string): TagName | undefined {
   return tokenTags(parser, text).find((t) => t.text === token)?.tag;
 }
+
+/** Every node name in a parse, as a set. */
+export function nodeNames(parser: LRParser, text: string): Set<string> {
+  const names = new Set<string>();
+  parser.parse(text).iterate({
+    enter: (n) => {
+      names.add(n.name);
+    },
+  });
+  return names;
+}
+
+/**
+ * The source text the first `name` node covers, or undefined.
+ *
+ * The readable way to assert about a deep tree. SPARQL's expression grammar is
+ * seven productions tall before it reaches a leaf, so a full shape expectation
+ * for `FILTER(isTRIPLE(?t))` would be almost entirely wrappers; naming the node
+ * and checking what it spans says the same thing about the part under test.
+ */
+export function textOf(parser: LRParser, text: string, name: string): string | undefined {
+  let found: string | undefined;
+  parser.parse(text).iterate({
+    enter: (n) => {
+      if (found === undefined && n.name === name) found = text.slice(n.from, n.to);
+      return found === undefined;
+    },
+  });
+  return found;
+}
+
+/** The source text every `name` node covers, in document order. */
+export function allTextOf(parser: LRParser, text: string, name: string): string[] {
+  const out: string[] = [];
+  parser.parse(text).iterate({
+    enter: (n) => {
+      if (n.name === name) out.push(text.slice(n.from, n.to));
+    },
+  });
+  return out;
+}
