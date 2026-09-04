@@ -24,12 +24,15 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # Three layers, in the order that fails fastest.
-      - name: Typecheck
-        run: pnpm run typecheck
-
+      # The build comes first: `codemirror-lang-srl` imports the SPARQL
+      # package by name, so typechecking it needs that package's emitted
+      # declarations. After that, the layers run in the order that fails
+      # fastest.
       - name: Build the grammars
         run: pnpm run build
+
+      - name: Typecheck
+        run: pnpm run typecheck
 
       # Conformance, tree shapes and editor behaviour. A grammar change that
       # drops a conformance test from passing is a failing build, not a ratchet:

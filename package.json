@@ -10,7 +10,7 @@
     "test": "pnpm run build && vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "test:all": "pnpm run typecheck && pnpm run test && pnpm run test:e2e",
+    "test:all": "pnpm run build && pnpm run typecheck && vitest run && playwright test",
     "typecheck": "pnpm -r --filter './packages/*' exec tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json",
     "vendor-corpus": "node scripts/vendor-corpus.mjs",
     "changeset": "changeset",
