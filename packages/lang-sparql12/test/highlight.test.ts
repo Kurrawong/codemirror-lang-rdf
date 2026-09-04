@@ -19,7 +19,8 @@ describe('keywords', () => {
    */
   it('tags every keyword the grammar knows', () => {
     const untagged: string[] = [];
-    for (const kw of KEYWORDS) {
+    // `true` and `false` are tagged `bool`, not `keyword` — see above.
+    for (const kw of KEYWORDS.filter((k) => k !== 'true' && k !== 'false')) {
       // `a`, `true` and `false` are keywords in term position, not clause
       // position, so each keyword is exercised where it can legally appear:
       // a FILTER expression accepts function names, a pattern accepts the rest.
@@ -72,7 +73,10 @@ describe('terms', () => {
     expect(tagOf(sparql, 'ASK { ?s ex:p -42 }', '-42')).toBe('number');
     expect(tagOf(sparql, 'ASK { ?s ex:p +4.2 }', '+4.2')).toBe('number');
     expect(tagOf(sparql, 'ASK { ?s ex:p 4.2e1 }', '4.2e1')).toBe('number');
-    expect(tagOf(sparql, 'ASK { ?s ex:p true }', 'true')).toBe('keyword');
+    // `true` is a keyword term in the grammar but an RDF literal to a reader,
+    // so the shared table tags it `bool` — see docs/highlight-tags.md.
+    expect(tagOf(sparql, 'ASK { ?s ex:p true }', 'true')).toBe('bool');
+    expect(tagOf(sparql, 'ASK { ?s ex:p false }', 'false')).toBe('bool');
   });
 
   it('tags a language tag as annotation and a datatype as typeName', () => {

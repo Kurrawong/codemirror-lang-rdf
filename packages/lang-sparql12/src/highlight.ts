@@ -16,7 +16,14 @@ import { KEYWORD_NODE_NAMES } from './keywords';
 export const sparqlHighlighting: NodePropSource = styleTags({
   Comment: t.comment,
 
-  [KEYWORD_NODE_NAMES.join(' ')]: t.keyword,
+  /*
+   * `true` and `false` are keyword *terms* in the grammar — SPARQL spells its
+   * booleans as words — but they are RDF literals, and the shared tag table
+   * tags them `bool` so a style colours them like the literals they are. They
+   * are the only two keyword nodes that are not tagged `keyword`.
+   */
+  [KEYWORD_NODE_NAMES.filter((name) => name !== 'KwTRUE' && name !== 'KwFALSE').join(' ')]: t.keyword,
+  'KwTRUE KwFALSE': t.bool,
 
   IRIRef: t.url,
   'PNameNS PNameLN': t.namespace,

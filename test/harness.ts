@@ -132,7 +132,7 @@ export interface TaggedToken {
 
 export function tokenTags(parser: LRParser, text: string): TaggedToken[] {
   const highlighter = tagHighlighter(
-    TAG_NAMES.map((name) => ({ tag: (tags as Record<string, Tag>)[name], class: name }))
+    TAG_NAMES.map((name) => ({ tag: (tags as unknown as Record<string, Tag>)[name], class: name }))
   );
   const out: TaggedToken[] = [];
   highlightTree(parser.parse(text), highlighter, (from, to, cls) => {

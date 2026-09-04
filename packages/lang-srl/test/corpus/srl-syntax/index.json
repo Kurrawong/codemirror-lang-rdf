@@ -1,0 +1,697 @@
+[
+  {
+    "name": "test_1",
+    "file": "syntax-ruleset-structure-01.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_10",
+    "file": "syntax-rule-terms-10.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_100",
+    "file": "syntax-pattern-18.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_101",
+    "file": "syntax-pattern-19.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_102",
+    "file": "syntax-pattern-20.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_103",
+    "file": "syntax-pattern-21.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_104",
+    "file": "syntax-pattern-22.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_105",
+    "file": "syntax-pattern-23.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_106",
+    "file": "syntax-pattern-24.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_107",
+    "file": "syntax-pattern-25.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_108",
+    "file": "syntax-pattern-26.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_109",
+    "file": "syntax-pattern-27.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_11",
+    "file": "syntax-rule-terms-11.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_110",
+    "file": "syntax-rule-bad-01.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_111",
+    "file": "syntax-rule-bad-02.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_112",
+    "file": "syntax-rule-bad-03.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_113",
+    "file": "syntax-rule-bad-04.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_114",
+    "file": "syntax-rule-bad-05.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_115",
+    "file": "syntax-rule-bad-06.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_116",
+    "file": "syntax-rule-terms-bad-01.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_117",
+    "file": "syntax-rule-terms-bad-02.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_118",
+    "file": "syntax-rule-terms-bad-03.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_119",
+    "file": "syntax-data-bad-01.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_12",
+    "file": "syntax-rule-terms-12.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_120",
+    "file": "syntax-data-bad-02.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_121",
+    "file": "syntax-data-bad-03.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_122",
+    "file": "syntax-data-bad-04.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_123",
+    "file": "syntax-data-bad-05.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_124",
+    "file": "syntax-data-bad-06.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_125",
+    "file": "syntax-data-bad-07.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_126",
+    "file": "syntax-data-bad-08.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_127",
+    "file": "syntax-data-bad-09.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_128",
+    "file": "syntax-data-bad-10.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_129",
+    "file": "syntax-data-bad-11.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_13",
+    "file": "syntax-rule-terms-13.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_130",
+    "file": "syntax-template-bad-01.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_131",
+    "file": "syntax-template-bad-02.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_132",
+    "file": "syntax-template-bad-03.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_133",
+    "file": "syntax-template-bad-04.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_134",
+    "file": "syntax-template-bad-05.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_135",
+    "file": "syntax-template-bad-06.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_136",
+    "file": "syntax-pattern-bad-01.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_137",
+    "file": "syntax-pattern-bad-02.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_138",
+    "file": "syntax-pattern-bad-03.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_139",
+    "file": "syntax-pattern-bad-04.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_14",
+    "file": "syntax-rule-terms-14.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_15",
+    "file": "syntax-rule-terms-15.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_16",
+    "file": "syntax-rule-terms-16.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_17",
+    "file": "syntax-rule-paths-01.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_18",
+    "file": "syntax-rule-paths-02.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_19",
+    "file": "syntax-rule-paths-03.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_2",
+    "file": "syntax-ruleset-structure-02.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_20",
+    "file": "syntax-rule-elements-filter-01.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_21",
+    "file": "syntax-rule-elements-filter-02.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_22",
+    "file": "syntax-rule-elements-filter-03.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_23",
+    "file": "syntax-rule-elements-not-01.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_24",
+    "file": "syntax-rule-elements-not-02.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_25",
+    "file": "syntax-rule-elements-not-03.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_26",
+    "file": "syntax-rule-elements-not-04.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_27",
+    "file": "syntax-reification-01.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_28",
+    "file": "syntax-reification-02.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_29",
+    "file": "syntax-reification-03.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_3",
+    "file": "syntax-ruleset-structure-03.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_30",
+    "file": "syntax-reification-04.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_31",
+    "file": "syntax-reification-05.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_32",
+    "file": "syntax-reification-06.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_33",
+    "file": "syntax-reification-07.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_34",
+    "file": "syntax-reification-08.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_35",
+    "file": "syntax-data-01.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_36",
+    "file": "syntax-data-02.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_37",
+    "file": "syntax-data-03.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_38",
+    "file": "syntax-data-04.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_39",
+    "file": "syntax-data-05.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_4",
+    "file": "syntax-ruleset-structure-04.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_40",
+    "file": "syntax-data-06.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_41",
+    "file": "syntax-data-07.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_42",
+    "file": "syntax-data-08.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_43",
+    "file": "syntax-data-09.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_44",
+    "file": "syntax-data-10.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_45",
+    "file": "syntax-data-11.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_46",
+    "file": "syntax-data-12.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_47",
+    "file": "syntax-data-13.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_48",
+    "file": "syntax-data-14.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_49",
+    "file": "syntax-data-15.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_5",
+    "file": "syntax-ruleset-structure-05.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_50",
+    "file": "syntax-data-16.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_51",
+    "file": "syntax-data-17.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_52",
+    "file": "syntax-data-18.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_53",
+    "file": "syntax-data-19.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_54",
+    "file": "syntax-data-20.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_55",
+    "file": "syntax-data-21.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_56",
+    "file": "syntax-template-01.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_57",
+    "file": "syntax-template-02.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_58",
+    "file": "syntax-template-03.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_59",
+    "file": "syntax-template-04.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_6",
+    "file": "syntax-ruleset-structure-06.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_60",
+    "file": "syntax-template-05.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_61",
+    "file": "syntax-template-06.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_62",
+    "file": "syntax-template-07.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_63",
+    "file": "syntax-template-08.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_64",
+    "file": "syntax-template-09.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_65",
+    "file": "syntax-template-10.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_66",
+    "file": "syntax-template-11.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_67",
+    "file": "syntax-template-12.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_68",
+    "file": "syntax-template-13.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_69",
+    "file": "syntax-template-14.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_7",
+    "file": "syntax-rule-terms-07.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_70",
+    "file": "syntax-template-15.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_71",
+    "file": "syntax-template-16.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_72",
+    "file": "syntax-template-17.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_73",
+    "file": "syntax-template-18.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_74",
+    "file": "syntax-template-19.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_75",
+    "file": "syntax-template-20.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_76",
+    "file": "syntax-template-21.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_77",
+    "file": "syntax-template-22.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_78",
+    "file": "syntax-template-23.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_79",
+    "file": "syntax-template-24.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_8",
+    "file": "syntax-rule-terms-08.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_80",
+    "file": "syntax-template-25.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_81",
+    "file": "syntax-template-26.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_82",
+    "file": "syntax-template-27.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_83",
+    "file": "syntax-pattern-01.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_84",
+    "file": "syntax-pattern-02.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_85",
+    "file": "syntax-pattern-03.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_86",
+    "file": "syntax-pattern-04.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_87",
+    "file": "syntax-pattern-05.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_88",
+    "file": "syntax-pattern-06.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_89",
+    "file": "syntax-pattern-07.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_9",
+    "file": "syntax-rule-terms-09.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_90",
+    "file": "syntax-pattern-08.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_91",
+    "file": "syntax-pattern-09.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_92",
+    "file": "syntax-pattern-10.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_93",
+    "file": "syntax-pattern-11.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_94",
+    "file": "syntax-pattern-12.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_95",
+    "file": "syntax-pattern-13.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_96",
+    "file": "syntax-pattern-14.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_97",
+    "file": "syntax-pattern-15.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_98",
+    "file": "syntax-pattern-16.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_99",
+    "file": "syntax-pattern-17.srl",
+    "expect": "positive"
+  }
+]

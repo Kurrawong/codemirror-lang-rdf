@@ -1,0 +1,16 @@
+https://github.com/w3c/data-shapes
+branch: gh-pages
+commit: 9c863967bceaef1a87c24e4dd761eda763823120
+path:   shacl12-test-suite/tests/sparql-rl/syntax
+entries: 109 positive, 30 negative
+
+Vendored from the snapshot the application monorepo already carries under
+packages/srl/test/w3c/syntax, so both parsers are scored against the same
+files. Do not edit by hand.
+
+Note on the language: `FOR ?var IN <shape>`, and the `IF … THEN` rule form,
+were removed from the SRL grammar upstream on 2026-08-24 (commits 58fdfc6 and
+cfbcd3c), and the five tests that covered them went with them. There is one
+rule production left: RULE iri? HeadTemplate 'WHERE' 'DATA'? BodyPattern.
+
+Licensed under the W3C Test Suite License and the W3C 3-clause BSD License.
