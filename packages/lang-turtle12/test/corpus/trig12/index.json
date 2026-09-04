@@ -1,0 +1,177 @@
+[
+  {
+    "name": "trig12-1",
+    "file": "trig12-syntax-basic-01.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-2",
+    "file": "trig12-syntax-basic-02.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-3",
+    "file": "trig12-syntax-basic-03.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-4",
+    "file": "trig12-syntax-basic-04.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-ann-1",
+    "file": "trig12-annotation-1.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-ann-2",
+    "file": "trig12-annotation-2.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-ann-3",
+    "file": "trig12-annotation-3.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-ann-4",
+    "file": "trig12-annotation-4.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-ann-5",
+    "file": "trig12-annotation-5.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-ann-6",
+    "file": "trig12-annotation-6.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-ann-7",
+    "file": "trig12-annotation-7.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-ann-8",
+    "file": "trig12-annotation-8.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-bad-1",
+    "file": "trig12-syntax-bad-01.trig",
+    "expect": "negative"
+  },
+  {
+    "name": "trig12-bad-2",
+    "file": "trig12-syntax-bad-02.trig",
+    "expect": "negative"
+  },
+  {
+    "name": "trig12-bad-3",
+    "file": "trig12-syntax-bad-03.trig",
+    "expect": "negative"
+  },
+  {
+    "name": "trig12-bad-4",
+    "file": "trig12-syntax-bad-04.trig",
+    "expect": "negative"
+  },
+  {
+    "name": "trig12-bad-5",
+    "file": "trig12-syntax-bad-05.trig",
+    "expect": "negative"
+  },
+  {
+    "name": "trig12-bad-6",
+    "file": "trig12-syntax-bad-06.trig",
+    "expect": "negative"
+  },
+  {
+    "name": "trig12-bad-7",
+    "file": "trig12-syntax-bad-07.trig",
+    "expect": "negative"
+  },
+  {
+    "name": "trig12-bad-ann-1",
+    "file": "trig12-syntax-bad-ann-1.trig",
+    "expect": "negative"
+  },
+  {
+    "name": "trig12-bad-ann-2",
+    "file": "trig12-syntax-bad-ann-2.trig",
+    "expect": "negative"
+  },
+  {
+    "name": "trig12-base-1",
+    "file": "trig12-base-1.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-base-2",
+    "file": "trig12-base-2.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-base-bad-1",
+    "file": "trig12-base-bad-1.trig",
+    "expect": "negative"
+  },
+  {
+    "name": "trig12-base-bad-2",
+    "file": "trig12-base-bad-2.trig",
+    "expect": "negative"
+  },
+  {
+    "name": "trig12-bnode-1",
+    "file": "trig12-syntax-bnode-01.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-bnode-2",
+    "file": "trig12-syntax-bnode-02.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-bnode-3",
+    "file": "trig12-syntax-bnode-03.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-compound-1",
+    "file": "trig12-syntax-compound.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-inside-1",
+    "file": "trig12-syntax-inside-01.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-inside-2",
+    "file": "trig12-syntax-inside-02.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-inside-3",
+    "file": "trig12-syntax-inside-03.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-inside-4",
+    "file": "trig12-syntax-inside-04.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-nested-1",
+    "file": "trig12-syntax-nested-01.trig",
+    "expect": "positive"
+  },
+  {
+    "name": "trig12-nested-2",
+    "file": "trig12-syntax-nested-02.trig",
+    "expect": "positive"
+  }
+]

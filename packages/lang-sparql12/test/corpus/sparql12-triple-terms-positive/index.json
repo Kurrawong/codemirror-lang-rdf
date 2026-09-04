@@ -1,0 +1,477 @@
+[
+  {
+    "name": "annotation-anonreifier-01",
+    "file": "annotation-anonreifier-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-anonreifier-02",
+    "file": "annotation-anonreifier-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-anonreifier-03",
+    "file": "annotation-anonreifier-03.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-anonreifier-04",
+    "file": "annotation-anonreifier-04.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-anonreifier-05",
+    "file": "annotation-anonreifier-05.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-anonreifier-06",
+    "file": "annotation-anonreifier-06.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-anonreifier-07",
+    "file": "annotation-anonreifier-07.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-anonreifier-08",
+    "file": "annotation-anonreifier-08.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-anonreifier-09",
+    "file": "annotation-anonreifier-09.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-anonreifier-multiple-01",
+    "file": "annotation-anonreifier-multiple-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-anonreifier-multiple-02",
+    "file": "annotation-anonreifier-multiple-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-anonreifier-multiple-03",
+    "file": "annotation-anonreifier-multiple-03.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-anonreifier-multiple-04",
+    "file": "annotation-anonreifier-multiple-04.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-reifier-01",
+    "file": "annotation-reifier-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-reifier-02",
+    "file": "annotation-reifier-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-reifier-03",
+    "file": "annotation-reifier-03.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-reifier-04",
+    "file": "annotation-reifier-04.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-reifier-05",
+    "file": "annotation-reifier-05.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-reifier-06",
+    "file": "annotation-reifier-06.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-reifier-07",
+    "file": "annotation-reifier-07.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-reifier-08",
+    "file": "annotation-reifier-08.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-reifier-09",
+    "file": "annotation-reifier-09.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-reifier-multiple-01",
+    "file": "annotation-reifier-multiple-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-reifier-multiple-02",
+    "file": "annotation-reifier-multiple-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-reifier-multiple-03",
+    "file": "annotation-reifier-multiple-03.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-reifier-multiple-04",
+    "file": "annotation-reifier-multiple-04.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-reifier-multiple-05",
+    "file": "annotation-reifier-multiple-05.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-reifier-multiple-06",
+    "file": "annotation-reifier-multiple-06.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-reifier-multiple-07",
+    "file": "annotation-reifier-multiple-07.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-reifier-multiple-08",
+    "file": "annotation-reifier-multiple-08.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-reifier-multiple-09",
+    "file": "annotation-reifier-multiple-09.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "annotation-reifier-multiple-10",
+    "file": "annotation-reifier-multiple-10.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-anonreifier-01",
+    "file": "basic-anonreifier-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-anonreifier-02",
+    "file": "basic-anonreifier-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-anonreifier-03",
+    "file": "basic-anonreifier-03.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-anonreifier-04",
+    "file": "basic-anonreifier-04.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-anonreifier-06",
+    "file": "basic-anonreifier-06.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-anonreifier-07",
+    "file": "basic-anonreifier-07.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-anonreifier-08",
+    "file": "basic-anonreifier-08.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-anonreifier-09",
+    "file": "basic-anonreifier-09.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-anonreifier-10",
+    "file": "basic-anonreifier-10.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-anonreifier-11",
+    "file": "basic-anonreifier-11.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-anonreifier-12",
+    "file": "basic-anonreifier-12.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-anonreifier-13",
+    "file": "basic-anonreifier-13.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-reifier-01",
+    "file": "basic-reifier-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-reifier-02",
+    "file": "basic-reifier-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-reifier-03",
+    "file": "basic-reifier-03.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-reifier-04",
+    "file": "basic-reifier-04.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-reifier-06",
+    "file": "basic-reifier-06.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-reifier-07",
+    "file": "basic-reifier-07.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-reifier-08",
+    "file": "basic-reifier-08.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-reifier-09",
+    "file": "basic-reifier-09.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-reifier-10",
+    "file": "basic-reifier-10.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-reifier-11",
+    "file": "basic-reifier-11.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-reifier-12",
+    "file": "basic-reifier-12.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-reifier-13",
+    "file": "basic-reifier-13.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-tripleterm-01",
+    "file": "basic-tripleterm-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-tripleterm-02",
+    "file": "basic-tripleterm-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-tripleterm-03",
+    "file": "basic-tripleterm-03.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-tripleterm-04",
+    "file": "basic-tripleterm-04.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-tripleterm-05",
+    "file": "basic-tripleterm-05.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-tripleterm-06",
+    "file": "basic-tripleterm-06.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "basic-tripleterm-07",
+    "file": "basic-tripleterm-07.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "bnode-anonreifier-01",
+    "file": "bnode-anonreifier-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "bnode-anonreifier-02",
+    "file": "bnode-anonreifier-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "bnode-anonreifier-03",
+    "file": "bnode-anonreifier-03.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "bnode-reifier-01",
+    "file": "bnode-reifier-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "bnode-reifier-02",
+    "file": "bnode-reifier-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "bnode-reifier-03",
+    "file": "bnode-reifier-03.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "bnode-tripleterm-01",
+    "file": "bnode-tripleterm-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "bnode-tripleterm-02",
+    "file": "bnode-tripleterm-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "bnode-tripleterm-03",
+    "file": "bnode-tripleterm-03.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "compound-all",
+    "file": "compound-all.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "compound-anonreifier",
+    "file": "compound-anonreifier.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "compound-reifier",
+    "file": "compound-reifier.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "compound-tripleterm",
+    "file": "compound-tripleterm.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "compound-tripleterm-subject",
+    "file": "compound-tripleterm-subject.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "expr-tripleterm-01",
+    "file": "expr-tripleterm-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "expr-tripleterm-03",
+    "file": "expr-tripleterm-03.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "expr-tripleterm-04",
+    "file": "expr-tripleterm-04.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "expr-tripleterm-05",
+    "file": "expr-tripleterm-05.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "expr-tripleterm-06",
+    "file": "expr-tripleterm-06.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "inside-anonreifier-01",
+    "file": "inside-anonreifier-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "inside-anonreifier-02",
+    "file": "inside-anonreifier-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "inside-reifier-01",
+    "file": "inside-reifier-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "inside-reifier-02",
+    "file": "inside-reifier-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "inside-tripleterm-01",
+    "file": "inside-tripleterm-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "inside-tripleterm-02",
+    "file": "inside-tripleterm-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "nested-anonreifier-01",
+    "file": "nested-anonreifier-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "nested-anonreifier-02",
+    "file": "nested-anonreifier-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "nested-reifier-01",
+    "file": "nested-reifier-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "nested-reifier-02",
+    "file": "nested-reifier-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "nested-tripleterm-01",
+    "file": "nested-tripleterm-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "nested-tripleterm-02",
+    "file": "nested-tripleterm-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "subject-tripleterm",
+    "file": "subject-tripleterm.rq",
+    "expect": "positive"
+  }
+]

@@ -1,0 +1,76 @@
+{
+  "source": {
+    "url": "https://github.com/w3c/rdf-tests",
+    "commit": "369a90d1a60c021b746df2e411da0ff36258a758"
+  },
+  "testTypes": {
+    "rdft:TestTurtlePositiveSyntax": "positive",
+    "rdft:TestTurtleNegativeSyntax": "negative",
+    "rdft:TestTrigPositiveSyntax": "positive",
+    "rdft:TestTrigNegativeSyntax": "negative",
+    "rdft:TestNTriplesPositiveSyntax": "positive",
+    "rdft:TestNTriplesNegativeSyntax": "negative",
+    "rdft:TestNQuadsPositiveSyntax": "positive",
+    "rdft:TestNQuadsNegativeSyntax": "negative",
+    "mf:PositiveSyntaxTest": "positive",
+    "mf:NegativeSyntaxTest": "negative",
+    "mf:PositiveSyntaxTest11": "positive",
+    "mf:NegativeSyntaxTest11": "negative",
+    "mf:PositiveUpdateSyntaxTest11": "positive",
+    "mf:NegativeUpdateSyntaxTest11": "negative"
+  },
+  "groups": [
+    {
+      "from": "rdf/rdf12/rdf-turtle/syntax",
+      "to": "packages/lang-turtle12/test/corpus/turtle12"
+    },
+    {
+      "from": "rdf/rdf12/rdf-trig/syntax",
+      "to": "packages/lang-turtle12/test/corpus/trig12"
+    },
+    {
+      "from": "rdf/rdf12/rdf-n-triples/syntax",
+      "to": "packages/lang-turtle12/test/corpus/ntriples12"
+    },
+    {
+      "from": "rdf/rdf12/rdf-n-quads/syntax",
+      "to": "packages/lang-turtle12/test/corpus/nquads12"
+    },
+    {
+      "from": "sparql/sparql11/syntax-query",
+      "to": "packages/lang-sparql12/test/corpus/sparql11-query"
+    },
+    {
+      "from": "sparql/sparql11/syntax-update-1",
+      "to": "packages/lang-sparql12/test/corpus/sparql11-update"
+    },
+    {
+      "from": "sparql/sparql11/syntax-fed",
+      "to": "packages/lang-sparql12/test/corpus/sparql11-fed"
+    },
+    {
+      "from": "sparql/sparql12/syntax",
+      "to": "packages/lang-sparql12/test/corpus/sparql12-syntax"
+    },
+    {
+      "from": "sparql/sparql12/syntax-triple-terms-positive",
+      "to": "packages/lang-sparql12/test/corpus/sparql12-triple-terms-positive"
+    },
+    {
+      "from": "sparql/sparql12/syntax-triple-terms-negative",
+      "to": "packages/lang-sparql12/test/corpus/sparql12-triple-terms-negative"
+    },
+    {
+      "from": "sparql/sparql12/version",
+      "to": "packages/lang-sparql12/test/corpus/sparql12-version"
+    },
+    {
+      "from": "sparql/sparql12/lang-basedir",
+      "to": "packages/lang-sparql12/test/corpus/sparql12-lang-basedir"
+    },
+    {
+      "from": "sparql/sparql12/codepoint-escapes",
+      "to": "packages/lang-sparql12/test/corpus/sparql12-codepoint-escapes"
+    }
+  ]
+}

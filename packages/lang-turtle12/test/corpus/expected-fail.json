@@ -1,0 +1,31 @@
+{
+  "$comment": [
+    "Conformance entries this grammar cannot decide, with the reason for each.",
+    "",
+    "Every entry here is a negative syntax test that a context-free token DFA",
+    "cannot reject: the constraint is on a value, not on a shape. Lezer is an",
+    "error-tolerant grammar for painting and navigation, and the parser that",
+    "decides whether a document is valid is a separate concern; a grammar that",
+    "tried to encode these would be larger, slower and still incomplete.",
+    "",
+    "The list is asserted exactly — a test that starts passing must be removed",
+    "here, and a test that stops passing is a failing build, not a new entry.",
+    "Add an entry only with a reason that says why the grammar cannot decide it."
+  ],
+  "turtle12": {
+    "turtle12-surrogate-pair-bad-01": "UCHAR pair validity: the escapes are lexically well-formed and only their combined code point is invalid.",
+    "turtle12-surrogate-pair-bad-02": "UCHAR pair validity, as above.",
+    "turtle12-surrogates-bad-01": "Lone/misordered surrogate escapes: needs code-point arithmetic across two UCHARs.",
+    "turtle12-surrogates-bad-02": "Lone/misordered surrogate escapes, as above.",
+    "turtle12-surrogates-bad-03": "Lone/misordered surrogate escapes, as above.",
+    "turtle12-surrogates-bad-04": "Lone/misordered surrogate escapes, as above.",
+    "turtle12-surrogates-bad-05": "Lone/misordered surrogate escapes, as above."
+  },
+  "trig12": {},
+  "ntriples12": {
+    "ntriples-langdir-bad-3": "rdf:langString without a language tag is a datatype constraint, not a syntactic one.",
+    "ntriples-langdir-bad-5": "rdf:dirLangString without a direction is a datatype constraint, not a syntactic one.",
+    "ntriples12-bad-iri-1": "N-Triples requires absolute IRIs; deciding that means resolving a scheme, not matching a token."
+  },
+  "nquads12": {}
+}

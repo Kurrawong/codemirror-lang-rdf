@@ -1,0 +1,7 @@
+https://github.com/w3c/rdf-tests
+commit: 369a90d1a60c021b746df2e411da0ff36258a758
+path:   sparql/sparql11/syntax-update-1
+entries: 41 positive, 13 negative
+
+Vendored by scripts/vendor-corpus.mjs. Do not edit by hand.
+Licensed under the W3C Test Suite License and the W3C 3-clause BSD License.

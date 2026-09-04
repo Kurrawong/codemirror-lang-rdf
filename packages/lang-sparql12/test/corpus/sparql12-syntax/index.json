@@ -1,0 +1,32 @@
+[
+  {
+    "name": "duplicated-values-variable",
+    "file": "duplicated-values-variable.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "group-by-scope-1",
+    "file": "group-by-scope-1.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "group-by-scope-bad-1",
+    "file": "group-by-scope-bad-1.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "group-by-scope-bad-2",
+    "file": "group-by-scope-bad-2.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "group-by-scope-bad-3",
+    "file": "group-by-scope-bad-3.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "nested-aggregate-functions",
+    "file": "nested-aggregate-functions.rq",
+    "expect": "negative"
+  }
+]

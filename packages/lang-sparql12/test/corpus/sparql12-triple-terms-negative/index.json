@@ -1,0 +1,317 @@
+[
+  {
+    "name": "alternate-path-anonreifier",
+    "file": "alternate-path-anonreifier.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "alternate-path-reifier",
+    "file": "alternate-path-reifier.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "alternate-path-tripleterm",
+    "file": "alternate-path-tripleterm.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "annotated-anonreifier-alternate-path",
+    "file": "annotated-anonreifier-alternate-path.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "annotated-anonreifier-list-predicate",
+    "file": "annotated-anonreifier-list-predicate.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "annotated-anonreifier-oneOrMore",
+    "file": "annotated-anonreifier-oneOrMore.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "annotated-anonreifier-optional",
+    "file": "annotated-anonreifier-optional.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "annotated-anonreifier-path",
+    "file": "annotated-anonreifier-path.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "annotated-anonreifier-path-on-start",
+    "file": "annotated-anonreifier-path-on-start.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "annotated-anonreifier-variable-path",
+    "file": "annotated-anonreifier-variable-path.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "annotated-reifier-list-predicate",
+    "file": "annotated-reifier-list-predicate.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "annotated-reifier-oneOrMore",
+    "file": "annotated-reifier-oneOrMore.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "annotated-reifier-optional",
+    "file": "annotated-reifier-optional.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "annotated-reifier-path",
+    "file": "annotated-reifier-path.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "annotated-reifier-path-on-start",
+    "file": "annotated-reifier-path-on-start.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "annotated-reifier-reifier-alternate-path",
+    "file": "annotated-reifier-reifier-alternate-path.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "annotated-reifier-variable-path",
+    "file": "annotated-reifier-variable-path.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "bind-anonreified",
+    "file": "bind-anonreified.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "bind-reified",
+    "file": "bind-reified.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "bindbnode-anonreifier",
+    "file": "bindbnode-anonreifier.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "bindbnode-reifier",
+    "file": "bindbnode-reifier.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "bindbnode-tripleterm",
+    "file": "bindbnode-tripleterm.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "bnode-predicate-anonreifier",
+    "file": "bnode-predicate-anonreifier.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "bnode-predicate-reifier",
+    "file": "bnode-predicate-reifier.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "bnode-predicate-tripleterm",
+    "file": "bnode-predicate-tripleterm.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "list-anonreifier-01",
+    "file": "list-anonreifier-01.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "list-anonreifier-02",
+    "file": "list-anonreifier-02.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "list-reifier-01",
+    "file": "list-reifier-01.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "list-reifier-02",
+    "file": "list-reifier-02.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "list-tripleterm-01",
+    "file": "list-tripleterm-01.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "list-tripleterm-02",
+    "file": "list-tripleterm-02.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "nested-annotated-path-anonreifier",
+    "file": "nested-annotated-path-anonreifier.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "nested-annotated-path-reifier",
+    "file": "nested-annotated-path-reifier.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "quoted-list-object-anonreifier",
+    "file": "quoted-list-object-anonreifier.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "quoted-list-object-reifier",
+    "file": "quoted-list-object-reifier.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "quoted-list-object-tripleterm",
+    "file": "quoted-list-object-tripleterm.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "quoted-list-predicate-anonreifier",
+    "file": "quoted-list-predicate-anonreifier.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "quoted-list-predicate-reifier",
+    "file": "quoted-list-predicate-reifier.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "quoted-list-predicate-tripleterm",
+    "file": "quoted-list-predicate-tripleterm.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "quoted-list-subject-anonreifier",
+    "file": "quoted-list-subject-anonreifier.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "quoted-list-subject-reifier",
+    "file": "quoted-list-subject-reifier.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "quoted-list-subject-tripleterm",
+    "file": "quoted-list-subject-tripleterm.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "quoted-path-anonreifier",
+    "file": "quoted-path-anonreifier.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "quoted-path-bind-anonreifier",
+    "file": "quoted-path-bind-anonreifier.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "quoted-path-bind-reifier",
+    "file": "quoted-path-bind-reifier.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "quoted-path-bind-tripleterm",
+    "file": "quoted-path-bind-tripleterm.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "quoted-path-reifier",
+    "file": "quoted-path-reifier.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "quoted-path-tripleterm",
+    "file": "quoted-path-tripleterm.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "quoted-variable-path-anonreifier",
+    "file": "quoted-variable-path-anonreifier.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "quoted-variable-path-reifier",
+    "file": "quoted-variable-path-reifier.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "quoted-variable-path-tripleterm",
+    "file": "quoted-variable-path-tripleterm.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "tripleterm-separate-01",
+    "file": "tripleterm-separate-01.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "tripleterm-separate-02",
+    "file": "tripleterm-separate-02.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "tripleterm-separate-03",
+    "file": "tripleterm-separate-03.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "tripleterm-separate-04",
+    "file": "tripleterm-separate-04.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "tripleterm-separate-05",
+    "file": "tripleterm-separate-05.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "tripleterm-separate-06",
+    "file": "tripleterm-separate-06.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "tripleterm-subject-01",
+    "file": "tripleterm-subject-01.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "tripleterm-subject-02",
+    "file": "tripleterm-subject-02.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "tripleterm-subject-03",
+    "file": "tripleterm-subject-03.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "tripleterm-subject-04",
+    "file": "tripleterm-subject-04.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "tripleterm-subject-05",
+    "file": "tripleterm-subject-05.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "tripleterm-subject-06",
+    "file": "tripleterm-subject-06.rq",
+    "expect": "negative"
+  }
+]

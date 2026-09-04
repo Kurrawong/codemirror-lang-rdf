@@ -1,0 +1,47 @@
+[
+  {
+    "name": "version-01",
+    "file": "version-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "version-02",
+    "file": "version-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "version-03",
+    "file": "version-03.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "version-04",
+    "file": "version-04.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "version-05",
+    "file": "version-05.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "version-06",
+    "file": "version-06.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "version-bad-01",
+    "file": "version-bad-01.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "version-bad-02",
+    "file": "version-bad-02.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "version-bad-03",
+    "file": "version-bad-03.rq",
+    "expect": "negative"
+  }
+]

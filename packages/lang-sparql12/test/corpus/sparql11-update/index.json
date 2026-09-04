@@ -1,0 +1,272 @@
+[
+  {
+    "name": "test_1",
+    "file": "syntax-update-01.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_10",
+    "file": "syntax-update-10.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_11",
+    "file": "syntax-update-11.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_12",
+    "file": "syntax-update-12.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_13",
+    "file": "syntax-update-13.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_14",
+    "file": "syntax-update-14.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_15",
+    "file": "syntax-update-15.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_16",
+    "file": "syntax-update-16.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_17",
+    "file": "syntax-update-17.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_18",
+    "file": "syntax-update-18.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_19",
+    "file": "syntax-update-19.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_2",
+    "file": "syntax-update-02.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_20",
+    "file": "syntax-update-20.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_21",
+    "file": "syntax-update-21.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_22",
+    "file": "syntax-update-22.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_23",
+    "file": "syntax-update-23.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_24",
+    "file": "syntax-update-24.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_25",
+    "file": "syntax-update-25.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_26",
+    "file": "syntax-update-26.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_27",
+    "file": "syntax-update-27.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_28",
+    "file": "syntax-update-28.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_29",
+    "file": "syntax-update-29.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_3",
+    "file": "syntax-update-03.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_30",
+    "file": "syntax-update-30.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_31",
+    "file": "syntax-update-31.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_32",
+    "file": "syntax-update-32.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_33",
+    "file": "syntax-update-33.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_34",
+    "file": "syntax-update-34.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_35",
+    "file": "syntax-update-35.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_36",
+    "file": "syntax-update-36.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_37",
+    "file": "syntax-update-37.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_38",
+    "file": "syntax-update-38.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_39",
+    "file": "syntax-update-39.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_4",
+    "file": "syntax-update-04.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_40",
+    "file": "syntax-update-40.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_41",
+    "file": "syntax-update-bad-01.ru",
+    "expect": "negative"
+  },
+  {
+    "name": "test_42",
+    "file": "syntax-update-bad-02.ru",
+    "expect": "negative"
+  },
+  {
+    "name": "test_43",
+    "file": "syntax-update-bad-03.ru",
+    "expect": "negative"
+  },
+  {
+    "name": "test_44",
+    "file": "syntax-update-bad-04.ru",
+    "expect": "negative"
+  },
+  {
+    "name": "test_45",
+    "file": "syntax-update-bad-05.ru",
+    "expect": "negative"
+  },
+  {
+    "name": "test_46",
+    "file": "syntax-update-bad-06.ru",
+    "expect": "negative"
+  },
+  {
+    "name": "test_47",
+    "file": "syntax-update-bad-07.ru",
+    "expect": "negative"
+  },
+  {
+    "name": "test_48",
+    "file": "syntax-update-bad-08.ru",
+    "expect": "negative"
+  },
+  {
+    "name": "test_49",
+    "file": "syntax-update-bad-09.ru",
+    "expect": "negative"
+  },
+  {
+    "name": "test_5",
+    "file": "syntax-update-05.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_50",
+    "file": "syntax-update-bad-10.ru",
+    "expect": "negative"
+  },
+  {
+    "name": "test_51",
+    "file": "syntax-update-bad-11.ru",
+    "expect": "negative"
+  },
+  {
+    "name": "test_52",
+    "file": "syntax-update-bad-12.ru",
+    "expect": "negative"
+  },
+  {
+    "name": "test_53",
+    "file": "syntax-update-53.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_54",
+    "file": "syntax-update-54.ru",
+    "expect": "negative"
+  },
+  {
+    "name": "test_6",
+    "file": "syntax-update-06.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_7",
+    "file": "syntax-update-07.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_8",
+    "file": "syntax-update-08.ru",
+    "expect": "positive"
+  },
+  {
+    "name": "test_9",
+    "file": "syntax-update-09.ru",
+    "expect": "positive"
+  }
+]

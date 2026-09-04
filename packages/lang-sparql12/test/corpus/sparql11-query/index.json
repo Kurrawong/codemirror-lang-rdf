@@ -1,0 +1,472 @@
+[
+  {
+    "name": "test_1",
+    "file": "syntax-select-expr-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_10",
+    "file": "syntax-aggregate-05.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_11",
+    "file": "syntax-aggregate-06.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_12",
+    "file": "syntax-aggregate-07.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_13",
+    "file": "syntax-aggregate-08.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_14",
+    "file": "syntax-aggregate-09.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_15",
+    "file": "syntax-aggregate-10.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_16",
+    "file": "syntax-aggregate-11.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_17",
+    "file": "syntax-aggregate-12.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_18",
+    "file": "syntax-aggregate-13.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_19",
+    "file": "syntax-aggregate-14.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_2",
+    "file": "syntax-select-expr-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_20",
+    "file": "syntax-aggregate-15.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_21",
+    "file": "syntax-subquery-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_22",
+    "file": "syntax-subquery-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_23",
+    "file": "syntax-subquery-03.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_24",
+    "file": "syntax-not-exists-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_25",
+    "file": "syntax-not-exists-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_26",
+    "file": "syntax-not-exists-03.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_27",
+    "file": "syntax-exists-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_28",
+    "file": "syntax-exists-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_29",
+    "file": "syntax-exists-03.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_3",
+    "file": "syntax-select-expr-03.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_30",
+    "file": "syntax-minus-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_31",
+    "file": "syntax-oneof-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_32",
+    "file": "syntax-oneof-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_33",
+    "file": "syntax-oneof-03.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_34",
+    "file": "syntax-bindings-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_35a",
+    "file": "syntax-bindings-02a.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_36a",
+    "file": "syntax-bindings-03a.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_38a",
+    "file": "syntax-bindings-05a.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_4",
+    "file": "syntax-select-expr-04.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_40",
+    "file": "syntax-bind-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_41",
+    "file": "syntax-construct-where-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_42",
+    "file": "syntax-construct-where-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_43",
+    "file": "syn-bad-01.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_44",
+    "file": "syn-bad-02.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_45",
+    "file": "syn-bad-03.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_46",
+    "file": "syn-bad-04.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_47",
+    "file": "syn-bad-05.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_48",
+    "file": "syn-bad-06.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_49",
+    "file": "syn-bad-07.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_5",
+    "file": "syntax-select-expr-05.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_50",
+    "file": "syn-bad-08.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_51",
+    "file": "syntax-bindings-09.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_53",
+    "file": "qname-escape-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_54",
+    "file": "qname-escape-03.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_55",
+    "file": "syntax-BINDscope1.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_56",
+    "file": "syntax-BINDscope2.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_57",
+    "file": "syntax-BINDscope3.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_58",
+    "file": "syntax-BINDscope4.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_59",
+    "file": "syntax-BINDscope5.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_6",
+    "file": "syntax-aggregate-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_60",
+    "file": "syntax-BINDscope6.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_61a",
+    "file": "syntax-BINDscope7.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_62a",
+    "file": "syntax-BINDscope8.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_63",
+    "file": "syntax-propertyPaths-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_64",
+    "file": "syntax-SELECTscope1.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_65",
+    "file": "syntax-SELECTscope2.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_66",
+    "file": "syntax-SELECTscope3.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_7",
+    "file": "syntax-aggregate-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_8",
+    "file": "syntax-aggregate-03.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_9",
+    "file": "syntax-aggregate-04.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_bad_values_too_few",
+    "file": "syn-bad-values-too-few.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_bad_values_too_many",
+    "file": "syn-bad-values-too-many.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_codepoint_boundaries_04",
+    "file": "1val1STRING_LITERAL1_with_UTF8_boundaries.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_codepoint_boundaries_escaped_05",
+    "file": "1val1STRING_LITERAL1_with_UTF8_boundaries_escaped.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_codepoint_escape_01",
+    "file": "syn-codepoint-escape-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_codepoint_escape_bad_02",
+    "file": "syn-codepoint-escape-bad-04.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_codepoint_escape_bad_03",
+    "file": "syn-codepoint-escape-bad-05.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_codepoint_invalid_escaped_bad_06",
+    "file": "syn-invalid-codepoint-escaped-bad-01.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_pn_01",
+    "file": "syn-pname-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_pn_02",
+    "file": "syn-pname-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_pn_03",
+    "file": "syn-pname-03.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_pn_04",
+    "file": "syn-pname-04.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_pn_05",
+    "file": "syn-pname-05.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_pn_06",
+    "file": "syn-pname-06.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_pn_07",
+    "file": "syn-pname-07.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_pn_08",
+    "file": "syn-pname-08.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_pn_09",
+    "file": "syn-pname-09.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_pn_bad_01",
+    "file": "syn-bad-pname-01.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_pn_bad_02",
+    "file": "syn-bad-pname-02.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_pn_bad_03",
+    "file": "syn-bad-pname-03.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_pn_bad_04",
+    "file": "syn-bad-pname-04.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_pn_bad_05",
+    "file": "syn-bad-pname-05.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_pn_bad_06",
+    "file": "syn-bad-pname-06.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_pn_bad_07",
+    "file": "syn-bad-pname-07.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_pn_bad_08",
+    "file": "syn-bad-pname-08.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_pn_bad_09",
+    "file": "syn-bad-pname-09.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_pn_bad_10",
+    "file": "syn-bad-pname-10.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_pn_bad_11",
+    "file": "syn-bad-pname-11.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_pn_bad_12",
+    "file": "syn-bad-pname-12.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_pn_bad_13",
+    "file": "syn-bad-pname-13.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "test_pp_coll",
+    "file": "syn-pp-in-collection.rq",
+    "expect": "positive"
+  }
+]

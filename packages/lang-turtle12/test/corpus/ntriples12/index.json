@@ -1,0 +1,147 @@
+[
+  {
+    "name": "ntriples-langdir-1",
+    "file": "ntriples-langdir-1.nt",
+    "expect": "positive"
+  },
+  {
+    "name": "ntriples-langdir-2",
+    "file": "ntriples-langdir-2.nt",
+    "expect": "positive"
+  },
+  {
+    "name": "ntriples-langdir-bad-1",
+    "file": "ntriples-langdir-bad-1.nt",
+    "expect": "negative"
+  },
+  {
+    "name": "ntriples-langdir-bad-2",
+    "file": "ntriples-langdir-bad-2.nt",
+    "expect": "negative"
+  },
+  {
+    "name": "ntriples-langdir-bad-3",
+    "file": "ntriples-langdir-bad-3.nt",
+    "expect": "negative"
+  },
+  {
+    "name": "ntriples-langdir-bad-4",
+    "file": "ntriples-langdir-bad-4.nt",
+    "expect": "negative"
+  },
+  {
+    "name": "ntriples-langdir-bad-5",
+    "file": "ntriples-langdir-bad-5.nt",
+    "expect": "negative"
+  },
+  {
+    "name": "ntriples12-01",
+    "file": "ntriples12-syntax-01.nt",
+    "expect": "positive"
+  },
+  {
+    "name": "ntriples12-02",
+    "file": "ntriples12-syntax-02.nt",
+    "expect": "positive"
+  },
+  {
+    "name": "ntriples12-03",
+    "file": "ntriples12-syntax-03.nt",
+    "expect": "positive"
+  },
+  {
+    "name": "ntriples12-bad-01",
+    "file": "ntriples12-bad-syntax-01.nt",
+    "expect": "negative"
+  },
+  {
+    "name": "ntriples12-bad-02",
+    "file": "ntriples12-bad-syntax-02.nt",
+    "expect": "negative"
+  },
+  {
+    "name": "ntriples12-bad-03",
+    "file": "ntriples12-bad-syntax-03.nt",
+    "expect": "negative"
+  },
+  {
+    "name": "ntriples12-bad-04",
+    "file": "ntriples12-bad-syntax-04.nt",
+    "expect": "negative"
+  },
+  {
+    "name": "ntriples12-bad-05",
+    "file": "ntriples12-bad-syntax-05.nt",
+    "expect": "negative"
+  },
+  {
+    "name": "ntriples12-bad-06",
+    "file": "ntriples12-bad-syntax-06.nt",
+    "expect": "negative"
+  },
+  {
+    "name": "ntriples12-bad-07",
+    "file": "ntriples12-bad-syntax-07.nt",
+    "expect": "negative"
+  },
+  {
+    "name": "ntriples12-bad-08",
+    "file": "ntriples12-bad-syntax-08.nt",
+    "expect": "negative"
+  },
+  {
+    "name": "ntriples12-bad-09",
+    "file": "ntriples12-bad-syntax-09.nt",
+    "expect": "negative"
+  },
+  {
+    "name": "ntriples12-bad-10",
+    "file": "ntriples12-bad-syntax-10.nt",
+    "expect": "negative"
+  },
+  {
+    "name": "ntriples12-bad-iri-1",
+    "file": "ntriples12-bad-iri-1.nt",
+    "expect": "negative"
+  },
+  {
+    "name": "ntriples12-bad-reified-1",
+    "file": "ntriples12-bad-reified-syntax-1.nt",
+    "expect": "negative"
+  },
+  {
+    "name": "ntriples12-bad-reified-2",
+    "file": "ntriples12-bad-reified-syntax-2.nt",
+    "expect": "negative"
+  },
+  {
+    "name": "ntriples12-bad-reified-3",
+    "file": "ntriples12-bad-reified-syntax-3.nt",
+    "expect": "negative"
+  },
+  {
+    "name": "ntriples12-bad-reified-4",
+    "file": "ntriples12-bad-reified-syntax-4.nt",
+    "expect": "negative"
+  },
+  {
+    "name": "ntriples12-bnode-1",
+    "file": "ntriples12-bnode-1.nt",
+    "expect": "positive"
+  },
+  {
+    "name": "ntriples12-bnode-bad-annotated-syntax-1",
+    "file": "ntriples12-bnode-bad-annotated-syntax-1.nt",
+    "expect": "negative"
+  },
+  {
+    "name": "ntriples12-bnode-bad-annotated-syntax-2",
+    "file": "ntriples12-bnode-bad-annotated-syntax-2.nt",
+    "expect": "negative"
+  },
+  {
+    "name": "ntriples12-nested-1",
+    "file": "ntriples12-nested-1.nt",
+    "expect": "positive"
+  }
+]

@@ -1,0 +1,137 @@
+[
+  {
+    "name": "nquads-langdir-1",
+    "file": "nquads-langdir-1.nq",
+    "expect": "positive"
+  },
+  {
+    "name": "nquads-langdir-2",
+    "file": "nquads-langdir-2.nq",
+    "expect": "positive"
+  },
+  {
+    "name": "nquads-langdir-bad-1",
+    "file": "nquads-langdir-bad-1.nq",
+    "expect": "negative"
+  },
+  {
+    "name": "nquads-langdir-bad-2",
+    "file": "nquads-langdir-bad-2.nq",
+    "expect": "negative"
+  },
+  {
+    "name": "nquads12-01",
+    "file": "nquads12-syntax-01.nq",
+    "expect": "positive"
+  },
+  {
+    "name": "nquads12-02",
+    "file": "nquads12-syntax-02.nq",
+    "expect": "positive"
+  },
+  {
+    "name": "nquads12-03",
+    "file": "nquads12-syntax-03.nq",
+    "expect": "positive"
+  },
+  {
+    "name": "nquads12-bad-01",
+    "file": "nquads12-bad-syntax-01.nq",
+    "expect": "negative"
+  },
+  {
+    "name": "nquads12-bad-02",
+    "file": "nquads12-bad-syntax-02.nq",
+    "expect": "negative"
+  },
+  {
+    "name": "nquads12-bad-03",
+    "file": "nquads12-bad-syntax-03.nq",
+    "expect": "negative"
+  },
+  {
+    "name": "nquads12-bad-04",
+    "file": "nquads12-bad-syntax-04.nq",
+    "expect": "negative"
+  },
+  {
+    "name": "nquads12-bad-05",
+    "file": "nquads12-bad-syntax-05.nq",
+    "expect": "negative"
+  },
+  {
+    "name": "nquads12-bad-06",
+    "file": "nquads12-bad-syntax-06.nq",
+    "expect": "negative"
+  },
+  {
+    "name": "nquads12-bad-07",
+    "file": "nquads12-bad-syntax-07.nq",
+    "expect": "negative"
+  },
+  {
+    "name": "nquads12-bad-08",
+    "file": "nquads12-bad-syntax-08.nq",
+    "expect": "negative"
+  },
+  {
+    "name": "nquads12-bad-09",
+    "file": "nquads12-bad-syntax-09.nq",
+    "expect": "negative"
+  },
+  {
+    "name": "nquads12-bad-10",
+    "file": "nquads12-bad-syntax-10.nq",
+    "expect": "negative"
+  },
+  {
+    "name": "nquads12-bad-reified-1",
+    "file": "nquads12-bad-reified-syntax-1.nq",
+    "expect": "negative"
+  },
+  {
+    "name": "nquads12-bad-reified-2",
+    "file": "nquads12-bad-reified-syntax-2.nq",
+    "expect": "negative"
+  },
+  {
+    "name": "nquads12-bad-reified-3",
+    "file": "nquads12-bad-reified-syntax-3.nq",
+    "expect": "negative"
+  },
+  {
+    "name": "nquads12-bad-reified-4",
+    "file": "nquads12-bad-reified-syntax-4.nq",
+    "expect": "negative"
+  },
+  {
+    "name": "nquads12-bnode-1",
+    "file": "nquads12-bnode-1.nq",
+    "expect": "positive"
+  },
+  {
+    "name": "nquads12-bnode-bad-annotated-syntax-1",
+    "file": "nquads12-bnode-bad-annotated-syntax-1.nq",
+    "expect": "negative"
+  },
+  {
+    "name": "nquads12-bnode-bad-annotated-syntax-2",
+    "file": "nquads12-bnode-bad-annotated-syntax-2.nq",
+    "expect": "negative"
+  },
+  {
+    "name": "nquads12-nested-1",
+    "file": "nquads12-nested-1.nq",
+    "expect": "positive"
+  },
+  {
+    "name": "nquads12-nested-bad-annotated-syntax-1",
+    "file": "nquads12-nested-bad-annotated-syntax-1.nq",
+    "expect": "negative"
+  },
+  {
+    "name": "nquads12-nested-bad-annotated-syntax-2",
+    "file": "nquads12-nested-bad-annotated-syntax-2.nq",
+    "expect": "negative"
+  }
+]

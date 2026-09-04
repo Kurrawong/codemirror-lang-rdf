@@ -1,0 +1,47 @@
+[
+  {
+    "name": "codepoint-esc-01-bad",
+    "file": "codepoint-esc-01-bad.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "codepoint-esc-02-bad",
+    "file": "codepoint-esc-02-bad.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "codepoint-esc-03-bad",
+    "file": "codepoint-esc-03-bad.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "codepoint-esc-04-bad",
+    "file": "codepoint-esc-04-bad.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "surrogate-esc-01-bad",
+    "file": "surrogate-esc-01-bad.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "surrogate-esc-02-bad",
+    "file": "surrogate-esc-02-bad.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "surrogate-esc-03-bad",
+    "file": "surrogate-esc-03-bad.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "surrogate-esc-04-bad",
+    "file": "surrogate-esc-04-bad.rq",
+    "expect": "negative"
+  },
+  {
+    "name": "surrogate-esc-05-bad",
+    "file": "surrogate-esc-05-bad.rq",
+    "expect": "negative"
+  }
+]

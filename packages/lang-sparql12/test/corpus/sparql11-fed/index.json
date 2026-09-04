@@ -1,0 +1,17 @@
+[
+  {
+    "name": "test_1",
+    "file": "syntax-service-01.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_2",
+    "file": "syntax-service-02.rq",
+    "expect": "positive"
+  },
+  {
+    "name": "test_3",
+    "file": "syntax-service-03.rq",
+    "expect": "positive"
+  }
+]
