@@ -153,6 +153,18 @@ which means the keyword list exists in exactly one place — the grammar's
 `@external specialize` block — and both the case-insensitive lookup and the
 `styleTags` rule are derived from it. Adding a keyword is one edit.
 
+## Publishing
+
+The three names were free on npm as of 2026-09-04 (§8 of the plan flagged this
+as unverified; it is now verified). Nothing has been published yet: the first
+release goes out through the changeset in `.changeset/`, which CI turns into a
+release PR on `main` and publishes when that PR merges. Publishing needs an
+`NPM_TOKEN` secret on the repository.
+
+To develop an application against these before a release, `pnpm link` the three
+packages from a local checkout, or let CI's release PR land a real `0.x`
+version to pin.
+
 ## Spec revisions
 
 Both SPARQL 1.2 and RDF 1.2 are Working Drafts, and the SRL draft is moving.
