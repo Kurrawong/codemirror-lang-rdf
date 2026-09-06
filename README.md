@@ -168,7 +168,29 @@ syntax so RDF terms carry the colour, which is how you want to read data rather
 than edit it.
 
 `pnpm demo:build` writes a static bundle to `demo/dist` instead. It is a
-`file://`-safe page, so it needs no server to look at.
+`file://`-safe page with only relative asset references, so it needs no server
+to look at and works under any base path.
+
+### It deploys itself
+
+CI publishes the demo to GitHub Pages on every merge to `main`, gated behind a
+green `test` job — a demo that does not parse is worse than a stale one. The
+job builds the packages from that commit first, so the page always shows the
+grammars as they are on `main`, never a published version.
+
+This needs **Settings → Pages → Source: "GitHub Actions"** to be set once. Until
+it is, the job fails at the deploy step, the same shape of repository-policy
+refusal as the release job's.
+
+GitHub Pages is the right host here — the repository, the CI and the identity
+are already there, and it is CDN-backed. Two things to know if that ever stops
+being true. It serves **gzip but not brotli** (checked against a live Pages
+site, which returns `content-encoding: gzip` even when brotli is offered),
+which for this bundle is 156 KB rather than 131 KB — a real 16%, and the only
+meaningful performance difference between static hosts. And it does not let you
+set cache headers, so a content-hashed asset cannot be given a long max-age. If
+either matters, Cloudflare Pages or Netlify take the same `demo/dist` directory
+with no change to the build.
 
 ## Working on this
 

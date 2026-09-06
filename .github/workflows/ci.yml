@@ -76,6 +76,48 @@ jobs:
       - name: The vendored corpus matches its pin
         run: git diff --exit-code -- packages/*/test/corpus
 
+  # Publish the demo to GitHub Pages on every merge to main, but only behind a
+  # green `test` job — a demo that does not parse is worse than a stale one.
+  #
+  # Needs Settings → Pages → Source: "GitHub Actions". Until that is set the job
+  # fails on deploy with a 404, the same shape of repository-policy refusal as
+  # the release job's.
+  demo:
+    needs: [test]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    # Its own concurrency group, and no cancelling: the workflow-level group
+    # cancels in-progress runs, which would abort a half-finished deployment.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      # Builds the three packages first, so the demo runs the grammars from
+      # this commit rather than anything published.
+      - run: pnpm run demo:build
+
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: demo/dist
+      - id: deploy
+        uses: actions/deploy-pages@v5
+
   release:
     needs: [test, corpus]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'

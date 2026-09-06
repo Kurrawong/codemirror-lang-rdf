@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path';
 import { nquadsLanguage, ntriplesLanguage, trigLanguage, turtleLanguage } from '../packages/lang-turtle12/dist/index.js';
 import { sparqlLanguage } from '../packages/lang-sparql12/dist/index.js';
 import { srlLanguage } from '../packages/lang-srl/dist/index.js';
-import { tagOf, tagsOf, tokenTags } from './harness';
+import { tagsOf, tokenTags } from './harness';
 import type { TagName } from './harness';
 import { tags as t, tagHighlighter, highlightTree } from '@lezer/highlight';
 
