@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path';
 import { nquadsLanguage, ntriplesLanguage, trigLanguage, turtleLanguage } from '../packages/lang-turtle12/dist/index.js';
 import { sparqlLanguage } from '../packages/lang-sparql12/dist/index.js';
 import { srlLanguage } from '../packages/lang-srl/dist/index.js';
-import { tagOf, tokenTags } from './harness';
+import { tagOf, tagsOf, tokenTags } from './harness';
 import type { TagName } from './harness';
 import { tags as t, tagHighlighter, highlightTree } from '@lezer/highlight';
 
@@ -83,6 +83,29 @@ const rows: Row[] = [
   tripleRow('(', 'paren', 'ex:s ex:p ( ex:a )', '('),
   tripleRow(';', 'separator', 'ex:s ex:p ex:o ; ex:q ex:r', ';'),
   tripleRow(',', 'separator', 'ex:s ex:p ex:o , ex:o2', ','),
+  {
+    construct: 'A term inside a reified triple (also tagged `quote`)',
+    tag: 'quote',
+    cases: {
+      turtle: { doc: 'PREFIX ex: <http://e/>\n<< ex:a ex:b ex:c >> ex:p ex:o .', token: 'ex:a' },
+      trig: { doc: 'PREFIX ex: <http://e/>\nex:g { << ex:a ex:b ex:c >> ex:p ex:o }', token: 'ex:a' },
+      sparql: { doc: 'PREFIX ex: <http://e/>\nASK { << ex:a ex:b ex:c >> ex:p ex:o }', token: 'ex:a' },
+      srl: { doc: 'PREFIX ex: <http://e/>\nRULE {} WHERE { << ex:a ex:b ex:c >> ex:p ex:o }', token: 'ex:a' },
+    },
+  },
+  {
+    construct: 'A term inside a triple term (also tagged `quote`)',
+    tag: 'quote',
+    cases: {
+      turtle: { doc: 'PREFIX ex: <http://e/>\nex:s ex:p <<( ex:a ex:b ex:c )>> .', token: 'ex:a' },
+      ntriples: {
+        doc: '<http://s> <http://p> <<( <http://a> <http://b> "x" )>> .',
+        token: '<http://a>',
+      },
+      sparql: { doc: 'PREFIX ex: <http://e/>\nASK { ex:s ex:p <<( ex:a ex:b ex:c )>> }', token: 'ex:a' },
+      srl: { doc: 'PREFIX ex: <http://e/>\nRULE {} WHERE { ex:s ex:p <<( ex:a ex:b ex:c )>> }', token: 'ex:a' },
+    },
+  },
   {
     construct: 'Comment',
     tag: 'comment',
@@ -187,7 +210,9 @@ describe.each(rows)('$construct is tagged $tag', ({ tag, cases }) => {
     // A missing tag and a wrong tag are different failures; report which.
     const tags = tokenTags(parser, doc);
     expect(tags.map((t) => t.text)).toContain(token);
-    expect(tagOf(parser, doc, token)).toBe(tag);
+    // Containment, not equality: a token inside an RDF 1.2 construct carries
+    // the region tag as well as its own, and both rows are legitimate.
+    expect(tagsOf(parser, doc, token)).toContain(tag);
   });
 });
 
@@ -260,5 +285,31 @@ describe('a style that knows nothing about RDF 1.2 still colours it', () => {
     for (const token of ['<<(', ')>>', '<<', '>>', '{|', '|}'])
       expect(seen.get(token), `${token} in ${name}`).toBe('bracket');
     expect(seen.get('~'), `~ in ${name}`).toBe('operator');
+  });
+
+  it.each(cases)('in %s, the region tag adds to a term rather than replacing it', (name, doc) => {
+    const parser = languages[name];
+    const both = tagHighlighter([
+      { tag: t.namespace, class: 'namespace' },
+      { tag: t.quote, class: 'quote' },
+    ]);
+    const classes = new Map<string, string>();
+    highlightTree(parser.parse(doc), both, (from, to, cls) => classes.set(doc.slice(from, to), cls));
+    // `ex:a` is inside the reified triple; `ex:s` is outside it.
+    expect(classes.get('ex:a')?.split(' ').sort()).toEqual(['namespace', 'quote']);
+    expect(classes.get('ex:s')).toBe('namespace');
+  });
+
+  it.each(cases)('in %s, a style that ignores the region tag is unaffected', (name, doc) => {
+    const parser = languages[name];
+    const render = (hl: ReturnType<typeof tagHighlighter>) => {
+      const out: string[] = [];
+      highlightTree(parser.parse(doc), hl, (from, to, cls) => out.push(`${doc.slice(from, to)}=${cls}`));
+      return out.join(' ');
+    };
+    const ignorant = tagHighlighter([{ tag: t.namespace, class: 'namespace' }]);
+    // Byte-identical to what a style written before these tags existed sees.
+    expect(render(ignorant)).not.toContain('quote');
+    expect(render(ignorant).split(' ').every((e) => e.endsWith('=namespace'))).toBe(true);
   });
 });

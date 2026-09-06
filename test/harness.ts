@@ -120,6 +120,7 @@ const TAG_NAMES = [
   'operator',
   'separator',
   'punctuation',
+  'quote',
   'invalid',
 ] as const;
 
@@ -140,8 +141,21 @@ export type TagName = (typeof TAG_NAMES)[number] | keyof typeof DERIVED_TAGS;
 
 export interface TaggedToken {
   text: string;
+  /** The token's own tag — the region tags below are filtered out. */
   tag: TagName;
+  /** Every tag on the token, region tags included, in the order emitted. */
+  tags: TagName[];
 }
+
+/**
+ * Tags that mark a *construct's extent* rather than what a token is.
+ *
+ * `quote` is added to every token inside a reified triple, triple term or
+ * annotation block, *in addition* to that token's own tag, so a style can shade
+ * the whole construct. Tests that ask "what is this token?" want the other one,
+ * so `tagOf` skips these; `tagsOf` returns everything.
+ */
+const REGION_TAGS = new Set<string>(['quote']);
 
 export function tokenTags(parser: LRParser, text: string): TaggedToken[] {
   const highlighter = tagHighlighter([
@@ -150,14 +164,24 @@ export function tokenTags(parser: LRParser, text: string): TaggedToken[] {
   ]);
   const out: TaggedToken[] = [];
   highlightTree(parser.parse(text), highlighter, (from, to, cls) => {
-    out.push({ text: text.slice(from, to), tag: cls as TagName });
+    const all = cls.split(' ').filter(Boolean) as TagName[];
+    out.push({
+      text: text.slice(from, to),
+      tag: (all.find((name) => !REGION_TAGS.has(name)) ?? all[0]) as TagName,
+      tags: all,
+    });
   });
   return out;
 }
 
-/** The tag given to the first token whose text is exactly `token`. */
+/** The tag given to the first token whose text is exactly `token`, region tags aside. */
 export function tagOf(parser: LRParser, text: string, token: string): TagName | undefined {
   return tokenTags(parser, text).find((t) => t.text === token)?.tag;
+}
+
+/** Every tag on the first token whose text is exactly `token`, region tags included. */
+export function tagsOf(parser: LRParser, text: string, token: string): TagName[] {
+  return tokenTags(parser, text).find((t) => t.text === token)?.tags ?? [];
 }
 
 /** Every node name in a parse, as a set. */

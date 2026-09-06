@@ -29,6 +29,7 @@ cannot drift in one grammar without failing the build.
 | `<<(`, `)>>` — a triple term | `special(paren)` |
 | `{\|`, `\|}` — an annotation block | `special(brace)` |
 | `~` — a reifier | `special(operator)` |
+| Everything *inside* `<< … >>`, `<<( … )>>` or `{\| … \|}` | `quote`, in addition to its own tag |
 | `:=`, arithmetic and comparison operators | `operator` |
 | `;`, `,` | `separator` |
 | `.` | `punctuation` |
@@ -76,12 +77,29 @@ HighlightStyle.define([
 ]);
 ```
 
+**The construct's contents are tagged too, not just its brackets.** Every token
+inside a reified triple, a triple term or an annotation block also carries
+`quote` — *in addition* to its own tag, so an IRI in there is `quote url` and a
+style can shade the whole construct while its terms keep their colours:
+
+```js
+{ tag: t.quote, backgroundColor: 'var(--reification-tint)' },
+```
+
+Colouring only the brackets tells you where a construct starts; tagging the
+contents tells you how far it reaches, which is the harder thing to see when
+`<< … >>` nests. One tag covers all three constructs rather than three, because
+the brackets already say which kind it is; a style that wants them apart can
+add its own props to the exported parser (`turtleProps`, `sparqlProps`).
+
 **Nothing has to know about this.** `special(x)` derives from `x`, and
 `angleBracket`, `paren` and `brace` all derive from `bracket`, so a style that
 handles only `bracket` — or only `brace`, `paren` and `angleBracket` — colours
 every one of them with no change. The specific tags are there for a style that
-wants the distinction, not a requirement on one that does not. That fallback is
-asserted in `test/highlight-conventions.test.ts` alongside the table itself.
+wants the distinction, not a requirement on one that does not. The same goes
+for `quote`: a style that never mentions it produces byte-identical output to
+one written before these tags existed. Both properties are asserted in
+`test/highlight-conventions.test.ts` alongside the table itself.
 
 **`.` is `punctuation`, `;` and `,` are `separator`.** In Turtle the dot ends a
 statement while the other two continue one, which is the same split

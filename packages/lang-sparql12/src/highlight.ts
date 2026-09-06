@@ -51,6 +51,22 @@ export const sparqlHighlighting: NodePropSource = styleTags({
    * styles `bracket` (or `brace`/`paren`/`angleBracket`) still colours all of
    * them, and one that wants the distinction overrides the specific tag.
    */
+
+  /*
+   * Every token *inside* an RDF 1.2 nested-triple construct also carries
+   * `quote`, so a style can shade the whole thing and not just its brackets —
+   * which is what "colour reified triples differently" usually means. The
+   * `/...` form applies to descendants and *combines* with each token's own
+   * tag, so an IRI inside a reified triple is `quote url`, not one or the
+   * other. A style that never mentions `quote` sees no change at all.
+   *
+   * One tag for all three constructs, rather than three: the brackets above
+   * already say which kind it is, and a style wanting per-kind regions can add
+   * its own props to the exported parser.
+   */
+  'ReifiedTriple/... TripleTerm/... TripleTermData/... ExprTripleTerm/... AnnotationBlock/... AnnotationBlockPath/...':
+    t.quote,
+
   '"<<" ">>"': t.special(t.angleBracket),
   '"<<(" ")>>"': t.special(t.paren),
   '"{|" "|}"': t.special(t.brace),

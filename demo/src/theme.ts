@@ -48,6 +48,15 @@ export const rdfHighlightStyle = HighlightStyle.define([
   { tag: t.special(t.brace), color: 'var(--rdf-annotation)' },
   { tag: t.special(t.operator), color: 'var(--rdf-reifier)' },
 
+  /*
+   * The construct's *extent*, not its brackets. Every token inside a reified
+   * triple, triple term or annotation also carries `quote`, combined with its
+   * own tag — so a background tint here shades the whole construct while the
+   * terms inside keep their colours. That is the thing colouring only the
+   * brackets cannot show: how far the construct reaches when they nest.
+   */
+  { tag: t.quote, backgroundColor: 'var(--rdf-region-bg)', borderRadius: '2px' },
+
   { tag: t.invalid, color: 'var(--danger)' },
 ]);
 

@@ -45,8 +45,15 @@ const statementFold = (node: SyntaxNode, state: EditorState) => {
   return { from: firstLineEnd, to: node.to };
 };
 
-/** Highlighting, folding and indentation, shared by all four dialects. */
-const props = [
+/**
+ * Highlighting, folding and indentation, shared by all four dialects.
+ *
+ * Exported so a consumer can re-configure the parser with props of their own —
+ * extra `styleTags`, say, to tag the three RDF 1.2 constructs' regions apart
+ * rather than all as `quote`. `codemirror-lang-sparql12` exports `sparqlProps`
+ * for the same reason.
+ */
+export const turtleProps = [
   turtleHighlighting,
   indentNodeProp.add({
     BlankNodePropertyList: delimitedIndent({ closing: ']' }),
@@ -74,7 +81,7 @@ const languageData = {
 function define(top: string) {
   return LRLanguage.define({
     name: top === 'TurtleDoc' ? 'turtle' : top === 'TrigDoc' ? 'trig' : top === 'NTriplesDoc' ? 'ntriples' : 'nquads',
-    parser: rawParser.configure({ top, props }),
+    parser: rawParser.configure({ top, props: turtleProps }),
     languageData,
   });
 }

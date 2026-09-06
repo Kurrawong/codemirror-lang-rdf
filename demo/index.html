@@ -41,6 +41,8 @@
         --rdf-tripleterm: #1a7f5a;
         --rdf-annotation: #8a6d00;
         --rdf-reifier: #b0197f;
+        /* The tint behind a whole 1.2 construct; off unless a palette sets it. */
+        --rdf-region-bg: transparent;
       }
 
       :root[data-theme='dark'] {
@@ -74,6 +76,7 @@
         --rdf-tripleterm: #6fd0a8;
         --rdf-annotation: #e0b062;
         --rdf-reifier: #f191ce;
+        --rdf-region-bg: transparent;
       }
 
       /*
@@ -85,6 +88,15 @@
        * variants carry more specificity than the base theme blocks above, which
        * is what lets a palette differ between light and dark.
        */
+
+      /* The default. Brackets coloured per construct, and a tint behind each
+         construct so its extent is visible where they nest. */
+      :root[data-palette='rdf12'] {
+        --rdf-region-bg: rgba(176, 25, 127, 0.07);
+      }
+      :root[data-palette='rdf12'][data-theme='dark'] {
+        --rdf-region-bg: rgba(241, 145, 206, 0.11);
+      }
 
       /* What a theme that has never heard of RDF 1.2 gives you: the 1.2
          brackets fall back to the ordinary punctuation colour. */
