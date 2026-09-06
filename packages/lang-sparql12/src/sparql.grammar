@@ -464,9 +464,17 @@ TupleTemplate { KwTUPLE "(" varOrTerm ("," varOrTerm)* ")" }
   // AssignOp before PNameNS: `:=` must not lex as an empty prefix followed
   // by `=`, which is what SRL's `SET ( ?v := … )` turned into.
   @precedence { PNameLN, AssignOp, PNameNS, Word }
-  @precedence { DoublePositive, DecimalPositive, IntegerPositive, DoubleNegative, DecimalNegative, IntegerNegative, ArithOp, "+" }
-  // `[ :p 1 ]` may have `+1` as its object while `[ :p+ 1 ]` has `+` as a path
-  // modifier, so those two really are valid at the same position.
+  // A signed literal beats the operator that starts the same way: `?x -1` is an
+  // addition whose right operand is `-1`, and `[ :p 1 ]` may have `+1` as its
+  // object while `[ :p+ 1 ]` has `+` as a path modifier.
+  @precedence { DoublePositive, DecimalPositive, IntegerPositive, DoubleNegative, DecimalNegative, IntegerNegative, ArithOp }
+  //
+  // The path modifier gets its OWN declaration rather than joining the list
+  // above. Listing it after ArithOp would order the two against each other, and
+  // a precedence is global: `+` would then lex as arithmetic everywhere,
+  // including in `ex:p+/ex:q` where arithmetic is not valid at all. Same trap
+  // as `@precedence { MulOp, "*" }` and `SELECT *`.
+  @precedence { DoublePositive, DecimalPositive, IntegerPositive, "+" }
   @precedence { Double, Decimal, Integer, "." }
   @precedence { Var1, "?" }
   @precedence { IRIRef, "<<(", "<<" }

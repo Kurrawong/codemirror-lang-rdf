@@ -129,10 +129,37 @@ describe('graph patterns', () => {
   });
 
   it('reads property paths', () => {
-    const text = 'SELECT * { ?s ex:p/ex:q?/^ex:r|ex:t* ?o }';
+    const text = 'SELECT * { ?s ex:p/ex:q?/^ex:r|ex:t*/ex:u+ ?o }';
     expect(parsesCleanly(sparql, text)).toBe(true);
-    expect(allTextOf(sparql, text, 'PathMod')).toEqual(['?', '*']);
-    expect(span(text, 'VerbPath')).toBe('ex:p/ex:q?/^ex:r|ex:t*');
+    expect(allTextOf(sparql, text, 'PathMod')).toEqual(['?', '*', '+']);
+    expect(span(text, 'VerbPath')).toBe('ex:p/ex:q?/^ex:r|ex:t*/ex:u+');
+  });
+
+  it.each(['?', '*', '+'])('reads the %s path modifier on its own', (mod) => {
+    /*
+     * `+` had to be tested separately, and by name: it is the one modifier that
+     * shares its spelling with an arithmetic operator, and no test in the
+     * vendored corpus uses it, so a precedence that made `+` lex as arithmetic
+     * everywhere went unnoticed until someone typed `ex:p+/ex:q` into the demo.
+     */
+    const text = `SELECT * { ?s ex:p${mod} ?o }`;
+    expect(parsesCleanly(sparql, text)).toBe(true);
+    expect(span(text, 'PathMod')).toBe(mod);
+  });
+
+  it('still tells a path modifier from a signed literal', () => {
+    // `[ :p+ 1 ]` is a one-or-more path; `[ :p +1 ]` is a positive literal.
+    const withMod = 'ASK { [ ex:p+ 1 ] ex:q ?z }';
+    expect(parsesCleanly(sparql, withMod)).toBe(true);
+    expect(span(withMod, 'PathMod')).toBe('+');
+
+    const withLiteral = 'ASK { [ ex:p +1 ] ex:q ?z }';
+    expect(parsesCleanly(sparql, withLiteral)).toBe(true);
+    expect(span(withLiteral, 'NumericLiteralPositive')).toBe('+1');
+    expect(has(withLiteral, 'PathMod')).toBe(false);
+
+    // And arithmetic still works where arithmetic belongs.
+    expect(span('ASK { FILTER(?a + 1 > 2) }', 'ArithOp')).toBe('+');
   });
 
   it('reads a negated property set', () => {

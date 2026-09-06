@@ -85,17 +85,21 @@ Tested against the SPARQL 1.1 and 1.2 syntax suites vendored from
 would be a regression the 1.2 suite alone cannot see.
 
 A positive test must parse with no error node; a negative test must produce at
-least one. **300 of the 334 entries are decided by the grammar, including all
-95 positive triple-term tests.** The other 34 are listed with reasons in
-`test/corpus/expected-fail.json`, and fall into three groups:
+least one. **298 of the 334 entries are decided by the grammar, including all
+95 positive triple-term tests.** The other 36 are listed with reasons in
+`test/corpus/expected-fail.json`, and fall into four groups:
 
-- **Scoping and arity** (17): `GROUP BY` scope, `BIND` scope, projection
-  aliases, `VALUES` row width, nested aggregates. These are conditions on a
-  whole query, not shapes.
-- **Code points** (6): lone or misordered surrogate escapes, which need
-  arithmetic across two escape sequences.
-- **Constraints stated in prose** (3) and **annotation after a property path**
-  (8). The last group is the interesting one: the restriction distinguishes a
+- **Scoping and arity** (15): `GROUP BY` scope, `BIND` scope, projection
+  aliases, `VALUES` row width, nested aggregates, a blank-node label reused
+  across two operations. These are conditions on a whole query, not shapes.
+- **Code points** (6): lone or misordered surrogate escapes and an escape
+  naming an invalid code point, which need arithmetic across two escape
+  sequences.
+- **Constraints stated in prose** (5): variables and blank nodes in
+  `INSERT DATA` and `DELETE` templates, which the 1.1 grammar reaches through
+  `TriplesTemplate` and forbids only in the surrounding text.
+- **Annotation after a property path** (10). The interesting group: the
+  restriction distinguishes a
   bare-predicate verb from a property path, and a single IRI is *both*, so an
   LR grammar cannot decide which production applies without an ambiguity
   split. Over-accepting here costs a reader nothing — the query still colours

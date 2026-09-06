@@ -59,6 +59,8 @@
     "annotated-anonreifier-alternate-path": "As above (`|` path alternative).",
     "annotated-reifier-reifier-alternate-path": "As above.",
     "nested-annotated-path-anonreifier": "As above, with the path inside an annotation block.",
-    "nested-annotated-path-reifier": "As above."
+    "nested-annotated-path-reifier": "As above.",
+    "annotated-reifier-oneOrMore": "As above (`+` path modifier). Passed before only because `+` failed to lex as a path modifier at all, so the file errored for the wrong reason.",
+    "annotated-anonreifier-oneOrMore": "As above (`+` path modifier), and as above about why it used to pass."
   }
 }

@@ -7,6 +7,8 @@
   "type": "module",
   "scripts": {
     "build": "pnpm -r --filter './packages/*' run build",
+    "demo": "pnpm run build && node demo/build.mjs --serve",
+    "demo:build": "pnpm run build && node demo/build.mjs",
     "test": "pnpm run build && vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
@@ -22,6 +24,7 @@
     "@codemirror/autocomplete": "^6.18.0",
     "@codemirror/commands": "^6.11.0",
     "@codemirror/language": "^6.10.0",
+    "@codemirror/search": "^6.7.2",
     "@codemirror/state": "^6.4.0",
     "@codemirror/view": "^6.43.11",
     "@lezer/common": "^1.2.0",

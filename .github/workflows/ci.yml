@@ -41,6 +41,11 @@ jobs:
       - name: Unit and conformance tests
         run: pnpm exec vitest run
 
+      # The demo is not published, but it is the fastest way to see a grammar
+      # change, so it must not be allowed to rot.
+      - name: Build the demo
+        run: node demo/build.mjs
+
       - name: Install Playwright's browser
         run: pnpm exec playwright install --with-deps chromium
 

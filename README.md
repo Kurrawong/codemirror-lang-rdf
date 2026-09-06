@@ -84,10 +84,10 @@ Where each grammar stands:
 | Suite | Decided | Source |
 | --- | --- | --- |
 | RDF 1.2 Turtle, TriG, N-Triples, N-Quads | 155 / 165 | [`w3c/rdf-tests`](https://github.com/w3c/rdf-tests) |
-| SPARQL 1.1 and 1.2 syntax | 300 / 334 | [`w3c/rdf-tests`](https://github.com/w3c/rdf-tests) |
+| SPARQL 1.1 and 1.2 syntax | 298 / 334 | [`w3c/rdf-tests`](https://github.com/w3c/rdf-tests) |
 | SPARQL-RL syntax | 134 / 139 | [`w3c/data-shapes`](https://github.com/w3c/data-shapes) |
 
-**Every positive test in all three suites passes.** The 49 undecided entries
+**Every positive test in all three suites passes.** The 51 undecided entries
 are all *negative* tests, each listed with its reason in a committed
 `test/corpus/expected-fail.json`, and they fall into a small number of kinds:
 
@@ -113,6 +113,28 @@ list cannot become a place where working tests go to be ignored. The suite
 sizes are asserted outright too, so a vendoring mistake that halved a corpus
 reads as a failure rather than as a smaller green build.
 
+## The demo
+
+```
+pnpm demo
+```
+
+Builds the packages and serves an editor on a local port (the URL is printed)
+with a sample document per language, a fold gutter, completion, and one
+`HighlightStyle` shared by all six — the arrangement `docs/highlight-tags.md`
+says an application can keep.
+
+Beside the editor is an inspector, and that is the half that earns its keep
+while you are changing a grammar: the parse-error count, the highlight tag and
+node path under the cursor, and the live syntax tree, where clicking a node
+selects what it covers. Typing into it is how you find that a token went to the
+wrong term long before a conformance file tells you. The `+` property-path bug
+was found on the demo's first run, because no test in any vendored corpus uses
+a `+` path modifier and nothing else had ever typed one.
+
+`pnpm demo:build` writes a static bundle to `demo/dist` instead. It is a
+`file://`-safe page, so it needs no server to look at.
+
 ## Working on this
 
 ```
@@ -122,6 +144,7 @@ pnpm test               # build, then the unit and conformance layers
 pnpm run test:e2e       # real editors in Chromium
 pnpm run typecheck
 pnpm run test:all       # all three, in the order that fails fastest
+pnpm demo               # the demo editor, with a syntax-tree inspector
 pnpm run vendor-corpus  # re-vendor the corpora at the pinned commit
 ```
 

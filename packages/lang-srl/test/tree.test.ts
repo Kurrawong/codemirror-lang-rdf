@@ -72,6 +72,12 @@ describe('body items', () => {
     expect(span(text, 'VerbPath')).toBe('^:p1/^:p2');
   });
 
+  it.each(['?', '*', '+'])('reads the %s path modifier, as SPARQL does', (mod) => {
+    const text = `PREFIX : <http://e/>\nRULE {} WHERE { ?x :p${mod} ?o }`;
+    expect(parsesCleanly(parser, text)).toBe(true);
+    expect(span(text, 'PathMod')).toBe(mod);
+  });
+
   it('reads several body items separated by optional dots', () => {
     const text = 'RULE {} WHERE { ?s ?p ?o . FILTER(?o > 1) SET ( ?y := 1 ) . ?a ?b ?c }';
     expect(parsesCleanly(parser, text)).toBe(true);
