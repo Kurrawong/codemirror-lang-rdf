@@ -1,5 +1,5 @@
 import { lezer } from '@lezer/generator/rollup';
-import typescript from '@rollup/plugin-typescript';
+import { esbuildTypeScript } from '../../scripts/rollup-plugin-esbuild.mjs';
 
 export default {
   input: 'src/index.ts',
@@ -8,13 +8,7 @@ export default {
     { file: 'dist/index.js', format: 'es', sourcemap: true },
     { file: 'dist/index.cjs', format: 'cjs', sourcemap: true },
   ],
-  plugins: [
-    lezer(),
-    typescript({
-      tsconfig: './tsconfig.build.json',
-      declaration: true,
-      declarationDir: 'dist',
-      sourceMap: true,
-    }),
-  ],
+  // Declarations are emitted separately, by `tsc --emitDeclarationOnly` in the
+  // package's build script. See scripts/rollup-plugin-esbuild.mjs.
+  plugins: [lezer(), esbuildTypeScript()],
 };

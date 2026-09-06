@@ -155,6 +155,24 @@ from what the tests are scoring against.
 Tests import the packages from their built `dist`, not from `src`, so they
 exercise the same entry points and `exports` map that an application would.
 
+### The build does not typecheck
+
+Each package builds in two steps: rollup compiles the grammar and strips types
+with esbuild, then `tsc --emitDeclarationOnly` writes the `.d.ts` files. Nothing
+in that path checks a type — `pnpm run typecheck` does, as its own step, which
+CI runs before the build.
+
+That split exists because TypeScript 7 is the native port and ships no
+JavaScript compiler API, so `@rollup/plugin-typescript` (which reaches for
+`ts.ScriptTarget`) cannot load at all. Splitting the jobs is the better shape
+regardless: an explicit gate rather than a side effect of bundling, and a build
+that takes about a second per package instead of three.
+
+The one thing it depends on is `verbatimModuleSyntax`, which is set in
+`tsconfig.base.json`. Type-stripping sees one file at a time and cannot know
+whether an import is a type, so every type-only import has to say so. Leave that
+setting on.
+
 ### Notes for anyone editing a grammar
 
 Two things cost real time to work out, so they are worth knowing up front.

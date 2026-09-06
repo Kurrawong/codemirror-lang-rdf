@@ -19,7 +19,7 @@ export type { CompletionOptions, PrefixMap, PrefixSource } from './complete';
 export { documentPrefixes, knownPrefixes, turtleCompletionSource } from './complete';
 export { turtleHighlighting } from './highlight';
 
-/** The uncofigured grammar, for callers that want their own `top` or props. */
+/** The unconfigured grammar, for callers that want their own `top` or props. */
 export const parser: LRParser = rawParser;
 
 /**

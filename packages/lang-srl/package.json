@@ -14,12 +14,27 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist", "src", "README.md"],
-  "keywords": ["codemirror", "lezer", "srl", "sparql-rl", "rules", "rdf"],
-  "repository": { "type": "git", "url": "git+https://github.com/recalcitrantsupplant/codemirror-lang-rdf.git", "directory": "packages/lang-srl" },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "keywords": [
+    "codemirror",
+    "lezer",
+    "srl",
+    "sparql-rl",
+    "rules",
+    "rdf"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/recalcitrantsupplant/codemirror-lang-rdf.git",
+    "directory": "packages/lang-srl"
+  },
   "scripts": {
-    "build": "rollup -c",
-    "prepublishOnly": "rollup -c"
+    "build": "rollup -c && tsc -p tsconfig.build.json --emitDeclarationOnly",
+    "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.18.0",
@@ -31,8 +46,8 @@
     "codemirror-lang-sparql12": "workspace:^"
   },
   "devDependencies": {
-    "@rollup/plugin-typescript": "^12.1.2",
+    "esbuild": "^0.28.2",
     "rollup": "^4.28.1",
-    "typescript": "^5.7.2"
+    "typescript": "^7.0.2"
   }
 }
