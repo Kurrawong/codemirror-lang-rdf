@@ -73,9 +73,23 @@ const TAG_NAMES = [
   'squareBracket', 'paren', 'operator', 'separator', 'punctuation', 'invalid',
 ] as const;
 
-const inspectorHighlighter = tagHighlighter(
-  TAG_NAMES.map((name) => ({ tag: (tags as unknown as Record<string, Tag>)[name], class: name }))
-);
+/**
+ * The RDF 1.2 term brackets, which are `special()` derivations. Listed so the
+ * inspector reports the *specific* tag rather than the standard one it falls
+ * back to — knowing that `<<` came out as `reifiedTripleBracket` and not merely
+ * as some kind of bracket is the whole reason to look.
+ */
+const DERIVED_TAGS: Record<string, Tag> = {
+  reifiedTripleBracket: tags.special(tags.angleBracket),
+  tripleTermBracket: tags.special(tags.paren),
+  annotationBrace: tags.special(tags.brace),
+  reifier: tags.special(tags.operator),
+};
+
+const inspectorHighlighter = tagHighlighter([
+  ...TAG_NAMES.map((name) => ({ tag: (tags as unknown as Record<string, Tag>)[name], class: name })),
+  ...Object.entries(DERIVED_TAGS).map(([name, tag]) => ({ tag, class: name })),
+]);
 
 function tagAt(view: EditorView, pos: number): { text: string; tag: string } | null {
   const line = view.state.doc.lineAt(pos);
@@ -146,6 +160,7 @@ function treeRows(view: EditorView): { rows: TreeRow[]; truncated: boolean; erro
 const el = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 
 const languageSelect = el<HTMLSelectElement>('language');
+const paletteSelect = el<HTMLSelectElement>('palette');
 const tuplesToggle = el<HTMLInputElement>('tuples');
 const tuplesField = el('tuples-field');
 const mediaTypeOut = el('media-type');
@@ -320,6 +335,32 @@ function selectLanguage(key: LanguageKey, { resetDoc = true } = {}) {
   });
   render(view);
 }
+
+/**
+ * The palettes, which all drive the one `HighlightStyle` in `theme.ts`.
+ *
+ * They exist to make a point rather than to be shipped: the packages tag, an
+ * application colours. `rdf12` is the default because the distinction it draws
+ * is the reason the 1.2 tags exist; `conventional` is there to show that a
+ * style which ignores them loses nothing.
+ */
+const PALETTES = [
+  { id: 'rdf12', label: 'RDF 1.2 emphasis' },
+  { id: 'conventional', label: 'Conventional' },
+  { id: 'terms', label: 'Terms first' },
+] as const;
+
+for (const { id, label } of PALETTES) {
+  const option = document.createElement('option');
+  option.value = id;
+  option.textContent = label;
+  paletteSelect.append(option);
+}
+
+paletteSelect.addEventListener('change', () => {
+  document.documentElement.dataset.palette = paletteSelect.value;
+});
+document.documentElement.dataset.palette = PALETTES[0].id;
 
 for (const key of LANGUAGE_KEYS) {
   const option = document.createElement('option');

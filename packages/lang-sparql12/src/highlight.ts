@@ -40,12 +40,27 @@ export const sparqlHighlighting: NodePropSource = styleTags({
   'Datatype/IRIRef Datatype/PrefixedName/PNameNS Datatype/PrefixedName/PNameLN': t.typeName,
   'Datatype/"^^"': t.typeName,
 
-  '"<<" ">>" "<<(" ")>>" "{|" "|}"': t.brace,
+  /*
+   * The RDF 1.2 term brackets are tagged apart from ordinary grouping, because
+   * `<< s p o >>` and `<<( s p o )>>` differ by one character and mean quite
+   * different things — a statement you can refer to, versus an object that *is*
+   * a triple. A style that cannot separate them cannot help a reader see that.
+   *
+   * Each is a `special()` of the standard tag its glyphs actually are, so the
+   * fallback chain does the work: a theme that knows nothing about RDF 1.2 and
+   * styles `bracket` (or `brace`/`paren`/`angleBracket`) still colours all of
+   * them, and one that wants the distinction overrides the specific tag.
+   */
+  '"<<" ">>"': t.special(t.angleBracket),
+  '"<<(" ")>>"': t.special(t.paren),
+  '"{|" "|}"': t.special(t.brace),
   '"{" "}"': t.brace,
   '"[" "]"': t.squareBracket,
   '"(" ")" Nil': t.paren,
 
-  'OrOp AndOp CompareOp ArithOp MulOp NotOp AssignOp "~" "^" "|" "?" "*" "+" "="': t.operator,
+  'OrOp AndOp CompareOp ArithOp MulOp NotOp AssignOp "^" "|" "?" "*" "+" "="': t.operator,
+  // The reifier marker, told from arithmetic; it falls back to `operator`.
+  '"~"': t.special(t.operator),
 
   '";" ","': t.separator,
   '"."': t.punctuation,

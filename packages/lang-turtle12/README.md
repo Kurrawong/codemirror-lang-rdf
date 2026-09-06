@@ -48,6 +48,13 @@ Tags follow [`docs/highlight-tags.md`](../../docs/highlight-tags.md), which is
 shared with `codemirror-lang-sparql12` and `codemirror-lang-srl` so one
 `HighlightStyle` covers all six languages.
 
+The three RDF 1.2 term brackets are tagged apart from each other and from
+ordinary grouping — `special(angleBracket)` for `<< … >>`, `special(paren)` for
+`<<( … )>>`, `special(brace)` for `{| … |}`, `special(operator)` for `~` —
+because the first two differ by one character and mean different things. Each
+falls back to the standard tag it derives from, so a style that ignores them
+loses nothing.
+
 ## Spec revisions
 
 Pinned against these editor's drafts:

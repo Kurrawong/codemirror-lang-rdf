@@ -57,6 +57,32 @@ asserts every row of it against every grammar that has the construct, in both
 directions (a tag the table lists must be asserted; a tag a test asserts must
 be listed). A tag cannot drift in one grammar without failing the build.
 
+**The packages ship tags, not colours.** That is the CodeMirror convention —
+`@codemirror/lang-*` packages tag, themes colour — and it is the right split
+here for a second reason: the application these were built for drives its
+editor colours from its own design tokens, so a palette shipped in a grammar
+package would be dead weight. The demo carries three palettes instead, as
+something to look at and copy.
+
+What the packages *do* give a style is enough tags to say something worth
+saying. The three RDF 1.2 term brackets are tagged apart from one another and
+from ordinary grouping:
+
+| | |
+| --- | --- |
+| `<< s p o >>` — a reified triple | `special(angleBracket)` |
+| `<<( s p o )>>` — a triple term | `special(paren)` |
+| `{\| … \|}` — an annotation | `special(brace)` |
+| `~` — a reifier | `special(operator)` |
+
+Those two bracket forms differ by one character and mean quite different
+things — a statement you can refer to, versus an object that *is* a triple — so
+a style that cannot separate them cannot help a reader see the difference.
+Because each is a `special()` of the standard tag its glyphs actually are, and
+`angleBracket`/`paren`/`brace` all derive from `bracket`, **a style that has
+never heard of RDF 1.2 still colours every one of them** with no change. That
+fallback is asserted, not assumed.
+
 ## Tree shape
 
 Node names are the W3C production names — `Triples`, `PredicateObjectList`,
@@ -131,6 +157,15 @@ selects what it covers. Typing into it is how you find that a token went to the
 wrong term long before a conformance file tells you. The `+` property-path bug
 was found on the demo's first run, because no test in any vendored corpus uses
 a `+` path modifier and nothing else had ever typed one.
+
+The palette picker carries three, all driving one `HighlightStyle` whose colours
+are `var(--…)` references resolved at paint time — so switching is an attribute
+flip, with no reactivity and no re-created editor. Each makes a point rather
+than being a theme worth shipping: **RDF 1.2 emphasis** colours the three term
+brackets apart, **Conventional** sets them all to the punctuation colour to show
+what a style that ignores the 1.2 tags gets for free, and **Terms first** mutes
+syntax so RDF terms carry the colour, which is how you want to read data rather
+than edit it.
 
 `pnpm demo:build` writes a static bundle to `demo/dist` instead. It is a
 `file://`-safe page, so it needs no server to look at.

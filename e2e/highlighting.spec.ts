@@ -75,12 +75,34 @@ test('SRL keywords are coloured, which #157 is about', async ({ page }) => {
   expect((await tokens(page, 'srl')).filter((s) => s.text === ':')).toHaveLength(0);
 });
 
-test('the RDF 1.2 delimiters are coloured as braces', async ({ page }) => {
-  await mount(page, 'ttl', 'turtle', 'PREFIX ex: <http://e/>\nex:s ex:p <<( ex:a ex:b ex:c )>> {| ex:q ex:r |} .');
-  expect(await tagOf(page, 'ttl', '<<(')).toBe('brace');
-  expect(await tagOf(page, 'ttl', ')>>')).toBe('brace');
-  expect(await tagOf(page, 'ttl', '{|')).toBe('brace');
-  expect(await tagOf(page, 'ttl', '|}')).toBe('brace');
+test('a style can colour the three RDF 1.2 delimiters differently', async ({ page }) => {
+  /*
+   * The whole point of tagging them apart: `<< … >>` and `<<( … )>>` differ by
+   * one character, so a reader needs the colour to tell them apart. Asserted
+   * from computed styles, which is the only place that is actually true.
+   */
+  await mount(
+    page,
+    'ttl',
+    'turtle',
+    'PREFIX ex: <http://e/>\nex:s ex:p <<( ex:a ex:b ex:c )>> , << ex:d ex:e ex:f >> ~ex:r {| ex:q ex:z |} .'
+  );
+  expect(await tagOf(page, 'ttl', '<<(')).toBe('tripleTermBracket');
+  expect(await tagOf(page, 'ttl', ')>>')).toBe('tripleTermBracket');
+  expect(await tagOf(page, 'ttl', '<<')).toBe('reifiedTripleBracket');
+  expect(await tagOf(page, 'ttl', '>>')).toBe('reifiedTripleBracket');
+  expect(await tagOf(page, 'ttl', '{|')).toBe('annotationBrace');
+  expect(await tagOf(page, 'ttl', '|}')).toBe('annotationBrace');
+  expect(await tagOf(page, 'ttl', '~')).toBe('reifier');
+
+  // And they really are four different colours on screen, not four names for
+  // one — which is what a reader gets and what the tags exist for.
+  const colours = await Promise.all(
+    ['<<(', '<<', '{|', '~', '{'].map((token) =>
+      page.evaluate(([id, tk]) => window.rdfFixture.colourOf(id, tk), ['ttl', token] as const)
+    )
+  );
+  expect(new Set(colours.filter(Boolean)).size).toBe(colours.filter(Boolean).length);
 });
 
 test('a typo does not uncolour the rest of the document', async ({ page }) => {

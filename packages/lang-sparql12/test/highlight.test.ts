@@ -91,18 +91,18 @@ describe('terms', () => {
 });
 
 describe('brackets and operators', () => {
-  it('tags the RDF 1.2 delimiters as brace', () => {
+  it('tags the three RDF 1.2 delimiters apart from each other', () => {
     const tt = tokenTags(sparql, 'ASK { ?s ?p <<( ?a ?b ?c )>> }');
-    expect(tt.find((t) => t.text === '<<(')?.tag).toBe('brace');
-    expect(tt.find((t) => t.text === ')>>')?.tag).toBe('brace');
+    expect(tt.find((t) => t.text === '<<(')?.tag).toBe('tripleTermBracket');
+    expect(tt.find((t) => t.text === ')>>')?.tag).toBe('tripleTermBracket');
 
     const rt = tokenTags(sparql, 'ASK { << ?a ?b ?c >> ?p ?o }');
-    expect(rt.find((t) => t.text === '<<')?.tag).toBe('brace');
-    expect(rt.find((t) => t.text === '>>')?.tag).toBe('brace');
+    expect(rt.find((t) => t.text === '<<')?.tag).toBe('reifiedTripleBracket');
+    expect(rt.find((t) => t.text === '>>')?.tag).toBe('reifiedTripleBracket');
 
     const an = tokenTags(sparql, 'ASK { ?s ex:p ?o {| ex:q ?z |} }');
-    expect(an.find((t) => t.text === '{|')?.tag).toBe('brace');
-    expect(an.find((t) => t.text === '|}')?.tag).toBe('brace');
+    expect(an.find((t) => t.text === '{|')?.tag).toBe('annotationBrace');
+    expect(an.find((t) => t.text === '|}')?.tag).toBe('annotationBrace');
   });
 
   it('tags a group graph pattern as brace', () => {
@@ -128,11 +128,14 @@ describe('brackets and operators', () => {
     ['ASK { FILTER(?a + ?b > 1) }', '+'],
     ['ASK { FILTER(?a * ?b > 1) }', '*'],
     ['ASK { FILTER(!?a) }', '!'],
-    ['ASK { << ?a ?b ?c ~?r >> ?p ?o }', '~'],
     ['ASK { ?s ^ex:p ?o }', '^'],
     ['ASK { ?s ex:p|ex:q ?o }', '|'],
   ])('tags the operator in %j: %s', (text, token) => {
     expect(tagOf(sparql, text, token)).toBe('operator');
+  });
+
+  it('tags the reifier marker apart from arithmetic', () => {
+    expect(tagOf(sparql, 'ASK { << ?a ?b ?c ~?r >> ?p ?o }', '~')).toBe('reifier');
   });
 
   it('tags separators and the statement terminator apart', () => {

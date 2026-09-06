@@ -37,6 +37,17 @@ export const rdfHighlightStyle = HighlightStyle.define([
     color: 'var(--syntax-punct)',
   },
 
+  /*
+   * The RDF 1.2 term brackets. A style need not say anything about these — each
+   * falls back to the ordinary bracket rule above — so they are here to show
+   * what becomes possible once it does, and the "Conventional" palette proves
+   * the fallback by setting all three to the punctuation colour.
+   */
+  { tag: t.special(t.angleBracket), color: 'var(--rdf-reified)' },
+  { tag: t.special(t.paren), color: 'var(--rdf-tripleterm)' },
+  { tag: t.special(t.brace), color: 'var(--rdf-annotation)' },
+  { tag: t.special(t.operator), color: 'var(--rdf-reifier)' },
+
   { tag: t.invalid, color: 'var(--danger)' },
 ]);
 

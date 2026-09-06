@@ -7,6 +7,7 @@ import { sparqlLanguage } from '../packages/lang-sparql12/dist/index.js';
 import { srlLanguage } from '../packages/lang-srl/dist/index.js';
 import { tagOf, tokenTags } from './harness';
 import type { TagName } from './harness';
+import { tags as t, tagHighlighter, highlightTree } from '@lezer/highlight';
 
 /**
  * The single test behind `docs/highlight-tags.md`.
@@ -71,13 +72,13 @@ const rows: Row[] = [
   tripleRow('@lang--dir', 'annotation', 'ex:s ex:p "x"@en--ltr', '@en--ltr'),
   tripleRow('^^datatype', 'typeName', 'ex:s ex:p "x"^^ex:t', 'ex:t'),
   tripleRow('^^', 'typeName', 'ex:s ex:p "x"^^ex:t', '^^'),
-  tripleRow('<<(', 'brace', 'ex:s ex:p <<( ex:a ex:b ex:c )>>', '<<('),
-  tripleRow(')>>', 'brace', 'ex:s ex:p <<( ex:a ex:b ex:c )>>', ')>>'),
-  tripleRow('<<', 'brace', '<< ex:a ex:b ex:c >> ex:p ex:o', '<<'),
-  tripleRow('>>', 'brace', '<< ex:a ex:b ex:c >> ex:p ex:o', '>>'),
-  tripleRow('{|', 'brace', 'ex:s ex:p ex:o {| ex:q ex:r |}', '{|'),
-  tripleRow('|}', 'brace', 'ex:s ex:p ex:o {| ex:q ex:r |}', '|}'),
-  tripleRow('~', 'operator', 'ex:s ex:p ex:o ~ex:r {| ex:q ex:r |}', '~'),
+  tripleRow('<<(', 'tripleTermBracket', 'ex:s ex:p <<( ex:a ex:b ex:c )>>', '<<('),
+  tripleRow(')>>', 'tripleTermBracket', 'ex:s ex:p <<( ex:a ex:b ex:c )>>', ')>>'),
+  tripleRow('<<', 'reifiedTripleBracket', '<< ex:a ex:b ex:c >> ex:p ex:o', '<<'),
+  tripleRow('>>', 'reifiedTripleBracket', '<< ex:a ex:b ex:c >> ex:p ex:o', '>>'),
+  tripleRow('{|', 'annotationBrace', 'ex:s ex:p ex:o {| ex:q ex:r |}', '{|'),
+  tripleRow('|}', 'annotationBrace', 'ex:s ex:p ex:o {| ex:q ex:r |}', '|}'),
+  tripleRow('~', 'reifier', 'ex:s ex:p ex:o ~ex:r {| ex:q ex:r |}', '~'),
   tripleRow('[', 'squareBracket', 'ex:s ex:p [ ex:q ex:r ]', '['),
   tripleRow('(', 'paren', 'ex:s ex:p ( ex:a )', '('),
   tripleRow(';', 'separator', 'ex:s ex:p ex:o ; ex:q ex:r', ';'),
@@ -199,18 +200,65 @@ describe('the table in docs/highlight-tags.md', () => {
    * table does not mention would be an undocumented convention — the exact
    * drift §4 set out to prevent.
    */
+  /*
+   * The table writes the tag as the expression a style author would type;
+   * these tests name it for readability. One explicit map, rather than letting
+   * the two drift into separate vocabularies.
+   */
+  const TABLE_TAG_TO_NAME: Record<string, TagName> = {
+    'special(angleBracket)': 'reifiedTripleBracket',
+    'special(paren)': 'tripleTermBracket',
+    'special(brace)': 'annotationBrace',
+    'special(operator)': 'reifier',
+  };
+  const NAME_TO_TABLE_TAG = Object.fromEntries(
+    Object.entries(TABLE_TAG_TO_NAME).map(([table, name]) => [name, table])
+  ) as Record<string, string>;
+
   it('mentions every tag these tests assert', () => {
     const asserted = [...new Set(rows.map((r) => r.tag))].sort();
-    const missing = asserted.filter((tag) => !doc.includes(`\`${tag}\``));
+    const missing = asserted.filter((tag) => !doc.includes(`\`${NAME_TO_TABLE_TAG[tag] ?? tag}\``));
     expect(missing).toEqual([]);
   });
 
   it('asserts every tag the table lists', () => {
-    const listed = [...doc.matchAll(/^\| [^|]+ \| `([a-zA-Z]+)`/gm)].map((m) => m[1]);
+    const listed = [...doc.matchAll(/^\| [^|]+ \| `([a-zA-Z()]+)`/gm)].map(
+      (m) => TABLE_TAG_TO_NAME[m[1]] ?? m[1]
+    );
     const asserted = new Set(rows.map((r) => r.tag));
     // `invalid` is CodeMirror's own tag for error nodes, not one a grammar
     // assigns, so it is documented for style authors but has no row here.
     const missing = listed.filter((tag) => tag !== 'invalid' && !asserted.has(tag as TagName));
     expect(missing).toEqual([]);
+  });
+});
+
+describe('a style that knows nothing about RDF 1.2 still colours it', () => {
+  /*
+   * The reason the 1.2 brackets are `special()` derivations rather than tags of
+   * their own: `special(x)` falls back to `x`, and `angleBracket`, `paren` and
+   * `brace` all fall back to `bracket`. So the distinction is available to a
+   * style that wants it and invisible to one that does not — which is what
+   * makes adding it a safe change for anyone already using these packages.
+   */
+  const plain = tagHighlighter([
+    { tag: t.bracket, class: 'bracket' },
+    { tag: t.operator, class: 'operator' },
+  ]);
+
+  const cases = [
+    ['turtle', 'PREFIX ex: <http://e/>\nex:s ex:p <<( ex:a ex:b ex:c )>> , << ex:d ex:e ex:f >> ~ex:r {| ex:q ex:z |} .'],
+    ['sparql', 'PREFIX ex: <http://e/>\nASK { ex:s ex:p <<( ex:a ex:b ex:c )>> , << ex:d ex:e ex:f >> ~ex:r {| ex:q ex:z |} }'],
+  ] as const;
+
+  it.each(cases)('in %s, every 1.2 delimiter falls back to bracket', (name, doc) => {
+    const parser = languages[name];
+    const seen = new Map<string, string>();
+    highlightTree(parser.parse(doc), plain, (from, to, cls) => {
+      seen.set(doc.slice(from, to), cls);
+    });
+    for (const token of ['<<(', ')>>', '<<', '>>', '{|', '|}'])
+      expect(seen.get(token), `${token} in ${name}`).toBe('bracket');
+    expect(seen.get('~'), `~ in ${name}`).toBe('operator');
   });
 });

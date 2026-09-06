@@ -123,7 +123,20 @@ const TAG_NAMES = [
   'invalid',
 ] as const;
 
-export type TagName = (typeof TAG_NAMES)[number];
+/**
+ * The RDF 1.2 term brackets, which are `special()` derivations rather than
+ * plain tags. They are listed separately because a test needs to see the
+ * specific tag; a *style* need not, since each falls back to the standard tag
+ * above it.
+ */
+const DERIVED_TAGS = {
+  reifiedTripleBracket: tags.special(tags.angleBracket),
+  tripleTermBracket: tags.special(tags.paren),
+  annotationBrace: tags.special(tags.brace),
+  reifier: tags.special(tags.operator),
+} as const;
+
+export type TagName = (typeof TAG_NAMES)[number] | keyof typeof DERIVED_TAGS;
 
 export interface TaggedToken {
   text: string;
@@ -131,9 +144,10 @@ export interface TaggedToken {
 }
 
 export function tokenTags(parser: LRParser, text: string): TaggedToken[] {
-  const highlighter = tagHighlighter(
-    TAG_NAMES.map((name) => ({ tag: (tags as unknown as Record<string, Tag>)[name], class: name }))
-  );
+  const highlighter = tagHighlighter([
+    ...TAG_NAMES.map((name) => ({ tag: (tags as unknown as Record<string, Tag>)[name], class: name })),
+    ...Object.entries(DERIVED_TAGS).map(([name, tag]) => ({ tag, class: name })),
+  ]);
   const out: TaggedToken[] = [];
   highlightTree(parser.parse(text), highlighter, (from, to, cls) => {
     out.push({ text: text.slice(from, to), tag: cls as TagName });

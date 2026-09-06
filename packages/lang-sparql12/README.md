@@ -52,6 +52,13 @@ new EditorView({ extensions: [basicSetup, sparql()] });
 Tags follow [`docs/highlight-tags.md`](../../docs/highlight-tags.md), shared
 with `codemirror-lang-turtle12` and `codemirror-lang-srl`.
 
+The three RDF 1.2 term brackets are tagged apart from each other and from
+ordinary grouping — `special(angleBracket)` for `<< … >>`, `special(paren)` for
+`<<( … )>>`, `special(brace)` for `{| … |}`, `special(operator)` for `~` —
+because the first two differ by one character and mean different things. Each
+falls back to the standard tag it derives from, so a style that ignores them
+loses nothing.
+
 Keyword node names are `Kw` + the keyword in upper case (`KwSELECT`,
 `KwGROUP_CONCAT`), and the keyword list exists once — in the grammar's
 `@external specialize` block. `keywords.ts` derives both the case-insensitive

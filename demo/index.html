@@ -35,6 +35,12 @@
         --rdf-qualifier: #7b8794;
         --rdf-var: #2c62c8;
         --rdf-bnode: #8a3ea8;
+
+        /* The RDF 1.2 term brackets. The palette blocks below reassign these. */
+        --rdf-reified: #b0197f;
+        --rdf-tripleterm: #1a7f5a;
+        --rdf-annotation: #8a6d00;
+        --rdf-reifier: #b0197f;
       }
 
       :root[data-theme='dark'] {
@@ -63,6 +69,57 @@
         --rdf-qualifier: #8d97a4;
         --rdf-var: #6ea8fe;
         --rdf-bnode: #d18ae8;
+
+        --rdf-reified: #f191ce;
+        --rdf-tripleterm: #6fd0a8;
+        --rdf-annotation: #e0b062;
+        --rdf-reifier: #f191ce;
+      }
+
+      /*
+       * Palettes.
+       *
+       * All three drive the same `HighlightStyle`, whose colours are `var(--…)`
+       * references resolved at paint time — so switching one is an attribute
+       * flip, with no reactivity and no re-created editor. The `[data-theme]`
+       * variants carry more specificity than the base theme blocks above, which
+       * is what lets a palette differ between light and dark.
+       */
+
+      /* What a theme that has never heard of RDF 1.2 gives you: the 1.2
+         brackets fall back to the ordinary punctuation colour. */
+      :root[data-palette='conventional'] {
+        --rdf-reified: var(--syntax-punct);
+        --rdf-tripleterm: var(--syntax-punct);
+        --rdf-annotation: var(--syntax-punct);
+        --rdf-reifier: var(--syntax-punct);
+      }
+
+      /* Terms first: RDF terms carry the colour, syntax recedes. For reading
+         data rather than editing it. */
+      :root[data-palette='terms'] {
+        --syntax-keyword: #97a0ad;
+        --syntax-punct: #b9c0c9;
+        --rdf-iri: #0b6e8a;
+        --rdf-literal: #a33d00;
+        --rdf-var: #1f4fbf;
+        --rdf-bnode: #7a1fa8;
+        --rdf-reified: #b9c0c9;
+        --rdf-tripleterm: #b9c0c9;
+        --rdf-annotation: #b9c0c9;
+        --rdf-reifier: #b9c0c9;
+      }
+      :root[data-palette='terms'][data-theme='dark'] {
+        --syntax-keyword: #6b7482;
+        --syntax-punct: #565f6b;
+        --rdf-iri: #7fd4ee;
+        --rdf-literal: #ffb27a;
+        --rdf-var: #8ab8ff;
+        --rdf-bnode: #e2a2f5;
+        --rdf-reified: #565f6b;
+        --rdf-tripleterm: #565f6b;
+        --rdf-annotation: #565f6b;
+        --rdf-reifier: #565f6b;
       }
 
       * { box-sizing: border-box; }
@@ -237,6 +294,7 @@
       <p>RDF&nbsp;1.2, SPARQL&nbsp;1.2 and SRL, in a real editor.</p>
       <div class="toolbar">
         <label>Language <select id="language"></select></label>
+        <label>Palette <select id="palette"></select></label>
         <label id="tuples-field" hidden><input type="checkbox" id="tuples" checked /> tuples</label>
         <button type="button" id="reset">Reset sample</button>
         <button type="button" id="theme">Dark</button>

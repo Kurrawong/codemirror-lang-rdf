@@ -42,13 +42,27 @@ const COLOURS = {
   operator: 'rgb(15, 15, 15)',
   separator: 'rgb(16, 16, 16)',
   punctuation: 'rgb(17, 17, 17)',
+  // The RDF 1.2 term brackets, which are `special()` derivations rather than
+  // plain tags. Given their own colours here so a test can prove a style is
+  // able to tell a reified triple from a triple term.
+  reifiedTripleBracket: 'rgb(18, 18, 18)',
+  tripleTermBracket: 'rgb(19, 19, 19)',
+  annotationBrace: 'rgb(20, 20, 20)',
+  reifier: 'rgb(21, 21, 21)',
 } as const;
 
 export type TagName = keyof typeof COLOURS;
 
+const DERIVED = {
+  reifiedTripleBracket: t.special(t.angleBracket),
+  tripleTermBracket: t.special(t.paren),
+  annotationBrace: t.special(t.brace),
+  reifier: t.special(t.operator),
+} as const;
+
 const style = HighlightStyle.define(
   (Object.keys(COLOURS) as TagName[]).map((name) => ({
-    tag: t[name],
+    tag: (DERIVED as Record<string, (typeof t)['brace']>)[name] ?? t[name as keyof typeof t],
     color: COLOURS[name],
   }))
 );

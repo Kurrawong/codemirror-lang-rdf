@@ -64,18 +64,20 @@ describe('keywords', () => {
 });
 
 describe('brackets, operators and separators', () => {
-  it('tags the RDF 1.2 delimiters as brace', () => {
+  it('tags the three RDF 1.2 delimiters apart from each other', () => {
+    // `<< … >>` and `<<( … )>>` differ by one character and mean different
+    // things, so a style has to be able to tell them apart.
     const tags = tokenTags(turtle, 'ex:s ex:p <<( ex:a ex:b ex:c )>> .');
-    expect(tags.find((t) => t.text === '<<(')?.tag).toBe('brace');
-    expect(tags.find((t) => t.text === ')>>')?.tag).toBe('brace');
+    expect(tags.find((t) => t.text === '<<(')?.tag).toBe('tripleTermBracket');
+    expect(tags.find((t) => t.text === ')>>')?.tag).toBe('tripleTermBracket');
 
     const reified = tokenTags(turtle, '<< ex:a ex:b ex:c >> ex:p ex:o .');
-    expect(reified.find((t) => t.text === '<<')?.tag).toBe('brace');
-    expect(reified.find((t) => t.text === '>>')?.tag).toBe('brace');
+    expect(reified.find((t) => t.text === '<<')?.tag).toBe('reifiedTripleBracket');
+    expect(reified.find((t) => t.text === '>>')?.tag).toBe('reifiedTripleBracket');
 
     const annotated = tokenTags(turtle, 'ex:s ex:p ex:o {| ex:q ex:r |} .');
-    expect(annotated.find((t) => t.text === '{|')?.tag).toBe('brace');
-    expect(annotated.find((t) => t.text === '|}')?.tag).toBe('brace');
+    expect(annotated.find((t) => t.text === '{|')?.tag).toBe('annotationBrace');
+    expect(annotated.find((t) => t.text === '|}')?.tag).toBe('annotationBrace');
   });
 
   it('tags a TriG graph block as brace', () => {
@@ -84,8 +86,8 @@ describe('brackets, operators and separators', () => {
     expect(tags.find((t) => t.text === '}')?.tag).toBe('brace');
   });
 
-  it('tags the reifier marker as an operator', () => {
-    expect(tagOf(turtle, 'ex:s ex:p ex:o ~ex:r {| ex:q ex:r |} .', '~')).toBe('operator');
+  it('tags the reifier marker apart from arithmetic', () => {
+    expect(tagOf(turtle, 'ex:s ex:p ex:o ~ex:r {| ex:q ex:r |} .', '~')).toBe('reifier');
   });
 
   it('tags separators and the statement terminator apart', () => {
