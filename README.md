@@ -178,10 +178,26 @@ green `test` job — a demo that does not parse is worse than a stale one. The
 job builds the packages from that commit first, so the page always shows the
 grammars as they are on `main`, never a published version.
 
-The job turns Pages on itself, through `configure-pages`' `enablement` input
-and the `pages: write` permission — so unlike the release job it needs no
-one-time visit to Settings. If that API call is ever refused, the fallback is
-**Settings → Pages → Source: "GitHub Actions"**.
+The job asks `configure-pages` to enable Pages itself (`enablement: true`), so
+once the repository lets it, no manual step is needed. On this repository that
+call is currently refused — `Create Pages site failed: Resource not accessible
+by integration` — which is the *same* refusal the release job gets when it tries
+to open a pull request: the workflow token is not being granted the write scopes
+the jobs declare.
+
+One settings page most likely covers both:
+
+**Settings → Actions → General → Workflow permissions**
+1. Select **"Read and write permissions"**. A repository left on
+   "Read repository contents and packages permissions" caps what a workflow may
+   request, so declaring `pages: write` or `contents: write` in the job has no
+   effect.
+2. Tick **"Allow GitHub Actions to create and approve pull requests"** — the
+   release job's separate blocker.
+
+If Pages still does not come up after that, enable it once at
+**Settings → Pages → Source: "GitHub Actions"**; `enablement: true` is a no-op
+from then on.
 
 GitHub Pages is the right host here — the repository, the CI and the identity
 are already there, and it is CDN-backed. Two things to know if that ever stops
