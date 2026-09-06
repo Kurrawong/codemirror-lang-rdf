@@ -178,9 +178,10 @@ green `test` job — a demo that does not parse is worse than a stale one. The
 job builds the packages from that commit first, so the page always shows the
 grammars as they are on `main`, never a published version.
 
-This needs **Settings → Pages → Source: "GitHub Actions"** to be set once. Until
-it is, the job fails at the deploy step, the same shape of repository-policy
-refusal as the release job's.
+The job turns Pages on itself, through `configure-pages`' `enablement` input
+and the `pages: write` permission — so unlike the release job it needs no
+one-time visit to Settings. If that API call is ever refused, the fallback is
+**Settings → Pages → Source: "GitHub Actions"**.
 
 GitHub Pages is the right host here — the repository, the CI and the identity
 are already there, and it is CDN-backed. Two things to know if that ever stops
