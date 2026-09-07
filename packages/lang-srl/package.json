@@ -17,7 +17,9 @@
   "files": [
     "dist",
     "src",
-    "README.md"
+    "README.md",
+    "LICENSE",
+    "NOTICE"
   ],
   "keywords": [
     "codemirror",
@@ -34,7 +36,7 @@
   },
   "scripts": {
     "build": "rollup -c && tsc -p tsconfig.build.json --emitDeclarationOnly",
-    "prepublishOnly": "pnpm run build"
+    "prepublishOnly": "cp ../../LICENSE ../../NOTICE . && pnpm run build"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.18.0",

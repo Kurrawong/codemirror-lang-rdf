@@ -178,26 +178,23 @@ green `test` job — a demo that does not parse is worse than a stale one. The
 job builds the packages from that commit first, so the page always shows the
 grammars as they are on `main`, never a published version.
 
-The job asks `configure-pages` to enable Pages itself (`enablement: true`), so
-once the repository lets it, no manual step is needed. On this repository that
-call is currently refused — `Create Pages site failed: Resource not accessible
-by integration` — which is the *same* refusal the release job gets when it tries
-to open a pull request: the workflow token is not being granted the write scopes
-the jobs declare.
+**It cannot deploy while the repository is private.** GitHub Pages is a
+public-repository feature on the Free plan, which is why `configure-pages`
+returns `Create Pages site failed: Resource not accessible by integration` —
+there is no Pages site to create, and no permission setting changes that. The
+build half of the job works; only the deploy is blocked. Making the repository
+public switches it on with no change here.
 
-One settings page most likely covers both:
+Two other things, both separate from the above:
 
-**Settings → Actions → General → Workflow permissions**
-1. Select **"Read and write permissions"**. A repository left on
-   "Read repository contents and packages permissions" caps what a workflow may
-   request, so declaring `pages: write` or `contents: write` in the job has no
-   effect.
-2. Tick **"Allow GitHub Actions to create and approve pull requests"** — the
-   release job's separate blocker.
-
-If Pages still does not come up after that, enable it once at
-**Settings → Pages → Source: "GitHub Actions"**; `enablement: true` is a no-op
-from then on.
+- **The release job** is blocked by a genuine settings toggle, not by
+  visibility: **Settings → Actions → General → Workflow permissions →
+  "Allow GitHub Actions to create and approve pull requests"**.
+- **A Pages site built from a private repository is still publicly reachable**
+  on anything below Enterprise Cloud. So "private repo, private demo" is not a
+  combination GitHub offers; if the demo needs to be up before the code is
+  public, Cloudflare Pages and Netlify both build from a private repository on
+  their free tiers and take `demo/dist` unchanged.
 
 GitHub Pages is the right host here — the repository, the CI and the identity
 are already there, and it is CDN-backed. Two things to know if that ever stops

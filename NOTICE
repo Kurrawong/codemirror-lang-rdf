@@ -1,0 +1,25 @@
+codemirror-lang-rdf
+Copyright (c) 2026 codemirror-lang-rdf contributors
+
+This product includes work derived from:
+
+  codemirror-lang-turtle and codemirror-lang-sparql
+  Copyright (c) aatauil
+  MIT licensed — https://github.com/aatauil
+
+  The Turtle and SPARQL grammars here are rewrites for the RDF 1.2 and
+  SPARQL 1.2 specifications of the approach those packages take.
+
+The vendored conformance corpora under packages/*/test/corpus are:
+
+  Copyright (c) W3C
+  Distributed under the W3C Test Suite License and the W3C 3-clause BSD
+  License. Each corpus directory carries a SOURCE file naming the upstream
+  repository and the pinned commit.
+
+  https://github.com/w3c/rdf-tests
+  https://github.com/w3c/data-shapes
+
+The attribution above lived in LICENSE until GitHub reported the repository's
+licence as NOASSERTION: licence detection needs that file to match the MIT text
+closely, and an interpolated paragraph is enough to defeat it.

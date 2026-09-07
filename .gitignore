@@ -6,3 +6,7 @@ test-results/
 playwright-report/
 e2e/.build/
 demo/dist/
+
+# Copied into each package at pack time by prepublishOnly.
+packages/*/LICENSE
+packages/*/NOTICE
