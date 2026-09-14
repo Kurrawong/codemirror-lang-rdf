@@ -4,6 +4,10 @@ CodeMirror 6 language support and Lezer parsers for RDF 1.2, SPARQL 1.2,
 and SRL (SPARQL Rule Language). Includes highlighting, folding, indentation,
 and completion for Turtle, TriG, SPARQL, and SRL.
 
+## Demo
+
+[Try the live editor](https://kwong.github.io/codemirror-lang-rdf/)
+
 | Package | Languages |
 | --- | --- |
 | [codemirror-lang-turtle12](packages/lang-turtle12/README.md) | Turtle, TriG, N-Triples, N-Quads |
