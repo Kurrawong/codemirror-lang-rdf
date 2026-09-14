@@ -36,7 +36,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kurrawong/codemirror-lang-rdf.git",
+    "url": "git+https://github.com/Kurrawong/codemirror-lang-rdf.git",
     "directory": "packages/lang-turtle12"
   },
   "scripts": {
