@@ -19,9 +19,9 @@ import { autocompletion, startCompletion } from '@codemirror/autocomplete';
 import { defaultKeymap, indentWithTab } from '@codemirror/commands';
 import { foldAll, foldCode, unfoldAll } from '@codemirror/language';
 import { tags as t } from '@lezer/highlight';
-import { nquads, ntriples, trig, turtle } from 'codemirror-lang-turtle12';
-import { sparql } from 'codemirror-lang-sparql12';
-import { srl } from 'codemirror-lang-srl';
+import { nquads, ntriples, trig, turtle } from '@kurrawongai/codemirror-lang-turtle12';
+import { sparql } from '@kurrawongai/codemirror-lang-sparql12';
+import { srl } from '@kurrawongai/codemirror-lang-srl';
 
 /** One colour per tag from `docs/highlight-tags.md`, all six languages sharing it. */
 const COLOURS = {

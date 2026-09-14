@@ -29,7 +29,7 @@ export { KEYWORDS, KEYWORD_NODE_NAMES } from './keywords';
 /**
  * The unconfigured grammar.
  *
- * `codemirror-lang-srl` is `parser.configure({ top: 'SrlUnit' })` on this, and
+ * `@kurrawongai/codemirror-lang-srl` is `parser.configure({ top: 'SrlUnit' })` on this, and
  * that is the whole reason it is exported: SPARQL and SRL then cannot disagree
  * about what a term is, because there is only one grammar to disagree with.
  */

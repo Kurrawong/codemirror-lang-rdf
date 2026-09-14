@@ -1,19 +1,19 @@
-# codemirror-lang-srl
+# @kurrawongai/codemirror-lang-srl
 
 SRL (SPARQL Rule Language) support for CodeMirror 6, with highlighting,
 folding, indentation, completion, and helpers for locating rules and data blocks.
 
 ## Get started
 
-The package is not yet published on npm. See
-[local installation](https://github.com/kurrawong/codemirror-lang-rdf/blob/main/docs/usage.md#install-from-a-checkout)
-to install it and `codemirror`.
+```sh
+npm install codemirror @kurrawongai/codemirror-lang-srl
+```
 
 In your application's browser entry module:
 
 ```js
 import { basicSetup, EditorView } from 'codemirror';
-import { srl } from 'codemirror-lang-srl';
+import { srl } from '@kurrawongai/codemirror-lang-srl';
 
 new EditorView({
   parent: document.body,

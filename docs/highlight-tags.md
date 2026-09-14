@@ -43,7 +43,7 @@ triple-term, and annotation delimiters. Install `codemirror`,
 import { basicSetup, EditorView } from 'codemirror';
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { tags as t } from '@lezer/highlight';
-import { turtle } from 'codemirror-lang-turtle12';
+import { turtle } from '@kurrawongai/codemirror-lang-turtle12';
 
 const rdfStyle = HighlightStyle.define([
   { tag: t.special(t.angleBracket), color: '#9c304b' },

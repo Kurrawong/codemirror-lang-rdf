@@ -29,6 +29,15 @@ importers:
       '@codemirror/view':
         specifier: ^6.43.11
         version: 6.43.11
+      '@kurrawongai/codemirror-lang-sparql12':
+        specifier: workspace:^
+        version: link:packages/lang-sparql12
+      '@kurrawongai/codemirror-lang-srl':
+        specifier: workspace:^
+        version: link:packages/lang-srl
+      '@kurrawongai/codemirror-lang-turtle12':
+        specifier: workspace:^
+        version: link:packages/lang-turtle12
       '@lezer/common':
         specifier: ^1.2.0
         version: 1.5.2
@@ -50,15 +59,6 @@ importers:
       '@types/node':
         specifier: ^26.4.1
         version: 26.4.1
-      codemirror-lang-sparql12:
-        specifier: workspace:^
-        version: link:packages/lang-sparql12
-      codemirror-lang-srl:
-        specifier: workspace:^
-        version: link:packages/lang-srl
-      codemirror-lang-turtle12:
-        specifier: workspace:^
-        version: link:packages/lang-turtle12
       esbuild:
         specifier: ^0.28.2
         version: 0.28.2
@@ -117,6 +117,9 @@ importers:
       '@codemirror/state':
         specifier: ^6.4.0
         version: 6.7.3
+      '@kurrawongai/codemirror-lang-sparql12':
+        specifier: workspace:^
+        version: link:../lang-sparql12
       '@lezer/common':
         specifier: ^1.2.0
         version: 1.5.2
@@ -126,9 +129,6 @@ importers:
       '@lezer/lr':
         specifier: ^1.4.0
         version: 1.4.10
-      codemirror-lang-sparql12:
-        specifier: workspace:^
-        version: link:../lang-sparql12
     devDependencies:
       esbuild:
         specifier: ^0.28.2

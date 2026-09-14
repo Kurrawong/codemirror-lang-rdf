@@ -33,7 +33,7 @@ Use the helpers with an `EditorState` configured for the appropriate language.
 
 ## Turtle, TriG, N-Triples, and N-Quads
 
-Import from `codemirror-lang-turtle12`.
+Import from `@kurrawongai/codemirror-lang-turtle12`.
 
 | Export | Behaviour |
 | --- | --- |
@@ -49,7 +49,7 @@ Import from `codemirror-lang-turtle12`.
 For raw parsing, select `TurtleDoc`, `TrigDoc`, `NTriplesDoc`, or `NQuadsDoc`:
 
 ```js
-import { parser } from 'codemirror-lang-turtle12';
+import { parser } from '@kurrawongai/codemirror-lang-turtle12';
 
 const tree = parser.configure({ top: 'NTriplesDoc' })
   .parse('<http://example.org/s> <http://example.org/p> <http://example.org/o> .');
@@ -59,7 +59,7 @@ For parsing with editor props, use the corresponding language's `.parser`.
 
 ## SPARQL
 
-Import from `codemirror-lang-sparql12`.
+Import from `@kurrawongai/codemirror-lang-sparql12`.
 
 | Export | Behaviour |
 | --- | --- |
@@ -88,7 +88,7 @@ To parse without an editor, use `parser.configure({ top: 'SparqlUnit' }).parse(t
 
 ## SRL
 
-Import from `codemirror-lang-srl`.
+Import from `@kurrawongai/codemirror-lang-srl`.
 
 | Export | Behaviour |
 | --- | --- |

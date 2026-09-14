@@ -1,9 +1,22 @@
 # Usage
 
+## Install from npm
+
+Install CodeMirror and the language packages you use:
+
+```sh
+npm install codemirror \
+  @kurrawongai/codemirror-lang-turtle12 \
+  @kurrawongai/codemirror-lang-sparql12 \
+  @kurrawongai/codemirror-lang-srl
+```
+
+SRL requires the SPARQL package. Omit packages you do not use.
+
 ## Install from a checkout
 
-The packages are not yet published on npm. Build local tarballs to install
-them in an application. Requires Node.js 22 and pnpm 9.15.0.
+Build local tarballs to test an unreleased checkout in an application. Requires
+Node.js 22 and pnpm 9.15.0.
 
 From the repository root:
 
@@ -22,14 +35,14 @@ For the current checkout versions:
 
 ```sh
 npm install codemirror \
-  /path/to/codemirror-lang-rdf/dist/packages/codemirror-lang-turtle12-0.1.0.tgz \
-  /path/to/codemirror-lang-rdf/dist/packages/codemirror-lang-sparql12-0.1.0.tgz \
-  /path/to/codemirror-lang-rdf/dist/packages/codemirror-lang-srl-0.1.0.tgz
+  /path/to/codemirror-lang-rdf/dist/packages/kurrawongai-codemirror-lang-turtle12-0.1.0.tgz \
+  /path/to/codemirror-lang-rdf/dist/packages/kurrawongai-codemirror-lang-sparql12-0.1.0.tgz \
+  /path/to/codemirror-lang-rdf/dist/packages/kurrawongai-codemirror-lang-srl-0.1.0.tgz
 ```
 
 Replace `/path/to/codemirror-lang-rdf` with your checkout path. You can omit
 packages you do not use, but SRL requires the SPARQL package. Install both
-tarballs together when using SRL; SPARQL is not available from npm yet.
+tarballs together when using SRL.
 
 This installation command uses npm. With pnpm 9, passing both tarballs still
 attempts to fetch SRL's SPARQL dependency from the registry; a pnpm application
@@ -43,7 +56,7 @@ Use this in a browser entry module processed by a JavaScript bundler:
 
 ```js
 import { basicSetup, EditorView } from 'codemirror';
-import { sparql } from 'codemirror-lang-sparql12';
+import { sparql } from '@kurrawongai/codemirror-lang-sparql12';
 
 new EditorView({
   parent: document.body,
@@ -59,12 +72,12 @@ Choose one language extension for the document:
 
 | Language | Package | Extension |
 | --- | --- | --- |
-| Turtle | `codemirror-lang-turtle12` | `turtle(options?)` |
-| TriG | `codemirror-lang-turtle12` | `trig(options?)` |
-| N-Triples | `codemirror-lang-turtle12` | `ntriples()` |
-| N-Quads | `codemirror-lang-turtle12` | `nquads()` |
-| SPARQL query or update | `codemirror-lang-sparql12` | `sparql(options?)` |
-| SRL | `codemirror-lang-srl` | `srl(options?)` |
+| Turtle | `@kurrawongai/codemirror-lang-turtle12` | `turtle(options?)` |
+| TriG | `@kurrawongai/codemirror-lang-turtle12` | `trig(options?)` |
+| N-Triples | `@kurrawongai/codemirror-lang-turtle12` | `ntriples()` |
+| N-Quads | `@kurrawongai/codemirror-lang-turtle12` | `nquads()` |
+| SPARQL query or update | `@kurrawongai/codemirror-lang-sparql12` | `sparql(options?)` |
+| SRL | `@kurrawongai/codemirror-lang-srl` | `srl(options?)` |
 
 N-Triples and N-Quads use separate parser entry points that reject Turtle-only
 syntax such as prefixed names and semicolon lists. They have no completion source.
@@ -74,7 +87,7 @@ syntax such as prefixed names and semicolon lists. They have no completion sourc
 Pass a prefix map or a synchronous function receiving the current `EditorState`:
 
 ```js
-import { sparql } from 'codemirror-lang-sparql12';
+import { sparql } from '@kurrawongai/codemirror-lang-sparql12';
 
 const language = sparql({
   prefixSource: {

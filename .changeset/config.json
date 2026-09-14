@@ -2,7 +2,7 @@
   "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
   "changelog": "@changesets/cli/changelog",
   "commit": false,
-  "fixed": [["codemirror-lang-sparql12", "codemirror-lang-srl"]],
+  "fixed": [["@kurrawongai/codemirror-lang-sparql12", "@kurrawongai/codemirror-lang-srl"]],
   "linked": [],
   "access": "public",
   "baseBranch": "main",

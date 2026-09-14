@@ -1,8 +1,11 @@
 {
-  "name": "codemirror-lang-sparql12",
+  "name": "@kurrawongai/codemirror-lang-sparql12",
   "version": "0.1.0",
   "description": "SPARQL 1.2 query and update language support for CodeMirror 6",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.js",

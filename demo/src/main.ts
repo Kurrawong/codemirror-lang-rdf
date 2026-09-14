@@ -17,9 +17,9 @@ import { highlightSelectionMatches, searchKeymap } from '@codemirror/search';
 import { highlightTree, tagHighlighter, tags } from '@lezer/highlight';
 import type { Tag } from '@lezer/highlight';
 
-import { nquads, ntriples, trig, turtle } from 'codemirror-lang-turtle12';
-import { sparql } from 'codemirror-lang-sparql12';
-import { dataBlockRanges, ruleRanges, srl, tupleRanges, variablesInDataBlocks } from 'codemirror-lang-srl';
+import { nquads, ntriples, trig, turtle } from '@kurrawongai/codemirror-lang-turtle12';
+import { sparql } from '@kurrawongai/codemirror-lang-sparql12';
+import { dataBlockRanges, ruleRanges, srl, tupleRanges, variablesInDataBlocks } from '@kurrawongai/codemirror-lang-srl';
 
 import { LANGUAGE_KEYS, SAMPLES, type LanguageKey } from './samples';
 import { demoTheme } from './theme';
@@ -285,7 +285,7 @@ function renderTree(v: EditorView, rows: TreeRow[], truncated: boolean, pos: num
 }
 
 /**
- * The tree facts `codemirror-lang-srl` exports for an application to build on:
+ * The tree facts `@kurrawongai/codemirror-lang-srl` exports for an application to build on:
  * rule and data-block spans for a gutter, tuple spans for the extension gate,
  * and variables in a ground DATA block for a linter.
  */

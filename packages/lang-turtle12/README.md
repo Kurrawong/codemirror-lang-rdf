@@ -1,18 +1,18 @@
-# codemirror-lang-turtle12
+# @kurrawongai/codemirror-lang-turtle12
 
 RDF 1.2 Turtle, TriG, N-Triples, and N-Quads support for CodeMirror 6.
 
 ## Get started
 
-The package is not yet published on npm. See
-[local installation](https://github.com/kurrawong/codemirror-lang-rdf/blob/main/docs/usage.md#install-from-a-checkout)
-to install it and `codemirror`.
+```sh
+npm install codemirror @kurrawongai/codemirror-lang-turtle12
+```
 
 In your application's browser entry module:
 
 ```js
 import { basicSetup, EditorView } from 'codemirror';
-import { turtle } from 'codemirror-lang-turtle12';
+import { turtle } from '@kurrawongai/codemirror-lang-turtle12';
 
 new EditorView({
   parent: document.body,

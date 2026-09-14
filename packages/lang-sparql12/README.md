@@ -1,19 +1,19 @@
-# codemirror-lang-sparql12
+# @kurrawongai/codemirror-lang-sparql12
 
 SPARQL 1.2 query and update support for CodeMirror 6, with highlighting,
 folding, indentation, and keyword, prefix, and variable completion.
 
 ## Get started
 
-The package is not yet published on npm. See
-[local installation](https://github.com/kurrawong/codemirror-lang-rdf/blob/main/docs/usage.md#install-from-a-checkout)
-to install it and `codemirror`.
+```sh
+npm install codemirror @kurrawongai/codemirror-lang-sparql12
+```
 
 In your application's browser entry module:
 
 ```js
 import { basicSetup, EditorView } from 'codemirror';
-import { sparql } from 'codemirror-lang-sparql12';
+import { sparql } from '@kurrawongai/codemirror-lang-sparql12';
 
 new EditorView({
   parent: document.body,

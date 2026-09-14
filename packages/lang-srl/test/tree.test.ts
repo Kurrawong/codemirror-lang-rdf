@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { parser } from '../dist/index.js';
-import { parser as sparqlParser } from 'codemirror-lang-sparql12';
+import { parser as sparqlParser } from '@kurrawongai/codemirror-lang-sparql12';
 import { allTextOf, nodeNames, parsesCleanly, shapeOf, textOf } from '../../../test/harness';
 
 const span = (text: string, name: string) => textOf(parser, text, name);

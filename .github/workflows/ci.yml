@@ -25,7 +25,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # The build comes first: `codemirror-lang-srl` imports the SPARQL
+      # The build comes first: `@kurrawongai/codemirror-lang-srl` imports the SPARQL
       # package by name, so typechecking it needs that package's emitted
       # declarations. After that, the layers run in the order that fails
       # fastest.

@@ -10,9 +10,9 @@ and completion for Turtle, TriG, SPARQL, and SRL.
 
 | Package | Languages |
 | --- | --- |
-| [codemirror-lang-turtle12](packages/lang-turtle12/README.md) | Turtle, TriG, N-Triples, N-Quads |
-| [codemirror-lang-sparql12](packages/lang-sparql12/README.md) | SPARQL query and update |
-| [codemirror-lang-srl](packages/lang-srl/README.md) | SRL |
+| [@kurrawongai/codemirror-lang-turtle12](packages/lang-turtle12/README.md) | Turtle, TriG, N-Triples, N-Quads |
+| [@kurrawongai/codemirror-lang-sparql12](packages/lang-sparql12/README.md) | SPARQL query and update |
+| [@kurrawongai/codemirror-lang-srl](packages/lang-srl/README.md) | SRL |
 
 These are editor parsers. They accept some invalid documents and do not provide
 validation diagnostics. N-Triples and N-Quads have no completion source.
@@ -33,15 +33,17 @@ and a syntax-tree inspector.
 
 ## Use in an application
 
-The packages are not yet published on npm. Follow
-[local installation](docs/usage.md#install-from-a-checkout) to install them
-and `codemirror` in your application.
+Install `codemirror` and the package for the language you use:
+
+```sh
+npm install codemirror @kurrawongai/codemirror-lang-sparql12
+```
 
 In a browser entry module processed by your application's bundler:
 
 ```js
 import { basicSetup, EditorView } from 'codemirror';
-import { sparql } from 'codemirror-lang-sparql12';
+import { sparql } from '@kurrawongai/codemirror-lang-sparql12';
 
 new EditorView({
   parent: document.body,

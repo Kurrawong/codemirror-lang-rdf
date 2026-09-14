@@ -1,11 +1,11 @@
 import { LRLanguage, LanguageSupport, syntaxTree } from '@codemirror/language';
 import type { EditorState } from '@codemirror/state';
 import type { LRParser } from '@lezer/lr';
-import { parser as sparqlParser, sparqlProps, sparqlCompletionSource } from 'codemirror-lang-sparql12';
-import type { CompletionOptions } from 'codemirror-lang-sparql12';
+import { parser as sparqlParser, sparqlProps, sparqlCompletionSource } from '@kurrawongai/codemirror-lang-sparql12';
+import type { CompletionOptions } from '@kurrawongai/codemirror-lang-sparql12';
 
-export type { CompletionOptions, PrefixMap, PrefixSource } from 'codemirror-lang-sparql12';
-export { documentPrefixes, documentVariables, knownPrefixes, srlKeywords } from 'codemirror-lang-sparql12';
+export type { CompletionOptions, PrefixMap, PrefixSource } from '@kurrawongai/codemirror-lang-sparql12';
+export { documentPrefixes, documentVariables, knownPrefixes, srlKeywords } from '@kurrawongai/codemirror-lang-sparql12';
 
 export interface SrlOptions extends CompletionOptions {
   /**

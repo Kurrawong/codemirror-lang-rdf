@@ -1,7 +1,7 @@
 ---
-'codemirror-lang-turtle12': minor
-'codemirror-lang-sparql12': minor
-'codemirror-lang-srl': minor
+'@kurrawongai/codemirror-lang-turtle12': minor
+'@kurrawongai/codemirror-lang-sparql12': minor
+'@kurrawongai/codemirror-lang-srl': minor
 ---
 
 Assign distinct highlight tags to RDF 1.2 delimiters and reifiers:
