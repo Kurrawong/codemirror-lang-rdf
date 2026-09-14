@@ -1,17 +1,31 @@
 import { defineConfig, devices } from '@playwright/test';
-import { existsSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { pathToFileURL } from 'node:url';
-import { resolve } from 'node:path';
+import { join, resolve } from 'node:path';
 
 /*
- * Some sandboxes ship a Chromium that Playwright did not download and cannot
- * re-download, at a revision its own manifest does not name. `PW_CHROMIUM`
- * points at such a build; where it is absent (CI, a normal checkout) the
- * browser Playwright manages is used, which is the default and the one the
- * pinned version was tested against.
+ * `PW_CHROMIUM` selects a browser explicitly. Some local environments retain
+ * a Chromium revision that differs from the Playwright package's expected
+ * revision, so look for a usable cached Chromium before falling back to
+ * Playwright's managed browser. CI installs the expected browser and does not
+ * need this fallback.
  */
-const preinstalled = process.env.PW_CHROMIUM ?? '/opt/pw-browsers/chromium';
-const executablePath = existsSync(preinstalled) ? preinstalled : undefined;
+function cachedChromium(): string | undefined {
+  const cache = join(homedir(), '.cache', 'ms-playwright');
+  if (!existsSync(cache)) return undefined;
+
+  const candidates = readdirSync(cache)
+    .filter((entry) => entry.startsWith('chromium-') && !entry.startsWith('chromium_headless_shell-'))
+    .sort()
+    .reverse()
+    .map((entry) => join(cache, entry, 'chrome-linux64', 'chrome'));
+
+  return candidates.find(existsSync);
+}
+
+const candidates = [process.env.PW_CHROMIUM, '/opt/pw-browsers/chromium', cachedChromium()];
+const executablePath = candidates.find((candidate): candidate is string => !!candidate && existsSync(candidate));
 
 /**
  * The fixture is a static page loaded over `file://`: there is no server to

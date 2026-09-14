@@ -5,7 +5,7 @@ RDF 1.2 Turtle, TriG, N-Triples, and N-Quads support for CodeMirror 6.
 ## Get started
 
 The package is not yet published on npm. See
-[local installation](https://github.com/kwong/codemirror-lang-rdf/blob/main/docs/usage.md#install-from-a-checkout)
+[local installation](https://github.com/kurrawong/codemirror-lang-rdf/blob/main/docs/usage.md#install-from-a-checkout)
 to install it and `codemirror`.
 
 In your application's browser entry module:
@@ -30,10 +30,10 @@ to check document validity.
 
 ## Documentation
 
-- [Usage and completion](https://github.com/kwong/codemirror-lang-rdf/blob/main/docs/usage.md)
-- [API reference](https://github.com/kwong/codemirror-lang-rdf/blob/main/docs/api.md#turtle-trig-n-triples-and-n-quads)
-- [Highlight tags](https://github.com/kwong/codemirror-lang-rdf/blob/main/docs/highlight-tags.md)
-- [Conformance and corpus revision](https://github.com/kwong/codemirror-lang-rdf/blob/main/docs/conformance.md)
+- [Usage and completion](https://github.com/kurrawong/codemirror-lang-rdf/blob/main/docs/usage.md)
+- [API reference](https://github.com/kurrawong/codemirror-lang-rdf/blob/main/docs/api.md#turtle-trig-n-triples-and-n-quads)
+- [Highlight tags](https://github.com/kurrawong/codemirror-lang-rdf/blob/main/docs/highlight-tags.md)
+- [Conformance and corpus revision](https://github.com/kurrawong/codemirror-lang-rdf/blob/main/docs/conformance.md)
 
 ## Licence
 

@@ -6,7 +6,7 @@ and completion for Turtle, TriG, SPARQL, and SRL.
 
 ## Demo
 
-[Try the live editor](https://kwong.github.io/codemirror-lang-rdf/)
+[Try the live editor](https://kurrawong.github.io/codemirror-lang-rdf/)
 
 | Package | Languages |
 | --- | --- |
@@ -22,7 +22,7 @@ validation diagnostics. N-Triples and N-Quads have no completion source.
 Requires Node.js 22 and pnpm 9.15.0.
 
 ```sh
-git clone https://github.com/kwong/codemirror-lang-rdf.git
+git clone https://github.com/kurrawong/codemirror-lang-rdf.git
 cd codemirror-lang-rdf
 pnpm install --frozen-lockfile
 pnpm demo
@@ -60,7 +60,7 @@ theme controls the colours.
 - [Highlight tags](docs/highlight-tags.md): shared tags and custom styles.
 - [Conformance](docs/conformance.md): syntax coverage, corpus revisions, and limitations.
 - [Development](docs/development.md): build, tests, demo, and grammar changes.
-- [Report an issue](https://github.com/kwong/codemirror-lang-rdf/issues).
+- [Report an issue](https://github.com/kurrawong/codemirror-lang-rdf/issues).
 
 ## Licence
 
