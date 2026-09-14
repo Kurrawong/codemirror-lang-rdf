@@ -203,15 +203,6 @@ WHERE {
   FILTER( ?painting NOT IN ( ex:unknown-work ) )
 }
 
-# The rule-tuples extension. Switch it off in the toolbar to see the grammar
-# still parse it while the editor stops recommending it.
-RULE {
-  TUPLE( ?painting, ?area )
-}
-WHERE {
-  ?painting ex:area ?area .
-  FILTER( ?area > 1000 )
-}
 `,
   },
 } as const satisfies Record<string, Sample>;

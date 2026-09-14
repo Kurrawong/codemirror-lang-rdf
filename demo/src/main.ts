@@ -1,13 +1,4 @@
-/**
- * The demo editor.
- *
- * Two jobs. For someone deciding whether to use these packages, it is the
- * fastest way to see what the grammars do. For someone *changing* a grammar, it
- * is the inspector the tests cannot be: the syntax tree beside the document,
- * the tag under the cursor, and the error count updating as you type — which is
- * how you find out that a token went to the wrong term long before a
- * conformance file tells you.
- */
+/** Interactive demo with syntax-tree and highlight inspectors. */
 import { EditorState, Compartment } from '@codemirror/state';
 import { EditorView, keymap, lineNumbers, highlightActiveLine, highlightActiveLineGutter, drawSelection, dropCursor, rectangularSelection, crosshairCursor, highlightSpecialChars } from '@codemirror/view';
 import { bracketMatching, foldGutter, foldKeymap, indentOnInput, indentUnit, syntaxTree } from '@codemirror/language';
@@ -19,7 +10,7 @@ import type { Tag } from '@lezer/highlight';
 
 import { nquads, ntriples, trig, turtle } from '@kurrawongai/codemirror-lang-turtle12';
 import { sparql } from '@kurrawongai/codemirror-lang-sparql12';
-import { dataBlockRanges, ruleRanges, srl, tupleRanges, variablesInDataBlocks } from '@kurrawongai/codemirror-lang-srl';
+import { dataBlockRanges, ruleRanges, srl, variablesInDataBlocks } from '@kurrawongai/codemirror-lang-srl';
 
 import { LANGUAGE_KEYS, SAMPLES, type LanguageKey } from './samples';
 import { demoTheme } from './theme';
@@ -39,7 +30,7 @@ const WORKSPACE_PREFIXES = {
 
 const languageConf = new Compartment();
 
-function extensionFor(key: LanguageKey, tuples: boolean) {
+function extensionFor(key: LanguageKey) {
   const prefixSource = WORKSPACE_PREFIXES;
   switch (key) {
     case 'turtle':
@@ -54,7 +45,7 @@ function extensionFor(key: LanguageKey, tuples: boolean) {
     case 'sparql-update':
       return sparql({ prefixSource });
     case 'srl':
-      return srl({ prefixSource, tuples });
+      return srl({ prefixSource, tuples: false });
   }
 }
 
@@ -161,8 +152,6 @@ const el = <T extends HTMLElement = HTMLElement>(id: string) => document.getElem
 
 const languageSelect = el<HTMLSelectElement>('language');
 const paletteSelect = el<HTMLSelectElement>('palette');
-const tuplesToggle = el<HTMLInputElement>('tuples');
-const tuplesField = el('tuples-field');
 const mediaTypeOut = el('media-type');
 const statusOut = el('status');
 const cursorOut = el('cursor');
@@ -171,7 +160,6 @@ const srlOut = el('srl-facts');
 const srlPanel = el('srl-panel');
 
 let current: LanguageKey = 'turtle';
-let tuples = true;
 
 const updateInspector = EditorView.updateListener.of((update) => {
   if (update.docChanged || update.selectionSet || update.viewportChanged) render(update.view);
@@ -209,7 +197,7 @@ const view = new EditorView({
         indentWithTab,
       ]),
       demoTheme,
-      languageConf.of(extensionFor(current, tuples)),
+      languageConf.of(extensionFor(current)),
       updateInspector,
     ],
   }),
@@ -284,11 +272,7 @@ function renderTree(v: EditorView, rows: TreeRow[], truncated: boolean, pos: num
   treeOut.querySelector('.is-current')?.scrollIntoView({ block: 'nearest' });
 }
 
-/**
- * The tree facts `@kurrawongai/codemirror-lang-srl` exports for an application to build on:
- * rule and data-block spans for a gutter, tuple spans for the extension gate,
- * and variables in a ground DATA block for a linter.
- */
+/** Rule and data-block spans, plus variables in ground DATA blocks. */
 function renderSrlFacts(v: EditorView) {
   if (current !== 'srl') {
     srlPanel.hidden = true;
@@ -297,7 +281,6 @@ function renderSrlFacts(v: EditorView) {
   srlPanel.hidden = false;
   const rules = ruleRanges(v.state);
   const data = dataBlockRanges(v.state);
-  const tupleSpans = tupleRanges(v.state);
   const badVars = variablesInDataBlocks(v.state);
 
   const lineOf = (from: number) => v.state.doc.lineAt(from).number;
@@ -305,33 +288,23 @@ function renderSrlFacts(v: EditorView) {
     field('rules', rules.length ? rules.map((r) => `line ${lineOf(r.from)}`).join(', ') : 'none'),
     field('DATA blocks', data.length ? data.map((r) => `line ${lineOf(r.from)}`).join(', ') : 'none'),
     field(
-      'tuples',
-      tupleSpans.length
-        ? tupleSpans.map((r) => `${r.kind === 'TupleTemplate' ? 'head' : 'body'} @ line ${lineOf(r.from)}`).join(', ')
-        : 'none'
-    ),
-    field(
       'variables in DATA',
       badVars.length ? badVars.map((x) => `${x.name} @ line ${lineOf(x.from)}`).join(', ') : 'none — all ground'
     )
   );
   srlOut
     .querySelectorAll('.field')
-    [3]?.classList.toggle('is-warning', badVars.length > 0);
-  if (!tuples && tupleSpans.length) {
-    srlOut.querySelectorAll('.field')[2]?.classList.add('is-warning');
-  }
+    [2]?.classList.toggle('is-warning', badVars.length > 0);
 }
 
 function selectLanguage(key: LanguageKey, { resetDoc = true } = {}) {
   current = key;
   languageSelect.value = key;
-  tuplesField.hidden = key !== 'srl';
   mediaTypeOut.textContent = SAMPLES[key].mediaType;
 
   view.dispatch({
     changes: resetDoc ? { from: 0, to: view.state.doc.length, insert: SAMPLES[key].doc } : undefined,
-    effects: languageConf.reconfigure(extensionFor(key, tuples)),
+    effects: languageConf.reconfigure(extensionFor(key)),
   });
   render(view);
 }
@@ -370,12 +343,6 @@ for (const key of LANGUAGE_KEYS) {
 }
 
 languageSelect.addEventListener('change', () => selectLanguage(languageSelect.value as LanguageKey));
-tuplesToggle.addEventListener('change', () => {
-  tuples = tuplesToggle.checked;
-  // Keep the document: the point is that switching the flag does not change
-  // what parses, only what the editor recommends.
-  selectLanguage(current, { resetDoc: false });
-});
 
 el<HTMLButtonElement>('reset').addEventListener('click', () => selectLanguage(current));
 
