@@ -6,7 +6,7 @@ folding, indentation, completion, and helpers for locating rules and data blocks
 ## Get started
 
 The package is not yet published on npm. See
-[local installation](https://github.com/recalcitrantsupplant/codemirror-lang-rdf/blob/main/docs/usage.md#install-from-a-checkout)
+[local installation](https://github.com/kwong/codemirror-lang-rdf/blob/main/docs/usage.md#install-from-a-checkout)
 to install it and `codemirror`.
 
 In your application's browser entry module:
@@ -31,10 +31,10 @@ create diagnostics.
 
 ## Documentation
 
-- [Usage and completion](https://github.com/recalcitrantsupplant/codemirror-lang-rdf/blob/main/docs/usage.md)
-- [API and tree helpers](https://github.com/recalcitrantsupplant/codemirror-lang-rdf/blob/main/docs/api.md#srl)
-- [Highlight tags](https://github.com/recalcitrantsupplant/codemirror-lang-rdf/blob/main/docs/highlight-tags.md)
-- [Conformance and corpus revision](https://github.com/recalcitrantsupplant/codemirror-lang-rdf/blob/main/docs/conformance.md)
+- [Usage and completion](https://github.com/kwong/codemirror-lang-rdf/blob/main/docs/usage.md)
+- [API and tree helpers](https://github.com/kwong/codemirror-lang-rdf/blob/main/docs/api.md#srl)
+- [Highlight tags](https://github.com/kwong/codemirror-lang-rdf/blob/main/docs/highlight-tags.md)
+- [Conformance and corpus revision](https://github.com/kwong/codemirror-lang-rdf/blob/main/docs/conformance.md)
 
 ## Licence
 
