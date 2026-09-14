@@ -1,14 +1,12 @@
 # Highlight tags
 
-The three grammars in this repository tag the same construct with the same
-`@lezer/highlight` tag, so an application can keep **one** `HighlightStyle` for
-Turtle, TriG, N-Triples, N-Quads, SPARQL and SRL. A style written against this
-table will not need a per-language variant.
+All six languages use the tags below from `@lezer/highlight`. Applications
+can use one `HighlightStyle` across the packages. The packages do not define
+colours.
 
-The table is not documentation of what the code happens to do: it is the
-specification the code is tested against. `test/highlight-conventions.test.ts`
-asserts every row below against every grammar that has the construct, so a tag
-cannot drift in one grammar without failing the build.
+[Highlight convention tests](../test/highlight-conventions.test.ts) check
+representative constructs in the applicable languages and check that the
+documented and tested tag sets agree.
 
 | Construct | Tag |
 | --- | --- |
@@ -25,82 +23,72 @@ cannot drift in one grammar without failing the build.
 | `{`, `}` | `brace` |
 | `[`, `]` | `squareBracket` |
 | `(`, `)` | `paren` |
-| `<<`, `>>` — a reified triple | `special(angleBracket)` |
-| `<<(`, `)>>` — a triple term | `special(paren)` |
-| `{\|`, `\|}` — an annotation block | `special(brace)` |
-| `~` — a reifier | `special(operator)` |
-| Everything *inside* `<< … >>`, `<<( … )>>` or `{\| … \|}` | `quote`, in addition to its own tag |
+| `<<`, `>>` (reified triple) | `special(angleBracket)` |
+| `<<(`, `)>>` (triple term) | `special(paren)` |
+| `{\|`, `\|}` (annotation block) | `special(brace)` |
+| `~` (reifier) | `special(operator)` |
+| Tokens within reified triples, triple terms, and annotation blocks | `quote`, in addition to their own tags |
 | `:=`, arithmetic and comparison operators | `operator` |
 | `;`, `,` | `separator` |
 | `.` | `punctuation` |
 | Comments | `comment` |
 
-## Notes on the choices
+## Style RDF 1.2 delimiters
 
-**An IRI and a prefixed name are tagged differently but denote the same thing.**
-`url` and `namespace` are separate rows so a style *may* distinguish them; the
-app this was built for deliberately colours them the same, because `:rel` and
-`<http://ex/rel>` name the same predicate and colouring them differently would
-suggest otherwise.
-
-**A blank node is `propertyName`.** Not an obvious choice on its own — it is the
-tag the `@codemirror/legacy-modes` Turtle mode used, and keeping it means an
-existing style keeps working when it swaps that mode for these grammars.
-
-**A datatype IRI is `typeName`, not `url`.** Inside `^^…` the IRI qualifies the
-literal rather than being a term the document is about, so it takes the
-de-emphasised tag. The grammars implement this with a parent-path rule
-(`Datatype/IRIRef`), which is more specific than the bare token rule and
-therefore wins.
-
-**Brackets are split, and the RDF 1.2 ones are split further.** `squareBracket`
-and `paren` are separate from `brace` because CodeMirror's own default style
-separates them, and a style that wants them uniform can list all three in one
-rule — whereas a grammar that tagged them all `brace` would make the
-distinction unrecoverable.
-
-The same argument applies with more force to the 1.2 term brackets.
-`<< s p o >>` and `<<( s p o )>>` differ by one character and mean quite
-different things — a statement you can refer to, versus an object that *is* a
-triple — so a style that cannot separate them cannot help a reader see the
-difference. Each is tagged `special()` of the standard tag its glyphs actually
-are:
+This browser entry module defines separate colours for reified-triple,
+triple-term, and annotation delimiters. Install `codemirror`,
+`@codemirror/language`, and `@lezer/highlight` alongside the language package.
 
 ```js
+import { basicSetup, EditorView } from 'codemirror';
+import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { tags as t } from '@lezer/highlight';
+import { turtle } from 'codemirror-lang-turtle12';
 
-HighlightStyle.define([
-  { tag: t.special(t.angleBracket), color: 'var(--reified)' },   // << … >>
-  { tag: t.special(t.paren),        color: 'var(--tripleterm)' },// <<( … )>>
-  { tag: t.special(t.brace),        color: 'var(--annotation)' },// {| … |}
-  { tag: t.special(t.operator),     color: 'var(--reifier)' },   // ~
+const rdfStyle = HighlightStyle.define([
+  { tag: t.special(t.angleBracket), color: '#9c304b' },
+  { tag: t.special(t.paren), color: '#176b50' },
+  { tag: t.special(t.brace), color: '#6850a1' },
+  { tag: t.special(t.operator), color: '#9c304b' },
 ]);
+
+new EditorView({
+  parent: document.body,
+  doc: 'PREFIX ex: <http://example.org/>\nex:s ex:p <<( ex:a ex:b ex:c )>> .',
+  extensions: [
+    basicSetup,
+    turtle(),
+    syntaxHighlighting(rdfStyle),
+  ],
+});
 ```
 
-**The construct's contents are tagged too, not just its brackets.** Every token
-inside a reified triple, a triple term or an annotation block also carries
-`quote` — *in addition* to its own tag, so an IRI in there is `quote url` and a
-style can shade the whole construct while its terms keep their colours:
+This style only assigns colours to the listed tags. Add rules for other tags
+when defining a complete theme.
 
-```js
-{ tag: t.quote, backgroundColor: 'var(--reification-tint)' },
-```
+## Style construct contents
 
-Colouring only the brackets tells you where a construct starts; tagging the
-contents tells you how far it reaches, which is the harder thing to see when
-`<< … >>` nests. One tag covers all three constructs rather than three, because
-the brackets already say which kind it is; a style that wants them apart can
-add its own props to the exported parser (`turtleProps`, `sparqlProps`).
+Tokens within reified triples, triple terms, and annotation blocks also carry
+`quote`. For example, an IRI retains `url` while receiving `quote`. Add a rule
+such as `{ tag: t.quote, backgroundColor: '#eef3f0' }` to `HighlightStyle.define()`
+to shade these constructs. A style without a `quote` rule retains its existing
+output; the highlight convention tests check this behaviour.
 
-**Nothing has to know about this.** `special(x)` derives from `x`, and
-`angleBracket`, `paren` and `brace` all derive from `bracket`, so a style that
-handles only `bracket` — or only `brace`, `paren` and `angleBracket` — colours
-every one of them with no change. The specific tags are there for a style that
-wants the distinction, not a requirement on one that does not. The same goes
-for `quote`: a style that never mentions it produces byte-identical output to
-one written before these tags existed. Both properties are asserted in
-`test/highlight-conventions.test.ts` alongside the table itself.
+All three constructs share the region tag. For custom parser props, the
+packages export `turtleProps` and `sparqlProps`; see [API reference](api.md).
 
-**`.` is `punctuation`, `;` and `,` are `separator`.** In Turtle the dot ends a
-statement while the other two continue one, which is the same split
-`@lezer/highlight` draws between the two tags.
+## Tag behaviour
+
+`special(x)` derives from `x`. A rule for `bracket` covers the RDF 1.2
+delimiters through their `angleBracket`, `paren`, and `brace` parents.
+A rule for `operator` covers `~`. Rules for the specific `special(...)` tags
+allow different colours for those constructs.
+
+`url` and `namespace` distinguish the written forms of IRIs and prefixed
+names. They can denote the same IRI; applications can assign them the same
+colour. Datatype IRIs and prefixed names following `^^` use `typeName`,
+as does the `^^` marker.
+
+Blank nodes use `propertyName`. Ordinary braces, square brackets, and
+parentheses have separate tags. A Turtle statement's terminating dot uses
+`punctuation`; semicolons and commas use `separator`.

@@ -142,10 +142,6 @@ jobs:
           cache: pnpm
           registry-url: https://registry.npmjs.org
       - run: pnpm install --frozen-lockfile
-      # Needs Settings → Actions → General → Workflow permissions →
-      # "Allow GitHub Actions to create and approve pull requests". Without it
-      # this step versions the packages, pushes `changeset-release/main`, and
-      # then fails on the PR call with a permissions error.
       - name: Open a release PR, or publish one that has been merged
         uses: changesets/action@v1
         with:

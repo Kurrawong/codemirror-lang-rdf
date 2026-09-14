@@ -1,17 +1,9 @@
 {
   "$comment": [
-    "Conformance entries this grammar cannot decide, with the reason for each.",
-    "",
-    "All are negative syntax tests. Lezer is an error-tolerant grammar for",
-    "painting and navigation; deciding whether a query is *valid* belongs to a",
-    "parser that also resolves scopes, arities and code points. Over-accepting",
-    "here costs a reader nothing — the document still colours and folds",
-    "correctly — whereas encoding these would make the grammar larger, slower,",
-    "and in two cases ambiguous.",
-    "",
-    "The list is asserted exactly: an entry that starts passing must be removed",
-    "here, and an entry that stops passing is a failing build. Add one only",
-    "with a reason that says why the grammar cannot decide it."
+    "Negative syntax tests accepted by the grammar. See docs/conformance.md.",
+    "Each entry describes a constraint the current parser does not enforce.",
+    "Tests fail for unlisted mismatches, stale entries, and unknown case names.",
+    "Review the cause of each mismatch before changing this list."
   ],
   "sparql11-query": {
     "test_43": "GROUP BY with SELECT * — a scoping rule over the whole query, not a shape.",
@@ -52,7 +44,7 @@
   "sparql12-version": {},
   "sparql12-triple-terms-positive": {},
   "sparql12-triple-terms-negative": {
-    "annotated-reifier-path": "An annotation on an object reached through a property path. The restriction distinguishes a bare-predicate verb from a property path, and a single IRI is both, so an LR grammar cannot decide which production applies without an ambiguity split — see README.",
+    "annotated-reifier-path": "An annotation on an object reached through a property path. The current grammar does not enforce this restriction; see docs/conformance.md.",
     "annotated-reifier-optional": "As above (`?` path modifier).",
     "annotated-anonreifier-path": "As above.",
     "annotated-anonreifier-optional": "As above.",

@@ -4,25 +4,17 @@
 'codemirror-lang-srl': minor
 ---
 
-First release: Lezer grammars and CodeMirror 6 language support for RDF 1.2,
-SPARQL 1.2 and SRL.
+Add CodeMirror 6 language support and Lezer parsers for RDF 1.2, SPARQL 1.2,
+and SRL.
 
-**`codemirror-lang-turtle12`** — Turtle, TriG, N-Triples and N-Quads, four
-entry points over one token set. RDF 1.2 triple terms, reified triples,
-reifiers, annotation blocks, directional language tags and `VERSION`. Folding,
-indentation and prefix-aware completion.
+- `codemirror-lang-turtle12`: Turtle, TriG, N-Triples, and N-Quads parsers,
+  with folding and indentation. Turtle and TriG include prefix completion.
+- `codemirror-lang-sparql12`: SPARQL query and update parsing, including
+  property paths, aggregates, federation, and RDF 1.2 terms. Includes folding,
+  indentation, and keyword, prefix, and variable completion.
+- `codemirror-lang-srl`: SRL support using the SPARQL grammar, with rule and
+  data-block folding, completion, and helpers for rule, tuple, and variable ranges.
 
-**`codemirror-lang-sparql12`** — SPARQL 1.2 query and update, all of 1.1
-included: property paths, federation, aggregates, update sequences. The 1.2
-additions are `VERSION`, the four bracketed term forms with their per-position
-subject restrictions, and the `TRIPLE`/`isTRIPLE`/`SUBJECT`/`PREDICATE`/
-`OBJECT`/`LANGDIR`/`hasLANG`/`hasLANGDIR`/`STRLANGDIR` built-ins. Keywords are
-case-insensitive and not reserved; built-in arity is in the grammar.
-
-**`codemirror-lang-srl`** — SRL on the same grammar, entered at a second
-`@top`, so the two languages cannot disagree about a term. Folding per rule and
-per `DATA` block, and tree helpers for rule spans, tuple spans and variables
-that appear inside a ground `DATA` block.
-
-Pinned against the RDF 1.2 and SPARQL 1.2 editor's drafts and the SRL draft as
-of the vendored W3C syntax suites; each package's README names the revision.
+These editor parsers accept some invalid documents. See the
+[conformance documentation](https://github.com/recalcitrantsupplant/codemirror-lang-rdf/blob/main/docs/conformance.md)
+for tested syntax, corpus revisions, and known limitations.

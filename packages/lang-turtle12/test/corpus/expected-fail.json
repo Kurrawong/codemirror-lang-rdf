@@ -1,16 +1,9 @@
 {
   "$comment": [
-    "Conformance entries this grammar cannot decide, with the reason for each.",
-    "",
-    "Every entry here is a negative syntax test that a context-free token DFA",
-    "cannot reject: the constraint is on a value, not on a shape. Lezer is an",
-    "error-tolerant grammar for painting and navigation, and the parser that",
-    "decides whether a document is valid is a separate concern; a grammar that",
-    "tried to encode these would be larger, slower and still incomplete.",
-    "",
-    "The list is asserted exactly — a test that starts passing must be removed",
-    "here, and a test that stops passing is a failing build, not a new entry.",
-    "Add an entry only with a reason that says why the grammar cannot decide it."
+    "Negative syntax tests accepted by the grammar. See docs/conformance.md.",
+    "These cases require value checks not implemented by the current parser.",
+    "Tests fail for unlisted mismatches, stale entries, and unknown case names.",
+    "Review the cause of each mismatch before changing this list."
   ],
   "turtle12": {
     "turtle12-surrogate-pair-bad-01": "UCHAR pair validity: the escapes are lexically well-formed and only their combined code point is invalid.",

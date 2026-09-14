@@ -1,18 +1,13 @@
 {
   "$comment": [
-    "Conformance entries this grammar cannot decide, with the reason for each.",
-    "",
-    "All five are negative syntax tests, and four of them have a better answer",
-    "than a parse error: `variablesInDataBlocks(state)` hands a linter the span",
-    "of the offending variable, so `DATA { :s :p ?o }` can underline `?o` and",
-    "say why instead of marking the whole block red.",
-    "",
-    "The list is asserted exactly: an entry that starts passing must be removed",
-    "here, and an entry that stops passing is a failing build."
+    "Negative syntax tests accepted by the grammar. See docs/conformance.md.",
+    "variablesInDataBlocks(state) returns variable ranges for four of these",
+    "cases. The application must create and display any diagnostics.",
+    "Tests fail for unlisted mismatches, stale entries, and unknown case names."
   ],
   "srl-syntax": {
     "test_113": "An undeclared prefix. Whether `:s` resolves is a question about the prologue, not about the shape of the document.",
-    "test_122": "A variable as the object of a ground DATA triple. Expressing this needs a third parallel triples hierarchy for one rule; `variablesInDataBlocks()` reports it with the variable's own span instead.",
+    "test_122": "A variable as the object of a ground DATA triple. The grammar accepts it; variablesInDataBlocks() returns its span.",
     "test_123": "A variable as the predicate of a ground DATA triple, as above.",
     "test_124": "A variable as the subject of a ground DATA triple, as above.",
     "test_126": "A variable reifier in a ground DATA triple, as above."
