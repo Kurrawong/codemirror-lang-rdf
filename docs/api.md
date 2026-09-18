@@ -106,6 +106,7 @@ The package also exports `SrlOptions` and `TupleRange`:
 ```ts
 interface SrlOptions extends CompletionOptions {
   tuples?: boolean;
+  sparqlConversions?: boolean;
 }
 
 interface TupleRange {

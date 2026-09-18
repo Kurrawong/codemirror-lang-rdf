@@ -2,6 +2,10 @@
 
 RDF 1.2 Turtle, TriG, N-Triples, and N-Quads support for CodeMirror 6.
 
+The RDF 1.2 specifications targeted by this package are W3C Working Drafts,
+not final Recommendations. Their syntax may change; see the project's
+[standards status](https://github.com/kurrawong/codemirror-lang-rdf#standards-status).
+
 ## Get started
 
 ```sh

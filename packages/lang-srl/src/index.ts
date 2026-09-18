@@ -3,6 +3,12 @@ import type { EditorState } from '@codemirror/state';
 import type { LRParser } from '@lezer/lr';
 import { parser as sparqlParser, sparqlProps, sparqlCompletionSource } from '@kurrawongai/codemirror-lang-sparql12';
 import type { CompletionOptions } from '@kurrawongai/codemirror-lang-sparql12';
+import { srlSparqlConversionLinter } from './conversion-lint';
+
+export { sparqlToSrl, srlToSparql } from './convert';
+export type { ConversionDiagnostic, ConversionResult, SrlExportForm, SrlToSparqlOptions } from './convert';
+export { sparqlBindConversions, sparqlNotExistsConversions, sparqlOperationConversions, srlConformanceDiagnostics, srlSparqlConversionLinter } from './conversion-lint';
+export type { SparqlBindConversion, SparqlNotExistsConversion, SparqlOperationConversion, SrlConformanceDiagnostic, SrlSparqlConversionLinterOptions } from './conversion-lint';
 
 export type { CompletionOptions, PrefixMap, PrefixSource } from '@kurrawongai/codemirror-lang-sparql12';
 export { documentPrefixes, documentVariables, knownPrefixes, srlKeywords } from '@kurrawongai/codemirror-lang-sparql12';
@@ -22,6 +28,8 @@ export interface SrlOptions extends CompletionOptions {
    * Defaults to `true`.
    */
   tuples?: boolean;
+  /** Enable conversion actions for invalid SPARQL syntax in SRL. Defaults to false. */
+  sparqlConversions?: boolean;
 }
 
 /**
@@ -126,6 +134,7 @@ export function variablesInDataBlocks(state: EditorState): { from: number; to: n
 export function srl(options: SrlOptions = {}): LanguageSupport {
   const source = sparqlCompletionSource({ ...options, dialect: 'srl' });
   const tuples = options.tuples ?? true;
+  const sparqlConversions = options.sparqlConversions ?? false;
   return new LanguageSupport(srlLanguage, [
     srlLanguage.data.of({
       autocomplete: tuples
@@ -135,6 +144,13 @@ export function srl(options: SrlOptions = {}): LanguageSupport {
             if (!result) return null;
             return { ...result, options: result.options.filter((o) => o.label !== 'TUPLE') };
           },
+    }),
+    // Conformance errors are always present; the optional helpers only add
+    // exact conversion actions for the two spellings we can translate.
+    srlSparqlConversionLinter({
+      bindAction: sparqlConversions,
+      notExistsAction: sparqlConversions,
+      operationAction: sparqlConversions,
     }),
   ]);
 }

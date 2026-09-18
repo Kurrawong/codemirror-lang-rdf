@@ -44,11 +44,12 @@
   "dependencies": {
     "@codemirror/autocomplete": "^6.18.0",
     "@codemirror/language": "^6.10.0",
+    "@codemirror/lint": "^6.8.5",
     "@codemirror/state": "^6.4.0",
+    "@kurrawongai/codemirror-lang-sparql12": "workspace:^",
     "@lezer/common": "^1.2.0",
     "@lezer/highlight": "^1.2.0",
-    "@lezer/lr": "^1.4.0",
-    "@kurrawongai/codemirror-lang-sparql12": "workspace:^"
+    "@lezer/lr": "^1.4.0"
   },
   "devDependencies": {
     "esbuild": "^0.28.2",

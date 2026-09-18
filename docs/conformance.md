@@ -45,7 +45,8 @@ Language specifications: [Turtle](https://www.w3.org/TR/rdf12-turtle/),
 [N-Triples](https://www.w3.org/TR/rdf12-n-triples/),
 [N-Quads](https://www.w3.org/TR/rdf12-n-quads/),
 [SPARQL query](https://www.w3.org/TR/sparql12-query/), and
-[SPARQL update](https://www.w3.org/TR/sparql12-update/).
+[SPARQL update](https://www.w3.org/TR/sparql12-update/), and
+[SPARQL-RL](https://www.w3.org/TR/sparql12-rl/).
 These links follow the published specifications and can change independently
 of the corpus pins.
 

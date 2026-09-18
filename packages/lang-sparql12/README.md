@@ -3,6 +3,10 @@
 SPARQL 1.2 query and update support for CodeMirror 6, with highlighting,
 folding, indentation, and keyword, prefix, and variable completion.
 
+The SPARQL 1.2 specifications targeted by this package are W3C Working Drafts,
+not final Recommendations. Their syntax may change; see the project's
+[standards status](https://github.com/kurrawong/codemirror-lang-rdf#standards-status).
+
 ## Get started
 
 ```sh
