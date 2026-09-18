@@ -1,6 +1,6 @@
 {
   "name": "@kurrawongai/codemirror-lang-turtle12",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "RDF 1.2 Turtle, TriG, N-Triples and N-Quads language support for CodeMirror 6",
   "license": "MIT",
   "publishConfig": {
