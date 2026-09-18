@@ -1,5 +1,13 @@
 # @kurrawongai/codemirror-lang-sparql12
 
+## 0.3.0
+
+### Patch Changes
+
+- d2f1f8a: Note in each README that the targeted RDF 1.2 and SPARQL 1.2 specifications are
+  W3C Working Drafts rather than final Recommendations, and link to the project's
+  standards status table.
+
 ## 0.2.0
 
 ### Minor Changes
