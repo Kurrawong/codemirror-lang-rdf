@@ -17,8 +17,7 @@ export const SAMPLES = {
   turtle: {
     label: 'Turtle',
     mediaType: 'text/turtle',
-    doc: `# RDF 1.2 Turtle. Try folding the [ … ] and the ( … ).
-VERSION "1.2"
+    doc: `VERSION "1.2"
 PREFIX ex:   <http://example.org/>
 PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
 @prefix dct: <http://purl.org/dc/terms/> .
@@ -52,8 +51,7 @@ ex:vasari ex:asserts <<( ex:mona-lisa ex:painter ex:leonardo )>> .
   trig: {
     label: 'TriG',
     mediaType: 'application/trig',
-    doc: `# RDF 1.2 TriG. Each graph block folds on its own.
-PREFIX ex:  <http://example.org/>
+    doc: `PREFIX ex:  <http://example.org/>
 PREFIX dct: <http://purl.org/dc/terms/>
 
 GRAPH ex:louvre {
@@ -79,10 +77,7 @@ ex:vasari {
   ntriples: {
     label: 'N-Triples',
     mediaType: 'application/n-triples',
-    doc: `# RDF 1.2 N-Triples: a strict subset with its own entry point.
-# A prefixed name or a ";" list here is an error, not a tolerated shorthand —
-# uncomment the last line to see it flagged.
-<http://example.org/mona-lisa> <http://purl.org/dc/terms/title> "Mona Lisa"@en .
+    doc: `<http://example.org/mona-lisa> <http://purl.org/dc/terms/title> "Mona Lisa"@en .
 <http://example.org/mona-lisa> <http://example.org/description> "الموناليزا"@ar--rtl .
 <http://example.org/vasari> <http://example.org/asserts> <<( <http://example.org/mona-lisa> <http://example.org/painter> <http://example.org/leonardo> )>> .
 _:b0 <http://example.org/note> "blank subjects are fine" .
@@ -94,8 +89,7 @@ _:b0 <http://example.org/note> "blank subjects are fine" .
   nquads: {
     label: 'N-Quads',
     mediaType: 'application/n-quads',
-    doc: `# RDF 1.2 N-Quads: N-Triples plus a graph label.
-<http://example.org/mona-lisa> <http://purl.org/dc/terms/title> "Mona Lisa"@en <http://example.org/louvre> .
+    doc: `<http://example.org/mona-lisa> <http://purl.org/dc/terms/title> "Mona Lisa"@en <http://example.org/louvre> .
 <http://example.org/mona-lisa> <http://example.org/height> "77.0"^^<http://www.w3.org/2001/XMLSchema#decimal> <http://example.org/louvre> .
 <http://example.org/vasari> <http://example.org/asserts> <<( <http://example.org/mona-lisa> <http://example.org/painter> <http://example.org/leonardo> )>> _:g1 .
 `,
@@ -104,9 +98,7 @@ _:b0 <http://example.org/note> "blank subjects are fine" .
   sparql: {
     label: 'SPARQL 1.2 (query)',
     mediaType: 'application/sparql-query',
-    doc: `# SPARQL 1.2. Keywords are case-insensitive and not reserved:
-# ?select is a variable and select:p would be a prefixed name.
-VERSION "1.2"
+    doc: `VERSION "1.2"
 PREFIX ex:   <http://example.org/>
 PREFIX dct:  <http://purl.org/dc/terms/>
 
@@ -146,8 +138,7 @@ LIMIT 10
   'sparql-update': {
     label: 'SPARQL 1.2 (update)',
     mediaType: 'application/sparql-update',
-    doc: `# The same grammar covers update. A trailing ";" is allowed; ";;" is not.
-PREFIX ex:  <http://example.org/>
+    doc: `PREFIX ex:  <http://example.org/>
 PREFIX dct: <http://purl.org/dc/terms/>
 
 INSERT DATA {
@@ -171,9 +162,7 @@ DROP SILENT GRAPH ex:staging
   srl: {
     label: 'SRL',
     mediaType: 'application/srl',
-    doc: `# SRL, on the same grammar as SPARQL — entered at a second @top rule,
-# so a term can never mean two things. Note ":=" is one token.
-PREFIX ex:   <http://example.org/>
+    doc: `PREFIX ex:   <http://example.org/>
 PREFIX dct:  <http://purl.org/dc/terms/>
 
 DATA {
@@ -198,11 +187,43 @@ RULE ex:unattributed {
 WHERE {
   ?painting a ex:Painting .
 
-  # Bare NOT is SRL's negation. It does not collide with NOT EXISTS or NOT IN.
   NOT DATA { ?painting ex:painter ?anyone }
   FILTER( ?painting NOT IN ( ex:unknown-work ) )
 }
 
+`,
+  },
+
+  'srl-conversion': {
+    label: 'SRL: convert SPARQL snippets',
+    mediaType: 'application/srl',
+    doc: `PREFIX ex: <http://example.org/>
+
+RULE ex:legacy-step {
+  ?painting ex:nextArea ?nextArea
+}
+WHERE {
+  ?painting ex:area ?area .
+  BIND(?area + 1 AS ?nextArea)
+  FILTER NOT EXISTS { ?painting ex:archived true }
+}
+`,
+  },
+
+  'sparql-conversion': {
+    label: 'SPARQL: convert document to SRL Rule',
+    mediaType: 'application/sparql-query',
+    doc: `PREFIX ex: <http://example.org/>
+
+CONSTRUCT {
+  ?painting ex:nextArea ?nextArea
+}
+WHERE {
+  ?painting ex:area ?area .
+  BIND(?area + 1 AS ?nextArea)
+  FILTER(BOUND(?nextArea))
+  FILTER NOT EXISTS { ?painting ex:archived true }
+}
 `,
   },
 } as const satisfies Record<string, Sample>;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dataBlockRanges, ruleRanges, srl, tupleRanges, variablesInDataBlocks } from '../dist/index.js';
+import { dataBlockRanges, ruleRanges, sparqlBindConversions, sparqlNotExistsConversions, sparqlOperationConversions, sparqlToSrl, srl, srlConformanceDiagnostics, srlToSparql, tupleRanges, variablesInDataBlocks } from '../dist/index.js';
 import {
   completionLabels,
   completionsAt,
@@ -152,5 +152,209 @@ describe('what an application needs from the tree', () => {
     // `WHERE DATA { … }` is a rule body, not a ground data block.
     expect(variablesInDataBlocks(state)).toEqual([]);
     expect(dataBlockRanges(state)).toEqual([]);
+  });
+});
+
+describe('explicit SRL/SPARQL conversion', () => {
+  it('lowers SET and NOT to their SPARQL equivalents', () => {
+    const result = srlToSparql('RULE { ?s :out ?x } WHERE { ?s :in ?n . SET ( ?x := ?n + 1 ) NOT { ?s :hidden true } }');
+    expect(result.diagnostics).toEqual([]);
+    expect(result.text).toContain('CONSTRUCT { ?s :out ?x } WHERE');
+    expect(result.text).toContain('BIND(?n + 1 AS ?x) FILTER(BOUND(?x))');
+    expect(result.text).toContain('FILTER NOT EXISTS { ?s :hidden true }');
+  });
+
+  it('exports a rule as an INSERT update when requested', () => {
+    const result = srlToSparql('RULE { ?s :out ?x } WHERE { ?s :in ?x }', { form: 'insert' });
+    expect(result).toEqual({ text: 'INSERT { ?s :out ?x } WHERE { ?s :in ?x }\n', diagnostics: [] });
+  });
+
+  it('exports a DATA selection as either a construct or INSERT DATA operation', () => {
+    const source = 'DATA { :hardcoded :p 1 }';
+    expect(srlToSparql(source)).toEqual({ text: 'CONSTRUCT { :hardcoded :p 1 } WHERE {}\n', diagnostics: [] });
+    expect(srlToSparql(source, { form: 'insert' })).toEqual({ text: 'INSERT DATA { :hardcoded :p 1 }\n', diagnostics: [] });
+  });
+
+  it('preserves a named SRL rule as an expanded IRI comment during export', () => {
+    const result = srlToSparql('PREFIX ex: <http://example.org/>\nRULE ex:named { ?s :p ?o } WHERE {}');
+    expect(result).toEqual({
+      text: 'PREFIX ex: <http://example.org/>\n# SRL rule IRI: <http://example.org/named>\nCONSTRUCT { ?s :p ?o } WHERE {}\n',
+      diagnostics: [],
+    });
+  });
+
+  it('does not recover the SRL rule IRI comment during SPARQL import', () => {
+    const result = sparqlToSrl('# SRL rule IRI: <http://example.org/named>\nCONSTRUCT { ?s :p ?o } WHERE {}');
+    expect(result).toEqual({ text: '# SRL rule IRI: <http://example.org/named>\nRULE { ?s :p ?o } WHERE {}\n', diagnostics: [] });
+  });
+
+  it('raises BIND and its guard back to SET', () => {
+    const result = sparqlToSrl('CONSTRUCT { ?s :out ?x } WHERE { ?s :in ?n . BIND(?n + 1 AS ?x) FILTER(BOUND(?x)) }');
+    expect(result.diagnostics).toEqual([]);
+    expect(result.text).toContain('RULE { ?s :out ?x } WHERE');
+    expect(result.text).toContain('SET ( ?x := ?n + 1 )');
+    expect(result.text).not.toContain('BOUND');
+  });
+
+  it('removes the whole standalone BOUND guard line', () => {
+    const result = sparqlToSrl(`CONSTRUCT { ?s :out ?x } WHERE {
+  ?s :in ?n .
+  BIND(?n + 1 AS ?x)
+  FILTER(BOUND(?x))
+  FILTER(?n > 0)
+}`);
+    expect(result.diagnostics).toEqual([]);
+    expect(result.text).toContain('  SET ( ?x := ?n + 1 )\n  FILTER(?n > 0)');
+    expect(result.text).not.toContain('\n\n');
+  });
+
+  it('raises FILTER NOT EXISTS back to SRL NOT', () => {
+    const result = sparqlToSrl('CONSTRUCT { ?s :out true } WHERE { ?s :in true . FILTER NOT EXISTS { ?s :hidden true } }');
+    expect(result.diagnostics).toEqual([]);
+    expect(result.text).toContain('NOT { ?s :hidden true }');
+    expect(result.text).not.toContain('FILTER NOT EXISTS');
+  });
+
+  it('imports INSERT WHERE and INSERT DATA into SRL', () => {
+    expect(sparqlToSrl('INSERT { ?s :out ?x } WHERE { ?s :in ?x }')).toEqual({
+      text: 'RULE { ?s :out ?x } WHERE { ?s :in ?x }\n',
+      diagnostics: [],
+    });
+    expect(sparqlToSrl('INSERT DATA { :hardcoded :p 1 }')).toEqual({
+      text: 'DATA { :hardcoded :p 1 }\n',
+      diagnostics: [],
+    });
+  });
+
+  it('returns a location for SPARQL that SRL cannot express', () => {
+    const source = 'CONSTRUCT { ?s :p ?o } WHERE { { ?s :p ?o } UNION { ?s :q ?o } }';
+    const result = sparqlToSrl(source);
+    expect(result.text).toBeUndefined();
+    expect(result.diagnostics[0]).toMatchObject({ from: source.indexOf('{ ?s :p ?o } UNION'), message: 'GroupOrUnionGraphPattern cannot be represented in SRL.' });
+  });
+
+  it.each([
+    ['UNION', 'CONSTRUCT { ?s :out ?o } WHERE { { ?s :p ?o } UNION { ?s :q ?o } }'],
+    ['OPTIONAL', 'CONSTRUCT { ?s :out ?o } WHERE { ?s :p ?o OPTIONAL { ?s :q ?o } }'],
+    ['MINUS', 'CONSTRUCT { ?s :out ?o } WHERE { ?s :p ?o MINUS { ?s :q ?o } }'],
+    ['GRAPH', 'CONSTRUCT { ?s :out ?o } WHERE { GRAPH :g { ?s :p ?o } }'],
+    ['SERVICE', 'CONSTRUCT { ?s :out ?o } WHERE { SERVICE <http://example.org/sparql> { ?s :p ?o } }'],
+    ['VALUES', 'CONSTRUCT { ?s :out ?o } WHERE { ?s :p ?o VALUES ?o { 1 } }'],
+    ['subquery', 'CONSTRUCT { ?s :out ?o } WHERE { { SELECT ?s ?o WHERE { ?s :p ?o } } }'],
+    ['dataset clause', 'CONSTRUCT { ?s :out ?o } FROM :g WHERE { ?s :p ?o }'],
+    ['solution modifier', 'CONSTRUCT { ?s :out ?o } WHERE { ?s :p ?o } ORDER BY ?s'],
+    ['EXISTS', 'CONSTRUCT { ?s :out ?o } WHERE { ?s :p ?o FILTER EXISTS { ?s :q ?o } }'],
+    ['SPARQL-only built-in', 'CONSTRUCT { ?s :out ?o } WHERE { ?s :p ?o FILTER(COALESCE(?o, 0) > 0) }'],
+    ['path modifier', 'CONSTRUCT { ?s :out ?o } WHERE { ?s :p+ ?o }'],
+    ['path alternative', 'CONSTRUCT { ?s :out ?o } WHERE { ?s (:p|:q) ?o }'],
+    ['negated property path', 'CONSTRUCT { ?s :out ?o } WHERE { ?s !:p ?o }'],
+  ])('refuses SPARQL %s because it has no SRL equivalent', (_name, source) => {
+    const result = sparqlToSrl(source);
+    expect(result.text).toBeUndefined();
+    expect(result.diagnostics.length).toBeGreaterThan(0);
+  });
+
+  it('refuses to convert input that parses but is not valid SRL', () => {
+    const source = 'RULE { ?s :out true } WHERE { FILTER NOT EXISTS { ?s :archived true } }';
+    const result = srlToSparql(source);
+    expect(result.text).toBeUndefined();
+    expect(result.diagnostics).toEqual([
+      expect.objectContaining({
+        from: source.indexOf('NOT EXISTS'),
+        message: 'SPARQL FILTER NOT EXISTS is not valid SRL. Use NOT { ... } instead.',
+      }),
+    ]);
+  });
+
+  it('prefers SRL conformance errors over parser-recovery noise', () => {
+    const source = 'RULE { ?s :out ?x } WHERE { BIND(?n AS ?x) FILTER NOT EXISTS { ?s :p ?o } }';
+    const result = srlToSparql(source);
+    expect(result.text).toBeUndefined();
+    expect(result.diagnostics.map((diagnostic) => diagnostic.message)).toEqual([
+      'SPARQL BIND is not valid SRL. Use SET instead.',
+      'SPARQL FILTER NOT EXISTS is not valid SRL. Use NOT { ... } instead.',
+    ]);
+  });
+
+  it('refuses a non-ground SRL DATA block before converting it', () => {
+    const result = srlToSparql('DATA { :s :p ?value }');
+    expect(result.text).toBeUndefined();
+    expect(result.diagnostics[0]).toMatchObject({ message: 'Variables are not valid in an SRL DATA block.' });
+  });
+});
+
+describe('accidental SPARQL BIND in SRL', () => {
+  it('offers a lossless SET replacement for BIND plus its BOUND guard', () => {
+    const state = stateFor('RULE {} WHERE { BIND(?n + fn(?m) AS ?x) FILTER(BOUND(?x)) }', srl());
+    expect(sparqlBindConversions(state)).toEqual([
+      { from: 16, to: 57, replacement: 'SET ( ?x := ?n + fn(?m) )', hasBoundGuard: true },
+    ]);
+  });
+
+  it('offers SET for bare BIND and identifies that it adds SETs BOUND guard', () => {
+    const state = stateFor('RULE {} WHERE { BIND(?n + 1 AS ?x) }', srl());
+    expect(sparqlBindConversions(state)).toEqual([
+      { from: 16, to: 34, replacement: 'SET ( ?x := ?n + 1 )', hasBoundGuard: false },
+    ]);
+  });
+});
+
+describe('accidental SPARQL FILTER NOT EXISTS in SRL', () => {
+  it('offers the exact SRL NOT replacement', () => {
+    const state = stateFor('RULE {} WHERE { FILTER NOT EXISTS { ?s :p ?o } }', srl());
+    expect(sparqlNotExistsConversions(state)).toEqual([
+      { from: 16, to: 46, replacement: 'NOT { ?s :p ?o }' },
+    ]);
+  });
+});
+
+describe('SPARQL operation openings in SRL', () => {
+  it('raises CONSTRUCT and INSERT spellings to their SRL equivalents', () => {
+    const construct = stateFor('CONSTRUCT ex:named { ?s :p ?o } WHERE {}', srl());
+    expect(sparqlOperationConversions(construct)).toEqual([
+      expect.objectContaining({ replacement: 'RULE', actionName: 'Convert SPARQL CONSTRUCT to SRL RULE' }),
+    ]);
+    expect(srlConformanceDiagnostics(construct)).toEqual(expect.arrayContaining([
+      expect.objectContaining({ message: 'SPARQL CONSTRUCT is not valid SRL. Use RULE instead.' }),
+    ]));
+
+    const insertData = stateFor('INSERT DATA { :s :p :o }', srl());
+    expect(sparqlOperationConversions(insertData)).toEqual([
+      expect.objectContaining({ replacement: 'DATA', actionName: 'Convert SPARQL INSERT DATA to SRL DATA' }),
+    ]);
+  });
+});
+
+describe('SRL conformance over the shared grammar', () => {
+  it('rejects SPARQL-only expressions and property paths as SRL errors', () => {
+    const doc = `RULE {} WHERE {
+      BIND(?n AS ?x)
+      FILTER NOT EXISTS { ?s :p ?o }
+      FILTER(COALESCE(?x, 0) > 0)
+      ?s :p+ ?o .
+      ?s (:p|:q) ?o
+    }
+    DATA { :ground :p ?notGround }`;
+    expect(srlConformanceDiagnostics(stateFor(doc, srl()))).toEqual(expect.arrayContaining([
+      expect.objectContaining({ message: 'SPARQL BIND is not valid SRL. Use SET instead.' }),
+      expect.objectContaining({ message: 'SPARQL FILTER NOT EXISTS is not valid SRL. Use NOT { ... } instead.' }),
+      expect.objectContaining({ message: 'SPARQL COALESCE is not valid SRL.' }),
+      expect.objectContaining({ message: 'Property path modifiers (?, *, +) are not valid SRL.' }),
+      expect.objectContaining({ message: 'Alternative property paths (|) are not valid SRL.' }),
+      expect.objectContaining({ message: 'Variables are not valid in an SRL DATA block.' }),
+    ]));
+  });
+
+  it('rejects assignments and negation nested inside an SRL NOT body', () => {
+    const doc = 'RULE {} WHERE { NOT { ?s :p ?o . SET ( ?x := ?o ) NOT { ?s :hidden true } } }';
+    expect(srlConformanceDiagnostics(stateFor(doc, srl()))).toEqual(expect.arrayContaining([
+      expect.objectContaining({ message: 'SET is not valid inside an SRL NOT body.' }),
+      expect.objectContaining({ message: 'Nested NOT is not valid inside an SRL NOT body.' }),
+    ]));
+  });
+
+  it('allows the SRL expression and path subset', () => {
+    const doc = 'RULE {} WHERE { ?s ^:p/:q ?o . FILTER(STR(?o) = "x") SET ( ?x := ?o ) }';
+    expect(srlConformanceDiagnostics(stateFor(doc, srl()))).toEqual([]);
   });
 });

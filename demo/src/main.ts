@@ -9,8 +9,8 @@ import { highlightTree, tagHighlighter, tags } from '@lezer/highlight';
 import type { Tag } from '@lezer/highlight';
 
 import { nquads, ntriples, trig, turtle } from '@kurrawongai/codemirror-lang-turtle12';
-import { sparql } from '@kurrawongai/codemirror-lang-sparql12';
-import { dataBlockRanges, ruleRanges, srl, variablesInDataBlocks } from '@kurrawongai/codemirror-lang-srl';
+import { sparql, sparqlLanguage } from '@kurrawongai/codemirror-lang-sparql12';
+import { dataBlockRanges, ruleRanges, sparqlToSrl, srl, srlConformanceDiagnostics, srlLanguage, srlToSparql, variablesInDataBlocks } from '@kurrawongai/codemirror-lang-srl';
 
 import { LANGUAGE_KEYS, SAMPLES, type LanguageKey } from './samples';
 import { demoTheme } from './theme';
@@ -29,6 +29,11 @@ const WORKSPACE_PREFIXES = {
 };
 
 const languageConf = new Compartment();
+let sparqlHelpers = true;
+
+function isSrl(key: LanguageKey = current): boolean {
+  return key === 'srl' || key === 'srl-conversion';
+}
 
 function extensionFor(key: LanguageKey) {
   const prefixSource = WORKSPACE_PREFIXES;
@@ -42,10 +47,12 @@ function extensionFor(key: LanguageKey) {
     case 'nquads':
       return nquads();
     case 'sparql':
+    case 'sparql-conversion':
     case 'sparql-update':
       return sparql({ prefixSource });
     case 'srl':
-      return srl({ prefixSource, tuples: false });
+    case 'srl-conversion':
+      return srl({ prefixSource, tuples: false, sparqlConversions: sparqlHelpers });
   }
 }
 
@@ -152,18 +159,65 @@ const el = <T extends HTMLElement = HTMLElement>(id: string) => document.getElem
 
 const languageSelect = el<HTMLSelectElement>('language');
 const paletteSelect = el<HTMLSelectElement>('palette');
+const themeSelect = el<HTMLSelectElement>('theme');
 const mediaTypeOut = el('media-type');
 const statusOut = el('status');
+const errorPanel = el('error-panel');
+const errorOut = el('errors');
 const cursorOut = el('cursor');
 const treeOut = el('tree');
 const srlOut = el('srl-facts');
 const srlPanel = el('srl-panel');
+const conversionPanel = el('conversion-panel');
+const conversionStatus = el('conversion-status');
+const conversionOut = el('conversion-output');
+const exportForm = el<HTMLSelectElement>('export-form');
+const exportFormLabel = el('export-form-label');
+const conversionDirection = el('conversion-direction');
+const convertButton = el<HTMLButtonElement>('convert');
+const copyButton = el<HTMLButtonElement>('copy-conversion');
+const sparqlHelpersToggle = el<HTMLInputElement>('sparql-helpers');
 
-let current: LanguageKey = 'turtle';
+function sampleFromUrl(): LanguageKey {
+  const requested = new URL(window.location.href).searchParams.get('sample');
+  return requested && (LANGUAGE_KEYS as readonly string[]).includes(requested)
+    ? requested as LanguageKey
+    : 'turtle';
+}
+
+function updateSampleUrl(key: LanguageKey): void {
+  const url = new URL(window.location.href);
+  url.searchParams.set('sample', key);
+  window.history.replaceState(null, '', url);
+}
+
+let current: LanguageKey = sampleFromUrl();
 
 const updateInspector = EditorView.updateListener.of((update) => {
   if (update.docChanged || update.selectionSet || update.viewportChanged) render(update.view);
 });
+
+interface SourceUnit {
+  from: number;
+  to: number;
+}
+
+function srlUnits(state: EditorState): SourceUnit[] {
+  const found: SourceUnit[] = [];
+  syntaxTree(state).iterate({
+    enter: (node) => {
+      if (node.name === 'Rule' || node.name === 'SrlDataBlock') found.push({ from: node.from, to: node.to });
+    },
+  });
+  return found;
+}
+
+function selectedSrlUnits(state: EditorState): SourceUnit[] {
+  const selection = state.selection.main;
+  return srlUnits(state).filter((unit) => selection.empty
+    ? unit.from <= selection.head && selection.head <= unit.to
+    : unit.from < selection.to && selection.from < unit.to);
+}
 
 const view = new EditorView({
   parent: el('editor'),
@@ -203,12 +257,47 @@ const view = new EditorView({
   }),
 });
 
+const outputLanguageConf = new Compartment();
+let outputShowsSrl = false;
+const conversionView = new EditorView({
+  parent: conversionOut,
+  state: EditorState.create({
+    extensions: [
+      highlightSpecialChars(),
+      drawSelection(),
+      EditorState.readOnly.of(true),
+      EditorView.editable.of(false),
+      EditorView.contentAttributes.of({ 'aria-label': 'Converted source' }),
+      demoTheme,
+      outputLanguageConf.of(sparqlLanguage),
+    ],
+  }),
+});
+
+function conversionOutput(): string {
+  return conversionView.state.doc.toString();
+}
+
+function setConversionOutput(text: string): void {
+  if (text === conversionOutput()) return;
+  conversionView.dispatch({ changes: { from: 0, to: conversionView.state.doc.length, insert: text } });
+}
+
 function render(v: EditorView) {
   const pos = v.state.selection.main.head;
-  const { rows, truncated, errors } = treeRows(v);
+  const { rows, truncated } = treeRows(v);
+  const issues = parseErrors(v);
 
-  statusOut.textContent = errors === 0 ? 'no parse errors' : `${errors} parse error${errors === 1 ? '' : 's'}`;
-  statusOut.dataset.state = errors === 0 ? 'ok' : 'error';
+  const parseIssueCount = issues.filter((issue) => issue.kind === 'parse').length;
+  const srlIssueCount = issues.length - parseIssueCount;
+  statusOut.textContent = issues.length === 0
+    ? 'no parse errors'
+    : parseIssueCount > 0 && srlIssueCount > 0
+      ? `${issues.length} errors`
+      : srlIssueCount > 0
+        ? `${srlIssueCount} SRL error${srlIssueCount === 1 ? '' : 's'}`
+        : `${parseIssueCount} parse error${parseIssueCount === 1 ? '' : 's'}`;
+  statusOut.dataset.state = issues.length === 0 ? 'ok' : 'error';
 
   const line = v.state.doc.lineAt(pos);
   const tag = tagAt(v, pos);
@@ -221,7 +310,58 @@ function render(v: EditorView) {
   );
 
   renderTree(v, rows, truncated, pos);
+  renderErrors(v, issues);
   renderSrlFacts(v);
+  renderConversionControls();
+}
+
+interface ParseIssue {
+  from: number;
+  to: number;
+  message: string;
+  kind: 'parse' | 'srl';
+}
+
+function parseErrors(v: EditorView): ParseIssue[] {
+  const found: ParseIssue[] = [];
+  const srlIssues = isSrl()
+    ? srlConformanceDiagnostics(v.state).map((issue) => sparqlHelpers ? issue : { ...issue, message: 'Syntax error.' })
+    : [];
+  syntaxTree(v.state).iterate({
+    enter: (node) => {
+      if (!node.type.isError || found.some((issue) => issue.from === node.from && issue.to === node.to)) return;
+      const text = v.state.sliceDoc(node.from, node.to).trim();
+      const message = /^CONSTRUCT$/i.test(text)
+        ? 'SPARQL CONSTRUCT is not valid in SRL. Use RULE or convert it.'
+        : /^BIND$/i.test(text)
+          ? 'SPARQL BIND is not valid SRL. Use SET instead.'
+          : `Unexpected ${text ? `“${text.slice(0, 32)}”` : 'syntax'}.`;
+      if (srlIssues.some((issue) => issue.from <= node.from && node.to <= issue.to)) return;
+      found.push({ from: node.from, to: node.to, message, kind: 'parse' });
+    },
+  });
+  for (const issue of srlIssues) {
+    if (!found.some((existing) => existing.from === issue.from && existing.to === issue.to))
+      found.push({ ...issue, kind: 'srl' });
+  }
+  return found;
+}
+
+function renderErrors(v: EditorView, issues: ParseIssue[]) {
+  errorPanel.hidden = issues.length === 0;
+  const fragment = document.createDocumentFragment();
+  for (const issue of issues) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'error-row';
+    button.textContent = `Line ${v.state.doc.lineAt(issue.from).number}: ${issue.message}`;
+    button.addEventListener('click', () => {
+      v.dispatch({ selection: { anchor: issue.from, head: issue.to }, scrollIntoView: true });
+      v.focus();
+    });
+    fragment.append(button);
+  }
+  errorOut.replaceChildren(fragment);
 }
 
 function field(label: string, value: string): HTMLElement {
@@ -274,7 +414,7 @@ function renderTree(v: EditorView, rows: TreeRow[], truncated: boolean, pos: num
 
 /** Rule and data-block spans, plus variables in ground DATA blocks. */
 function renderSrlFacts(v: EditorView) {
-  if (current !== 'srl') {
+  if (!isSrl()) {
     srlPanel.hidden = true;
     return;
   }
@@ -297,10 +437,91 @@ function renderSrlFacts(v: EditorView) {
     [2]?.classList.toggle('is-warning', badVars.length > 0);
 }
 
+function renderConversionControls() {
+  const convertible = isSrl() || current === 'sparql' || current === 'sparql-conversion';
+  conversionPanel.hidden = !convertible;
+  exportFormLabel.hidden = !convertible;
+  conversionDirection.textContent = isSrl() ? 'Convert to SPARQL' : 'Convert to SRL Rule';
+  exportForm.hidden = !isSrl();
+  convertButton.textContent = 'Convert';
+  const nextOutputShowsSrl = !isSrl();
+  if (convertible && nextOutputShowsSrl !== outputShowsSrl) {
+    outputShowsSrl = nextOutputShowsSrl;
+    conversionView.dispatch({ effects: outputLanguageConf.reconfigure(outputShowsSrl ? srlLanguage : sparqlLanguage) });
+  }
+  if (!convertible) {
+    conversionStatus.textContent = '';
+    setConversionOutput('');
+  }
+}
+
+function prologueBefore(pos: number): string {
+  const declarations: { from: number; to: number }[] = [];
+  syntaxTree(view.state).iterate({
+    enter: (node) => {
+      if (node.to <= pos && (node.name === 'BaseDecl' || node.name === 'PrefixDecl' || node.name === 'VersionDecl'))
+        declarations.push({ from: node.from, to: node.to });
+    },
+  });
+  return declarations.map((node) => view.state.sliceDoc(node.from, node.to)).join('\n');
+}
+
+function convertCurrent() {
+  const originalSelection = view.state.selection.main;
+  const units = isSrl() ? selectedSrlUnits(view.state) : [];
+  if (units.length > 1) {
+    setConversionOutput('');
+    conversionStatus.textContent = 'Select one RULE or DATA block to preview its conversion.';
+    conversionStatus.dataset.state = 'error';
+    return;
+  }
+  const unit = units[0];
+  if (unit && (originalSelection.from !== unit.from || originalSelection.to !== unit.to))
+    view.dispatch({ selection: { anchor: unit.from, head: unit.to }, scrollIntoView: true });
+  const hasSelection = !!unit || !originalSelection.empty;
+  const from = unit?.from ?? originalSelection.from;
+  const to = unit?.to ?? originalSelection.to;
+  const context = hasSelection ? prologueBefore(from) : '';
+  const source = hasSelection ? `${context}${context ? '\n' : ''}${view.state.sliceDoc(from, to)}` : view.state.doc.toString();
+  const offset = hasSelection ? from - context.length - (context ? 1 : 0) : 0;
+  const result = isSrl() ? srlToSparql(source, { form: exportForm.value as 'construct' | 'insert' }) : sparqlToSrl(source);
+  if (!result.text) {
+    setConversionOutput('');
+    conversionStatus.textContent = result.diagnostics.map((d) => `line ${view.state.doc.lineAt(offset + d.from).number}: ${d.message}`).join('\n');
+    conversionStatus.dataset.state = 'error';
+    if (result.diagnostics[0]) view.dispatch({ selection: { anchor: offset + result.diagnostics[0].from, head: offset + result.diagnostics[0].to }, scrollIntoView: true });
+    return;
+  }
+  setConversionOutput(result.text);
+  conversionStatus.textContent = unit
+    ? 'Preview of the highlighted RULE or DATA block.'
+    : hasSelection ? 'Preview of the selected source.' : 'Preview of the document.';
+  conversionStatus.dataset.state = 'ok';
+}
+
+async function copyConversion() {
+  const output = conversionOutput();
+  if (!output) return;
+  try {
+    await navigator.clipboard.writeText(output);
+    conversionStatus.textContent = 'Copied to clipboard.';
+    conversionStatus.dataset.state = 'ok';
+  } catch {
+    conversionView.dispatch({ selection: { anchor: 0, head: conversionView.state.doc.length } });
+    conversionView.focus();
+    document.execCommand('copy');
+    conversionStatus.textContent = 'Selected for copying.';
+    conversionStatus.dataset.state = 'ok';
+  }
+}
+
 function selectLanguage(key: LanguageKey, { resetDoc = true } = {}) {
   current = key;
+  updateSampleUrl(key);
   languageSelect.value = key;
   mediaTypeOut.textContent = SAMPLES[key].mediaType;
+  conversionStatus.textContent = '';
+  setConversionOutput('');
 
   view.dispatch({
     changes: resetDoc ? { from: 0, to: view.state.doc.length, insert: SAMPLES[key].doc } : undefined,
@@ -344,16 +565,31 @@ for (const key of LANGUAGE_KEYS) {
 
 languageSelect.addEventListener('change', () => selectLanguage(languageSelect.value as LanguageKey));
 
-el<HTMLButtonElement>('reset').addEventListener('click', () => selectLanguage(current));
-
-// Theme toggle: the highlight style resolves its custom properties at paint
-// time, so flipping an attribute on <html> is the whole implementation.
-const themeToggle = el<HTMLButtonElement>('theme');
-themeToggle.addEventListener('click', () => {
-  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-  document.documentElement.dataset.theme = next;
-  themeToggle.textContent = next === 'dark' ? 'Light' : 'Dark';
+sparqlHelpersToggle.checked = sparqlHelpers;
+sparqlHelpersToggle.addEventListener('change', () => {
+  sparqlHelpers = sparqlHelpersToggle.checked;
+  if (isSrl()) view.dispatch({ effects: languageConf.reconfigure(extensionFor(current)) });
 });
+
+el<HTMLButtonElement>('reset').addEventListener('click', () => selectLanguage(current));
+convertButton.addEventListener('click', convertCurrent);
+copyButton.addEventListener('click', copyConversion);
+
+// The highlight style resolves these custom properties at paint time, so a
+// theme change does not require either editor to be recreated.
+const systemDarkTheme = window.matchMedia('(prefers-color-scheme: dark)');
+function applyTheme(): void {
+  const selected = themeSelect.value;
+  document.documentElement.dataset.theme = selected === 'system'
+    ? systemDarkTheme.matches ? 'dark' : 'light'
+    : selected;
+}
+themeSelect.value = 'system';
+themeSelect.addEventListener('change', applyTheme);
+systemDarkTheme.addEventListener('change', () => {
+  if (themeSelect.value === 'system') applyTheme();
+});
+applyTheme();
 
 selectLanguage(current);
 view.focus();

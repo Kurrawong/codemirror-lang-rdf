@@ -209,7 +209,7 @@
       main {
         flex: 1;
         display: grid;
-        grid-template-columns: minmax(0, 1fr) 380px;
+        grid-template-columns: minmax(0, 1fr) 570px;
         min-height: 0;
       }
 
@@ -246,6 +246,19 @@
       .field-label { color: var(--fg-faint); min-width: 92px; flex: none; }
       .field-value { font-family: var(--mono); color: var(--fg); word-break: break-word; }
       .field.is-warning .field-value { color: var(--warning); }
+
+      #errors { display: flex; flex-direction: column; gap: 3px; }
+      .error-row { width: 100%; padding: 3px 0; border: 0; border-radius: 0; text-align: left; color: var(--danger); background: none; font-size: 12px; line-height: 1.35; }
+      .error-row:hover { color: var(--danger); text-decoration: underline; }
+
+      .conversion-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+      #conversion-status { margin-top: 7px; color: var(--fg-muted); font-family: var(--mono); font-size: 12px; line-height: 1.45; white-space: pre-wrap; }
+      #conversion-status[data-state='error'] { color: var(--danger); }
+      #conversion-status[data-state='ok'] { color: var(--ok); }
+      #conversion-output { width: 100%; height: 180px; min-height: 120px; resize: vertical; overflow: hidden; margin-top: 7px; border: 1px solid var(--rule-strong); border-radius: 4px; background: var(--editor-bg); }
+
+      .cm-tooltip-lint .cm-diagnostic { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
+      .cm-tooltip-lint .cm-diagnosticAction { order: -1; float: none; margin: 0; }
 
       #tree-panel { flex: 1; display: flex; flex-direction: column; min-height: 0; border-bottom: none; }
       #tree { flex: 1; overflow-y: auto; overflow-x: hidden; margin: 0 -12px -10px; }
@@ -306,9 +319,10 @@
       <p>RDF&nbsp;1.2, SPARQL&nbsp;1.2 and SRL.</p>
       <div class="toolbar">
         <label>Language <select id="language"></select></label>
+        <label>SPARQL ↔ SRL helpers <input id="sparql-helpers" type="checkbox" /></label>
         <label>Palette <select id="palette"></select></label>
+        <label>Theme <select id="theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
         <button type="button" id="reset">Reset sample</button>
-        <button type="button" id="theme">Dark</button>
       </div>
     </header>
 
@@ -322,6 +336,11 @@
           <div style="margin-top: 6px"><code id="media-type"></code></div>
         </div>
 
+        <div class="panel" id="error-panel" hidden>
+          <h2>Errors</h2>
+          <div id="errors"></div>
+        </div>
+
         <div class="panel">
           <h2>At the cursor</h2>
           <div id="cursor"></div>
@@ -330,6 +349,17 @@
         <div class="panel" id="srl-panel" hidden>
           <h2>What an application reads from the tree</h2>
           <div id="srl-facts"></div>
+        </div>
+
+        <div class="panel" id="conversion-panel" hidden>
+          <h2>Conversion</h2>
+          <div class="conversion-actions">
+            <label id="export-form-label"><span id="conversion-direction">Convert to SPARQL</span> <select id="export-form"><option value="construct">CONSTRUCT</option><option value="insert">INSERT</option></select></label>
+            <button type="button" id="convert">Convert</button>
+            <button type="button" id="copy-conversion">Copy</button>
+          </div>
+          <div id="conversion-status" aria-live="polite"></div>
+          <div id="conversion-output"></div>
         </div>
 
         <div class="panel" id="tree-panel">
