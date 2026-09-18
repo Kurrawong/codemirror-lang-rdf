@@ -294,6 +294,10 @@
       .tree-truncated { padding: 6px 12px; font-size: 11px; color: var(--fg-faint); }
 
       footer {
+        display: flex;
+        align-items: baseline;
+        gap: 16px;
+        flex-wrap: wrap;
         padding: 8px 16px;
         border-top: 1px solid var(--rule);
         background: var(--panel-bg);
@@ -301,6 +305,10 @@
         font-size: 12px;
       }
       footer a { color: inherit; }
+      /* Pushed to the trailing edge, so the hints on the left stay one run of
+         text however they wrap. */
+      .repo-link { margin-left: auto; }
+      .repo-link:hover { color: var(--accent); }
 
       kbd {
         font-family: var(--mono);
@@ -370,8 +378,11 @@
     </main>
 
     <footer>
-      Try: fold a block in the gutter · <kbd>Ctrl</kbd>-<kbd>Space</kbd> for completion ·
-      <kbd>Tab</kbd> to reindent · break something and watch the rest keep its colour.
+      <span>
+        Try: fold a block in the gutter · <kbd>Ctrl</kbd>-<kbd>Space</kbd> for completion ·
+        <kbd>Tab</kbd> to reindent · break something and watch the rest keep its colour.
+      </span>
+      <a class="repo-link" href="https://github.com/Kurrawong/codemirror-lang-rdf">Source on GitHub</a>
     </footer>
 
     <script src="./main.js"></script>
