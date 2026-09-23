@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { dataBlockRanges, ruleRanges, sparqlBindConversions, sparqlNotExistsConversions, sparqlOperationConversions, sparqlToSrl, srl, srlConformanceDiagnostics, srlToSparql, tupleRanges, variablesInDataBlocks } from '../dist/index.js';
+import { dataBlockRanges, ruleRanges, SRL_BASE_GRAPH_PLACEHOLDER, sparqlBindConversions, sparqlNotExistsConversions, sparqlOperationConversions, sparqlToSrl, srl, srlConformanceDiagnostics, srlToSparql, tupleRanges, variablesInDataBlocks } from '../dist/index.js';
+import { parser as sparqlParser } from '@kurrawongai/codemirror-lang-sparql12';
 import {
   completionLabels,
   completionsAt,
@@ -252,6 +253,80 @@ describe('explicit SRL/SPARQL conversion', () => {
     const result = sparqlToSrl(source);
     expect(result.text).toBeUndefined();
     expect(result.diagnostics.length).toBeGreaterThan(0);
+  });
+
+  it('lowers NOT DATA to a base-graph placeholder that is not a valid IRI, with a warning', () => {
+    const source = 'RULE { ?x :km ?k } WHERE { ?x :miles ?m . NOT DATA { ?x :km ?old } SET ( ?k := ?m * 2 ) }';
+    const result = srlToSparql(source);
+    expect(result.diagnostics).toEqual([]);
+    expect(result.text).toContain(`FILTER NOT EXISTS { GRAPH ${SRL_BASE_GRAPH_PLACEHOLDER} { ?x :km ?old } }`);
+    expect(result.warnings).toEqual([
+      expect.objectContaining({ from: source.indexOf('NOT DATA'), message: expect.stringContaining('NOT DATA was converted to GRAPH <{baseGraph}>') }),
+    ]);
+    const tree = sparqlParser.configure({ top: 'SparqlUnit' }).parse(result.text!);
+    let parseErrors = 0;
+    tree.iterate({ enter: (node) => { if (node.type.isError) parseErrors++; } });
+    expect(parseErrors).toBeGreaterThan(0);
+  });
+
+  it('lowers WHERE DATA by matching the whole body in the base graph', () => {
+    const result = srlToSparql('RULE { ?x :km ?k } WHERE DATA { ?x :miles ?m . NOT DATA { ?x :km ?old } NOT { ?x :z ?z } SET ( ?k := ?m * 2 ) }');
+    expect(result.diagnostics).toEqual([]);
+    expect(result.text).toBe('CONSTRUCT { ?x :km ?k } WHERE { GRAPH <{baseGraph}> { ?x :miles ?m . FILTER NOT EXISTS { ?x :km ?old } '
+      + 'FILTER NOT EXISTS { ?x :z ?z } BIND(?m * 2 AS ?k) FILTER(BOUND(?k)) } }\n');
+    expect(result.warnings?.map((warning) => warning.message)).toEqual([expect.stringContaining('WHERE DATA was converted')]);
+  });
+
+  it('uses a supplied base graph IRI in both directions', () => {
+    const options = { baseGraph: '<http://example.org/input>' };
+    const srl = 'RULE { ?x :ok true } WHERE { ?x a :C . NOT DATA { ?x :bad ?y } }';
+    const sparql = srlToSparql(srl, options);
+    expect(sparql.text).toBe('CONSTRUCT { ?x :ok true } WHERE { ?x a :C . FILTER NOT EXISTS { GRAPH <http://example.org/input> { ?x :bad ?y } } }\n');
+    expect(sparqlToSrl(sparql.text!, options)).toEqual({ text: `${srl}\n`, diagnostics: [] });
+    expect(sparqlToSrl(sparql.text!).diagnostics[0]).toMatchObject({ message: 'GraphGraphPattern cannot be represented in SRL.' });
+  });
+
+  it('raises the base-graph placeholder back to NOT DATA and WHERE DATA', () => {
+    expect(sparqlToSrl('CONSTRUCT { ?x :ok true } WHERE { ?x a :C . FILTER NOT EXISTS { GRAPH <{baseGraph}> { ?x :bad ?y } } }')).toEqual({
+      text: 'RULE { ?x :ok true } WHERE { ?x a :C . NOT DATA { ?x :bad ?y } }\n',
+      diagnostics: [],
+    });
+    expect(sparqlToSrl('CONSTRUCT { ?x :ok true } WHERE { GRAPH <{baseGraph}> { ?x a :C . FILTER NOT EXISTS { ?x :bad ?y } } }')).toEqual({
+      text: 'RULE { ?x :ok true } WHERE DATA { ?x a :C . NOT { ?x :bad ?y } }\n',
+      diagnostics: [],
+    });
+  });
+
+  it('still refuses a base-graph GRAPH pattern mixed with other patterns', () => {
+    const result = sparqlToSrl('CONSTRUCT { ?x :ok true } WHERE { GRAPH <{baseGraph}> { ?x a :C } ?x :q ?z }');
+    expect(result.text).toBeUndefined();
+    expect(result.diagnostics[0]).toMatchObject({ message: 'GraphGraphPattern cannot be represented in SRL.' });
+  });
+
+  it.each([
+    ['a later triple pattern', 'RULE { ?x :ok true } WHERE { NOT { ?x :bad ?y } ?x a :C . }', '?x'],
+    ['a later SET', 'RULE { ?s :p "abc" } WHERE { NOT { ?s :p "XYZ" } SET ( ?s := :sz ) }', '?s'],
+  ])('warns when an SRL NOT shares a variable bound by %s', (_name, source, variable) => {
+    const result = srlToSparql(source);
+    expect(result.diagnostics).toEqual([]);
+    expect(result.warnings).toEqual([
+      expect.objectContaining({ from: source.indexOf('NOT'), message: expect.stringContaining(`before ${variable} is bound`) }),
+    ]);
+  });
+
+  it('does not warn about a NOT whose shared variables are already bound', () => {
+    const result = srlToSparql('RULE { ?x :ok true } WHERE { ?x a :C . NOT { ?x :bad ?y } ?x :q ?y2 }');
+    expect(result.diagnostics).toEqual([]);
+    expect(result.warnings).toBeUndefined();
+  });
+
+  it('warns when a SPARQL FILTER NOT EXISTS precedes the patterns that bind its variables', () => {
+    const source = 'CONSTRUCT { ?s :p "abc" } WHERE { FILTER NOT EXISTS { ?s :p "XYZ" } BIND(:sz AS ?s) }';
+    const result = sparqlToSrl(source);
+    expect(result.text).toBe('RULE { ?s :p "abc" } WHERE { NOT { ?s :p "XYZ" } SET ( ?s := :sz ) }\n');
+    expect(result.warnings).toEqual([
+      expect.objectContaining({ from: source.indexOf('FILTER'), message: expect.stringContaining('Move the NOT after the patterns that bind ?s') }),
+    ]);
   });
 
   it('refuses to convert input that parses but is not valid SRL', () => {

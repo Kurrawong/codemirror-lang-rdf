@@ -5,8 +5,8 @@ import { parser as sparqlParser, sparqlProps, sparqlCompletionSource } from '@ku
 import type { CompletionOptions } from '@kurrawongai/codemirror-lang-sparql12';
 import { srlSparqlConversionLinter } from './conversion-lint';
 
-export { sparqlToSrl, srlToSparql } from './convert';
-export type { ConversionDiagnostic, ConversionResult, SrlExportForm, SrlToSparqlOptions } from './convert';
+export { SRL_BASE_GRAPH_PLACEHOLDER, sparqlToSrl, srlToSparql } from './convert';
+export type { ConversionDiagnostic, ConversionResult, SparqlToSrlOptions, SrlExportForm, SrlToSparqlOptions } from './convert';
 export { sparqlBindConversions, sparqlNotExistsConversions, sparqlOperationConversions, srlConformanceDiagnostics, srlSparqlConversionLinter } from './conversion-lint';
 export type { SparqlBindConversion, SparqlNotExistsConversion, SparqlOperationConversion, SrlConformanceDiagnostic, SrlSparqlConversionLinterOptions } from './conversion-lint';
 
