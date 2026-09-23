@@ -11,17 +11,37 @@ export interface ConversionDiagnostic {
   message: string;
 }
 
-/** The result of a conversion. `text` is present only when there are no diagnostics. */
+/**
+ * The result of a conversion. `text` is present only when there are no
+ * diagnostics. `warnings`, present only when non-empty, flag places where the
+ * converted text needs the reader's attention: it may not mean exactly the
+ * same thing in every setting.
+ */
 export interface ConversionResult {
   text?: string;
   diagnostics: ConversionDiagnostic[];
+  warnings?: ConversionDiagnostic[];
 }
 
 export type SrlExportForm = 'construct' | 'insert';
 
+/**
+ * Stands in for the graph holding the input data (SRL's base graph). It is
+ * deliberately not a valid IRI, so the converted SPARQL shows a syntax error
+ * until it is replaced with a real graph IRI.
+ */
+export const SRL_BASE_GRAPH_PLACEHOLDER = '<{baseGraph}>';
+
 export interface SrlToSparqlOptions {
   /** `construct` is a query; `insert` produces a SPARQL Update. */
   form?: SrlExportForm;
+  /** The graph `NOT DATA` and `WHERE DATA` match against. Defaults to `SRL_BASE_GRAPH_PLACEHOLDER`. */
+  baseGraph?: string;
+}
+
+export interface SparqlToSrlOptions {
+  /** The `GRAPH` term read as SRL's base graph. Defaults to `SRL_BASE_GRAPH_PLACEHOLDER`. */
+  baseGraph?: string;
 }
 
 interface Span {
@@ -51,8 +71,17 @@ function errors(tree: Tree): ConversionDiagnostic[] {
   return found;
 }
 
+/** Swap the invalid placeholder for a valid IRI of the same length so the rest can be parsed. */
+function withParseablePlaceholder(text: string): string {
+  return text.split(SRL_BASE_GRAPH_PLACEHOLDER).join(`<${'_'.repeat(SRL_BASE_GRAPH_PLACEHOLDER.length - 2)}>`);
+}
+
+function withWarnings(result: ConversionResult, warnings: ConversionDiagnostic[]): ConversionResult {
+  return result.text !== undefined && warnings.length ? { ...result, warnings } : result;
+}
+
 function checkedSparqlResult(text: string, sourceRange: Span): ConversionResult {
-  const targetDiagnostics = errors(sparqlParser.configure({ top: 'SparqlUnit' }).parse(text));
+  const targetDiagnostics = errors(sparqlParser.configure({ top: 'SparqlUnit' }).parse(withParseablePlaceholder(text)));
   return targetDiagnostics.length
     ? {
         diagnostics: [{
@@ -102,6 +131,58 @@ function unsupported(all: Span[], outer: Span, names: string[]): ConversionDiagn
   return all
     .filter((node) => outer.from <= node.from && node.to <= outer.to && names.includes(node.name) && node.to > node.from)
     .map((node) => ({ from: node.from, to: node.to, message: `${node.name} cannot be represented in SRL.` }));
+}
+
+function varName(source: string, node: Span): string {
+  return source.slice(node.from + 1, node.to);
+}
+
+function varsIn(all: Span[], source: string, outer: Span): Set<string> {
+  return new Set(within(all, outer, 'Var').map((node) => varName(source, node)));
+}
+
+/** The elements directly inside `body`, in order, leaving out the ones nested in another element. */
+function bodyElements(all: Span[], body: Span, names: string[]): Span[] {
+  const candidates = all.filter((node) => names.includes(node.name) && body.from < node.from && node.to < body.to);
+  return candidates.filter((node) => !candidates.some((outer) => outer !== node && outer.from <= node.from && node.to <= outer.to));
+}
+
+/**
+ * SRL checks a negation where it is written, with only the variables bound
+ * before it; SPARQL applies FILTER NOT EXISTS to its whole group. The two
+ * agree unless the negation shares a variable that is bound only later.
+ * Returns those variables for each negation element in `elements`.
+ */
+function lateBoundNegationVars(
+  source: string,
+  all: Span[],
+  elements: Span[],
+  isNegation: (element: Span) => boolean,
+  binds: (element: Span) => string[],
+): { element: Span; vars: string[] }[] {
+  const found: { element: Span; vars: string[] }[] = [];
+  elements.forEach((element, index) => {
+    if (!isNegation(element)) return;
+    const before = new Set(elements.slice(0, index).flatMap(binds));
+    const after = new Set(elements.slice(index + 1).flatMap(binds));
+    const vars = [...varsIn(all, source, element)].filter((name) => after.has(name) && !before.has(name));
+    if (vars.length) found.push({ element, vars });
+  });
+  return found;
+}
+
+function varList(vars: string[]): string {
+  return vars.map((name) => `?${name}`).join(', ');
+}
+
+function baseGraphWarning(from: number, to: number, keyword: string, baseGraph: string): ConversionDiagnostic {
+  return {
+    from,
+    to,
+    message: `SPARQL cannot tell input data from inferred triples, so ${keyword} was converted to GRAPH ${baseGraph}. `
+      + `Load the input data into a named graph and use its IRI in place of ${baseGraph}; `
+      + 'the default graph must hold the input data together with the inferred triples.',
+  };
 }
 
 function expandRuleIri(source: string, ruleName: Span): string {
@@ -169,6 +250,11 @@ export function srlToSparql(source: string, options: SrlToSparqlOptions = {}): C
   }
   if (diagnostics.length) return { diagnostics };
 
+  const baseGraph = options.baseGraph ?? SRL_BASE_GRAPH_PLACEHOLDER;
+  const warnings: ConversionDiagnostic[] = [];
+  const whereData = all.find((node) => node.name === 'KwDATA' && rule.from < node.from && node.to <= body.from);
+  if (whereData) warnings.push(baseGraphWarning(whereData.from, whereData.to, 'WHERE DATA', baseGraph));
+
   const changes: { from: number; to: number; insert: string }[] = [];
   for (const assignment of within(all, body, 'Assignment')) {
     const variable = within(all, assignment, 'Var')[0];
@@ -189,14 +275,37 @@ export function srlToSparql(source: string, options: SrlToSparqlOptions = {}): C
       diagnostics.push({ from: negation.from, to: negation.to, message: 'This NOT pattern cannot be converted.' });
       continue;
     }
-    changes.push({ from: negation.from, to: negation.to, insert: `FILTER NOT EXISTS ${source.slice(nested.from, nested.to)}` });
+    const inner = source.slice(nested.from, nested.to);
+    const notData = all.find((node) => node.name === 'KwDATA' && negation.from < node.from && node.to <= nested.from);
+    // Inside WHERE DATA everything already matches the base graph.
+    if (notData && !whereData) warnings.push(baseGraphWarning(negation.from, nested.from, 'NOT DATA', baseGraph));
+    changes.push({
+      from: negation.from,
+      to: negation.to,
+      insert: notData && !whereData ? `FILTER NOT EXISTS { GRAPH ${baseGraph} ${inner} }` : `FILTER NOT EXISTS ${inner}`,
+    });
   }
   if (diagnostics.length) return { diagnostics };
 
+  const elements = bodyElements(all, body, ['TriplesBlock', 'Negation', 'Filter', 'Assignment']);
+  const late = lateBoundNegationVars(source, all, elements, (element) => element.name === 'Negation', (element) =>
+    element.name === 'TriplesBlock' ? [...varsIn(all, source, element)]
+      : element.name === 'Assignment' ? within(all, element, 'Var').slice(0, 1).map((node) => varName(source, node))
+        : []);
+  for (const { element, vars } of late)
+    warnings.push({
+      from: element.from,
+      to: element.to,
+      message: `SRL checks this NOT before ${varList(vars)} ${vars.length === 1 ? 'is' : 'are'} bound, so inside it ${vars.length === 1 ? 'that variable matches' : 'those variables match'} anything. `
+        + `SPARQL FILTER NOT EXISTS applies to the whole group and uses the later ${vars.length === 1 ? 'value' : 'values'}, so the results can differ.`,
+    });
+
   const prologue = source.slice(0, rule.from);
   const ruleIriComment = ruleName ? `# SRL rule IRI: ${expandRuleIri(source, ruleName)}\n` : '';
-  const text = `${prologue}${ruleIriComment}${form === 'construct' ? 'CONSTRUCT' : 'INSERT'} ${source.slice(heads[0].from, heads[0].to)} WHERE ${replace(source.slice(body.from, body.to), changes.map((change) => ({ ...change, from: change.from - body.from, to: change.to - body.from })))}\n`;
-  return checkedSparqlResult(text, rule);
+  const convertedBody = replace(source.slice(body.from, body.to), changes.map((change) => ({ ...change, from: change.from - body.from, to: change.to - body.from })));
+  const where = whereData ? `{ GRAPH ${baseGraph} ${convertedBody} }` : convertedBody;
+  const text = `${prologue}${ruleIriComment}${form === 'construct' ? 'CONSTRUCT' : 'INSERT'} ${source.slice(heads[0].from, heads[0].to)} WHERE ${where}\n`;
+  return withWarnings(checkedSparqlResult(text, rule), warnings);
 }
 
 /**
@@ -205,8 +314,10 @@ export function srlToSparql(source: string, options: SrlToSparqlOptions = {}): C
  * `BIND(expr AS ?x)` is represented as `SET ( ?x := expr )`; its immediately
  * following `FILTER(BOUND(?x))`, when present, is removed as redundant.
  */
-export function sparqlToSrl(source: string): ConversionResult {
-  const tree = sparqlParser.configure({ top: 'SparqlUnit' }).parse(source);
+export function sparqlToSrl(source: string, options: SparqlToSrlOptions = {}): ConversionResult {
+  const baseGraph = options.baseGraph ?? SRL_BASE_GRAPH_PLACEHOLDER;
+  // Offsets are unchanged, so every slice below is still taken from `source`.
+  const tree = sparqlParser.configure({ top: 'SparqlUnit' }).parse(withParseablePlaceholder(source));
   const diagnostics = errors(tree);
   if (diagnostics.length) return { diagnostics };
 
@@ -229,14 +340,40 @@ export function sparqlToSrl(source: string): ConversionResult {
 
   const operation = constructs[0] ?? modifies[0];
   const isInsert = modifies.length === 1;
+  const templates = within(all, operation, isInsert ? 'QuadPattern' : 'ConstructTemplate');
+  const groups = within(all, operation, 'GroupGraphPattern');
+  const where = groups.reduce<Span | undefined>((outer, candidate) => !outer || candidate.to - candidate.from > outer.to - outer.from ? candidate : outer, undefined);
+
+  // `GRAPH <base> { P }` as the only thing in a group is SRL's base-graph matching.
+  const baseGraphInner = (group: Span): Span | undefined => {
+    const graphs = bodyElements(all, group, ['GraphGraphPattern', 'TriplesBlock', 'Filter', 'Bind', 'GroupGraphPattern',
+      'OptionalGraphPattern', 'MinusGraphPattern', 'ServiceGraphPattern', 'InlineData', 'GroupOrUnionGraphPattern']);
+    if (graphs.length !== 1 || graphs[0].name !== 'GraphGraphPattern') return undefined;
+    const graph = graphs[0];
+    const keyword = within(all, graph, 'KwGRAPH')[0];
+    const inner = within(all, graph, 'GroupGraphPattern')[0];
+    if (!keyword || !inner || source.slice(keyword.to, inner.from).trim() !== baseGraph) return undefined;
+    if (source.slice(group.from + 1, graph.from).trim() || source.slice(graph.to, group.to - 1).trim().replace(/^\.$/, '')) return undefined;
+    return inner;
+  };
+  const whereData = where ? baseGraphInner(where) : undefined;
+  const body = whereData ?? where;
+  const notDataPatterns = new Map<Span, Span>();
+  if (body) {
+    for (const notExists of within(all, body, 'NotExistsFunc')) {
+      const pattern = within(all, notExists, 'GroupGraphPattern')[0];
+      const inner = pattern && baseGraphInner(pattern);
+      if (inner) notDataPatterns.set(notExists, inner);
+    }
+  }
+  const baseGraphPatterns = all.filter((node) => node.name === 'GraphGraphPattern' && (
+    (whereData && node.to === whereData.to) || [...notDataPatterns.values()].some((inner) => node.to === inner.to)));
+
   diagnostics.push(...unsupported(all, operation, [
     'DatasetClause', 'GroupOrUnionGraphPattern', 'OptionalGraphPattern',
     'MinusGraphPattern', 'GraphGraphPattern', 'ServiceGraphPattern', 'InlineData',
     'SubSelect', 'SolutionModifier', 'DeleteClause', 'UsingClause', 'QuadsNotTriples',
-  ]));
-  const templates = within(all, operation, isInsert ? 'QuadPattern' : 'ConstructTemplate');
-  const groups = within(all, operation, 'GroupGraphPattern');
-  const body = groups.reduce<Span | undefined>((outer, candidate) => !outer || candidate.to - candidate.from > outer.to - outer.from ? candidate : outer, undefined);
+  ]).filter((diagnostic) => !baseGraphPatterns.some((graph) => graph.from === diagnostic.from && graph.to === diagnostic.to)));
   if (templates.length !== 1 || !body) {
     diagnostics.push({ from: operation.from, to: operation.to, message: 'This operation does not have one convertible template and WHERE block.' });
     return { diagnostics };
@@ -253,7 +390,12 @@ export function sparqlToSrl(source: string): ConversionResult {
       diagnostics.push({ from: filter.from, to: filter.to, message: 'This FILTER NOT EXISTS cannot be converted.' });
       continue;
     }
-    changes.push({ from: filter.from, to: filter.to, insert: `NOT ${source.slice(pattern.from, pattern.to)}` });
+    const notData = notDataPatterns.get(notExists);
+    changes.push({
+      from: filter.from,
+      to: filter.to,
+      insert: notData ? `NOT DATA ${source.slice(notData.from, notData.to)}` : `NOT ${source.slice(pattern.from, pattern.to)}`,
+    });
   }
   for (const bind of within(all, body, 'Bind')) {
     const variables = within(all, bind, 'Var');
@@ -273,7 +415,26 @@ export function sparqlToSrl(source: string): ConversionResult {
   }
   if (diagnostics.length) return { diagnostics };
 
+  const warnings: ConversionDiagnostic[] = [];
+  const elements = bodyElements(all, body, ['TriplesBlock', 'Filter', 'Bind']);
+  const late = lateBoundNegationVars(source, all, elements,
+    (element) => element.name === 'Filter' && within(all, element, 'NotExistsFunc').length > 0,
+    (element) => {
+      if (element.name === 'TriplesBlock') return [...varsIn(all, source, element)];
+      if (element.name !== 'Bind') return [];
+      const variables = within(all, element, 'Var');
+      return variables.slice(-1).map((node) => varName(source, node));
+    });
+  for (const { element, vars } of late)
+    warnings.push({
+      from: element.from,
+      to: element.to,
+      message: `SPARQL applies FILTER NOT EXISTS to the whole group, but SRL checks NOT where it is written, before ${varList(vars)} ${vars.length === 1 ? 'is' : 'are'} bound. `
+        + `Move the NOT after the patterns that bind ${varList(vars)} to keep the SPARQL meaning.`,
+    });
+
   const prologue = source.slice(0, operation.from);
-  const text = `${prologue}RULE ${source.slice(templates[0].from, templates[0].to)} WHERE ${replace(source.slice(body.from, body.to), changes.map((change) => ({ ...change, from: change.from - body.from, to: change.to - body.from })))}\n`;
-  return checkedSrlResult(text, operation);
+  const converted = replace(source.slice(body.from, body.to), changes.map((change) => ({ ...change, from: change.from - body.from, to: change.to - body.from })));
+  const text = `${prologue}RULE ${source.slice(templates[0].from, templates[0].to)} WHERE ${whereData ? 'DATA ' : ''}${converted}\n`;
+  return withWarnings(checkedSrlResult(text, operation), warnings);
 }

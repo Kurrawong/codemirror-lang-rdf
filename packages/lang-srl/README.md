@@ -14,12 +14,25 @@ single-rule / single-`CONSTRUCT` case:
 import { srlToSparql, sparqlToSrl } from '@kurrawongai/codemirror-lang-srl';
 
 const result = srlToSparql('RULE { ?s :out ?x } WHERE { SET ( ?x := 1 ) }', { form: 'insert' });
-if (result.text) console.log(result.text);
+if (result.text) console.log(result.text, result.warnings ?? []);
 else console.log(result.diagnostics);
 ```
 
 `SET` lowers to `BIND` plus `FILTER(BOUND(...))`; SRL `NOT` lowers to `FILTER
-NOT EXISTS`. `RULE` exports as either `CONSTRUCT` or `INSERT ... WHERE`;
+NOT EXISTS`. SRL's `NOT DATA` and `WHERE DATA` match only the input data, not
+inferred triples, and SPARQL cannot tell the two apart. They lower to a
+`GRAPH <{baseGraph}> { ... }` pattern with a warning. The placeholder is
+deliberately not a valid IRI: replace it with a named graph holding the input
+data, and query that data together with the inferred triples as the default
+graph. Pass `{ baseGraph: '<http://example.org/input>' }` to either function to
+use a real graph IRI; `sparqlToSrl` reads that `GRAPH` form back as `NOT DATA`
+or `WHERE DATA`.
+
+A successful result may carry `warnings`: ranges where the output needs
+checking. Besides the base graph, conversion warns about a negation that
+shares a variable bound only later in the body. SRL checks `NOT` where it is
+written, but SPARQL applies `FILTER NOT EXISTS` to the whole group, so the
+results can differ. `RULE` exports as either `CONSTRUCT` or `INSERT ... WHERE`;
 ground `DATA` exports as `CONSTRUCT { ... } WHERE {}` or `INSERT DATA`.
 The inverse recognises those simple forms. More complex forms, including
 `UNION` and `TUPLE`, return a diagnostic rather than losing meaning. A named

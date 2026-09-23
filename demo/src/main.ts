@@ -493,10 +493,12 @@ function convertCurrent() {
     return;
   }
   setConversionOutput(result.text);
-  conversionStatus.textContent = unit
+  const preview = unit
     ? 'Preview of the highlighted RULE or DATA block.'
     : hasSelection ? 'Preview of the selected source.' : 'Preview of the document.';
-  conversionStatus.dataset.state = 'ok';
+  const warnings = result.warnings ?? [];
+  conversionStatus.textContent = [preview, ...warnings.map((d) => `line ${view.state.doc.lineAt(offset + d.from).number}: ${d.message}`)].join('\n');
+  conversionStatus.dataset.state = warnings.length ? 'warning' : 'ok';
 }
 
 async function copyConversion() {
