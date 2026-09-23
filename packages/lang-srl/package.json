@@ -1,6 +1,6 @@
 {
   "name": "@kurrawongai/codemirror-lang-srl",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "SRL (SPARQL Rule Language) support for CodeMirror 6, on the SPARQL 1.2 Lezer grammar",
   "license": "MIT",
   "publishConfig": {
