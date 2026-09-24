@@ -1,5 +1,7 @@
 # @kurrawongai/codemirror-lang-sparql12
 
+## 0.3.1
+
 ## 0.3.0
 
 ### Patch Changes
