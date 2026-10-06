@@ -17,6 +17,7 @@ import { EditorView, keymap, lineNumbers } from '@codemirror/view';
 import { HighlightStyle, foldGutter, indentOnInput, indentUnit, syntaxHighlighting } from '@codemirror/language';
 import { autocompletion, startCompletion } from '@codemirror/autocomplete';
 import { defaultKeymap, indentWithTab } from '@codemirror/commands';
+import { forceLinting, forEachDiagnostic } from '@codemirror/lint';
 import { foldAll, foldCode, unfoldAll } from '@codemirror/language';
 import { tags as t } from '@lezer/highlight';
 import { nquads, ntriples, trig, turtle } from '@kurrawongai/codemirror-lang-turtle12';
@@ -230,6 +231,26 @@ window.rdfFixture = {
 
   docOf(id) {
     return viewFor(id).state.doc.toString();
+  },
+
+  /**
+   * The diagnostics on screen, read after their marks are drawn: an
+   * underline for a range, a point marker for an empty range.
+   *
+   * The linter waits for the document to stop changing before it runs, so
+   * this runs it at once rather than waiting out its delay.
+   */
+  async diagnostics(id) {
+    const view = viewFor(id);
+    forceLinting(view);
+    for (let attempt = 0; attempt < 40; attempt++) {
+      await new Promise((resolve) => setTimeout(resolve, 25));
+      const found: { from: number; to: number; message: string }[] = [];
+      forEachDiagnostic(view.state, (d, from, to) => found.push({ from, to, message: d.message }));
+      const marks = view.contentDOM.querySelectorAll('.cm-lintRange-error, .cm-lintPoint-error').length;
+      if (found.length && marks) return { found, marks };
+    }
+    return { found: [], marks: 0 };
   },
 };
 

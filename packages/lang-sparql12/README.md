@@ -26,8 +26,9 @@ new EditorView({
 });
 ```
 
-The parser supports editing incomplete queries. It accepts some invalid
-syntax and does not check query semantics. Use a separate validator before
+The parser supports editing incomplete queries, and the editor underlines
+parse errors. It accepts some invalid syntax and does not check query
+semantics, such as whether a projected variable is grouped. Use a separate validator before
 executing a query when validation is required.
 
 ## Documentation

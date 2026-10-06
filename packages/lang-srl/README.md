@@ -43,11 +43,11 @@ input language; it never uses shared-parser recovery to reinterpret invalid SRL
 as SPARQL. Before a successful result is returned, it is parsed and checked
 again in the target language.
 
-SRL conformance errors are always reported, including SPARQL `BIND`, `EXISTS`
-and `FILTER NOT EXISTS`, SPARQL-only aggregates and built-ins, unsupported
-property paths, and variables in a ground `DATA` block. SRL uses `SET` and
-`NOT { ... }` for the two directly convertible cases. Enable optional
-assistance to add conversion actions:
+Parse errors and SRL conformance errors are always reported. Conformance
+errors include SPARQL `BIND`, `EXISTS` and `FILTER NOT EXISTS`, SPARQL-only
+aggregates and built-ins, unsupported property paths, and variables in a
+ground `DATA` block. SRL uses `SET` and `NOT { ... }` for the two directly
+convertible cases. Enable optional assistance to add conversion actions:
 
 ```js
 import { srl } from '@kurrawongai/codemirror-lang-srl';

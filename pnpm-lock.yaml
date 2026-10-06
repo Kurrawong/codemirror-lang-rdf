@@ -20,6 +20,9 @@ importers:
       '@codemirror/language':
         specifier: ^6.10.0
         version: 6.12.4
+      '@codemirror/lint':
+        specifier: ^6.8.5
+        version: 6.9.7
       '@codemirror/search':
         specifier: ^6.7.2
         version: 6.7.2
@@ -80,6 +83,9 @@ importers:
       '@codemirror/language':
         specifier: ^6.10.0
         version: 6.12.4
+      '@codemirror/lint':
+        specifier: ^6.8.5
+        version: 6.9.7
       '@codemirror/state':
         specifier: ^6.4.0
         version: 6.7.3
@@ -151,6 +157,9 @@ importers:
       '@codemirror/language':
         specifier: ^6.10.0
         version: 6.12.4
+      '@codemirror/lint':
+        specifier: ^6.8.5
+        version: 6.9.7
       '@codemirror/state':
         specifier: ^6.4.0
         version: 6.7.3

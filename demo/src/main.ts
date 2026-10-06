@@ -9,7 +9,7 @@ import { highlightTree, tagHighlighter, tags } from '@lezer/highlight';
 import type { Tag } from '@lezer/highlight';
 
 import { nquads, ntriples, trig, turtle } from '@kurrawongai/codemirror-lang-turtle12';
-import { sparql, sparqlLanguage } from '@kurrawongai/codemirror-lang-sparql12';
+import { parseErrors as documentParseErrors, sparql, sparqlLanguage } from '@kurrawongai/codemirror-lang-sparql12';
 import { dataBlockRanges, ruleRanges, sparqlToSrl, srl, srlConformanceDiagnostics, srlLanguage, srlToSparql, variablesInDataBlocks } from '@kurrawongai/codemirror-lang-srl';
 
 import { LANGUAGE_KEYS, SAMPLES, type LanguageKey } from './samples';
@@ -322,24 +322,18 @@ interface ParseIssue {
   kind: 'parse' | 'srl';
 }
 
+/** Whether two ranges share any text, or the empty range `b` lies inside `a`. */
+function rangesOverlap(a: { from: number; to: number }, b: { from: number; to: number }): boolean {
+  return (b.from < a.to && a.from < b.to) || (a.from <= b.from && b.to <= a.to);
+}
+
 function parseErrors(v: EditorView): ParseIssue[] {
-  const found: ParseIssue[] = [];
   const srlIssues = isSrl()
     ? srlConformanceDiagnostics(v.state).map((issue) => sparqlHelpers ? issue : { ...issue, message: 'Syntax error.' })
     : [];
-  syntaxTree(v.state).iterate({
-    enter: (node) => {
-      if (!node.type.isError || found.some((issue) => issue.from === node.from && issue.to === node.to)) return;
-      const text = v.state.sliceDoc(node.from, node.to).trim();
-      const message = /^CONSTRUCT$/i.test(text)
-        ? 'SPARQL CONSTRUCT is not valid in SRL. Use RULE or convert it.'
-        : /^BIND$/i.test(text)
-          ? 'SPARQL BIND is not valid SRL. Use SET instead.'
-          : `Unexpected ${text ? `“${text.slice(0, 32)}”` : 'syntax'}.`;
-      if (srlIssues.some((issue) => issue.from <= node.from && node.to <= issue.to)) return;
-      found.push({ from: node.from, to: node.to, message, kind: 'parse' });
-    },
-  });
+  const found: ParseIssue[] = documentParseErrors(v.state)
+    .filter((error) => !srlIssues.some((issue) => rangesOverlap(issue, error)))
+    .map((error) => ({ ...error, kind: 'parse' as const }));
   for (const issue of srlIssues) {
     if (!found.some((existing) => existing.from === issue.from && existing.to === issue.to))
       found.push({ ...issue, kind: 'srl' });

@@ -99,6 +99,20 @@ are an undeclared prefix and four uses of variables in ground `DATA` blocks.
 `variablesInDataBlocks(state)` returns the variable ranges for an application
 to diagnose. Prefix resolution still requires a separate check.
 
+### Large blocks of triples in SPARQL and SRL
+
+A single group, `INSERT DATA` block or SRL `DATA` block with more than about
+1,000 triples separated by `.` produces error nodes even when it is valid, and
+the editor underlines them as parse errors. A block of 1,000 triples parses
+without errors; 1,500 do not.
+
+The `TriplesBlock` and `TriplesTemplate` productions in
+[sparql.grammar](../packages/lang-sparql12/src/sparql.grammar) are
+right-recursive, as in the SPARQL specification grammar, so the parser stack
+grows with each triple. When the stack reaches 8,400 entries, Lezer
+force-reduces it, and the forced reductions leave error nodes. Turtle and TriG
+statements are not nested this way and are not affected.
+
 ## Run the checks
 
 After installing dependencies, run `pnpm test` from the repository root.
