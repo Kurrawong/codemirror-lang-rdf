@@ -14,10 +14,13 @@ import { parser as rawParser } from './turtle.grammar';
 import { turtleHighlighting } from './highlight';
 import { turtleCompletionSource } from './complete';
 import type { CompletionOptions } from './complete';
+import { parseErrorLinter } from './lint';
 
 export type { CompletionOptions, PrefixMap, PrefixSource } from './complete';
 export { documentPrefixes, knownPrefixes, turtleCompletionSource } from './complete';
 export { turtleHighlighting } from './highlight';
+export { parseErrorLinter, parseErrors } from './lint';
+export type { ParseError } from './lint';
 
 /** The unconfigured grammar, for callers that want their own `top` or props. */
 export const parser: LRParser = rawParser;
@@ -94,6 +97,7 @@ export const nquadsLanguage = define('NQuadsDoc');
 function support(language: LRLanguage, options: CompletionOptions, dialect: 'turtle' | 'trig') {
   return new LanguageSupport(language, [
     language.data.of({ autocomplete: turtleCompletionSource(options, dialect) }),
+    parseErrorLinter(),
   ]);
 }
 
@@ -115,10 +119,10 @@ export function trig(options: CompletionOptions = {}): LanguageSupport {
  * an editor that colours it as valid is lying about the file it will write.
  */
 export function ntriples(): LanguageSupport {
-  return new LanguageSupport(ntriplesLanguage);
+  return new LanguageSupport(ntriplesLanguage, parseErrorLinter());
 }
 
 /** RDF 1.2 N-Quads. */
 export function nquads(): LanguageSupport {
-  return new LanguageSupport(nquadsLanguage);
+  return new LanguageSupport(nquadsLanguage, parseErrorLinter());
 }

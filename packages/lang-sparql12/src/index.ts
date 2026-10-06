@@ -12,6 +12,7 @@ import { parser as rawParser } from './sparql.grammar';
 import { sparqlHighlighting } from './highlight';
 import { sparqlCompletionSource } from './complete';
 import type { CompletionOptions } from './complete';
+import { parseErrorLinter } from './lint';
 
 export type { CompletionOptions, CompletionSourceOptions, PrefixMap, PrefixSource } from './complete';
 export {
@@ -25,6 +26,8 @@ export {
 } from './complete';
 export { sparqlHighlighting } from './highlight';
 export { KEYWORDS, KEYWORD_NODE_NAMES } from './keywords';
+export { parseErrorLinter, parseErrors } from './lint';
+export type { ParseError } from './lint';
 
 /**
  * The unconfigured grammar.
@@ -94,5 +97,6 @@ export const sparqlLanguage = LRLanguage.define({
 export function sparql(options: CompletionOptions = {}): LanguageSupport {
   return new LanguageSupport(sparqlLanguage, [
     sparqlLanguage.data.of({ autocomplete: sparqlCompletionSource({ ...options, dialect: 'sparql' }) }),
+    parseErrorLinter(),
   ]);
 }

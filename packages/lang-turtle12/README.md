@@ -29,8 +29,8 @@ Use `trig()`, `ntriples()`, or `nquads()` from the same package for those
 formats. Turtle and TriG include prefix completion; N-Triples and N-Quads do
 not include a completion source.
 
-The parser supports editing incomplete documents. Use a separate validator
-to check document validity.
+The parser supports editing incomplete documents, and the editor underlines
+parse errors. Use a separate validator to check document validity.
 
 ## Documentation
 

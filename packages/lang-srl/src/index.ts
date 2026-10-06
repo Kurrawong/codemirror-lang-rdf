@@ -3,15 +3,15 @@ import type { EditorState } from '@codemirror/state';
 import type { LRParser } from '@lezer/lr';
 import { parser as sparqlParser, sparqlProps, sparqlCompletionSource } from '@kurrawongai/codemirror-lang-sparql12';
 import type { CompletionOptions } from '@kurrawongai/codemirror-lang-sparql12';
-import { srlSparqlConversionLinter } from './conversion-lint';
+import { srlLinter } from './conversion-lint';
 
 export { SRL_BASE_GRAPH_PLACEHOLDER, sparqlToSrl, srlToSparql } from './convert';
 export type { ConversionDiagnostic, ConversionResult, SparqlToSrlOptions, SrlExportForm, SrlToSparqlOptions } from './convert';
 export { sparqlBindConversions, sparqlNotExistsConversions, sparqlOperationConversions, srlConformanceDiagnostics, srlSparqlConversionLinter } from './conversion-lint';
 export type { SparqlBindConversion, SparqlNotExistsConversion, SparqlOperationConversion, SrlConformanceDiagnostic, SrlSparqlConversionLinterOptions } from './conversion-lint';
 
-export type { CompletionOptions, PrefixMap, PrefixSource } from '@kurrawongai/codemirror-lang-sparql12';
-export { documentPrefixes, documentVariables, knownPrefixes, srlKeywords } from '@kurrawongai/codemirror-lang-sparql12';
+export type { CompletionOptions, ParseError, PrefixMap, PrefixSource } from '@kurrawongai/codemirror-lang-sparql12';
+export { documentPrefixes, documentVariables, knownPrefixes, parseErrors, srlKeywords } from '@kurrawongai/codemirror-lang-sparql12';
 
 export interface SrlOptions extends CompletionOptions {
   /**
@@ -145,9 +145,9 @@ export function srl(options: SrlOptions = {}): LanguageSupport {
             return { ...result, options: result.options.filter((o) => o.label !== 'TUPLE') };
           },
     }),
-    // Conformance errors are always present; the optional helpers only add
-    // exact conversion actions for the two spellings we can translate.
-    srlSparqlConversionLinter({
+    // Parse and conformance errors are always present; the optional helpers
+    // only add exact conversion actions for the spellings we can translate.
+    srlLinter({
       bindAction: sparqlConversions,
       notExistsAction: sparqlConversions,
       operationAction: sparqlConversions,

@@ -32,8 +32,9 @@ implementation, not the maturity or stability of the underlying standard.
 | [@kurrawongai/codemirror-lang-srl](packages/lang-srl/README.md) | SRL |
 
 These are editor parsers, not complete validators, and they accept some invalid
-documents. SRL language support adds targeted conformance diagnostics for the
-shared SPARQL grammar. N-Triples and N-Quads have no completion source.
+documents. Each language support underlines parse errors in the editor. SRL
+language support adds targeted conformance diagnostics for the shared SPARQL
+grammar. N-Triples and N-Quads have no completion source.
 
 ### SRL features
 

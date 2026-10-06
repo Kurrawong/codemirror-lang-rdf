@@ -24,6 +24,7 @@ declare global {
       setCursor(id: string, pos: number): void;
       completions(id: string): Promise<string[]>;
       docOf(id: string): string;
+      diagnostics(id: string): Promise<{ found: { from: number; to: number; message: string }[]; marks: number }>;
     };
   }
 }

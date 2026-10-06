@@ -1,6 +1,7 @@
 import { linter, type Diagnostic } from '@codemirror/lint';
 import type { Extension, EditorState } from '@codemirror/state';
 import { syntaxTree } from '@codemirror/language';
+import { parseErrors } from '@kurrawongai/codemirror-lang-sparql12';
 import { srlConformanceDiagnosticsForTree } from './conformance';
 export type { SrlConformanceDiagnostic } from './conformance';
 
@@ -197,57 +198,78 @@ export function sparqlOperationConversions(state: EditorState): SparqlOperationC
  * SPARQL BIND syntax in an SRL editor. Add this extension alongside `srl()`.
  */
 export function srlSparqlConversionLinter(options: SrlSparqlConversionLinterOptions = {}): Extension {
+  return linter((view) => srlSparqlConversionDiagnostics(view.state, options));
+}
+
+/** Whether two ranges share any text, or the empty range `b` lies inside `a`. */
+function rangesOverlap(a: { from: number; to: number }, b: { from: number; to: number }): boolean {
+  return (b.from < a.to && a.from < b.to) || (a.from <= b.from && b.to <= a.to);
+}
+
+/**
+ * Parse errors and SRL conformance errors in one linter. A parse error that
+ * overlaps an SRL diagnostic is left out: the SRL message explains it.
+ */
+export function srlLinter(options: SrlSparqlConversionLinterOptions = {}): Extension {
+  return linter((view) => {
+    const srlDiagnostics = srlSparqlConversionDiagnostics(view.state, options);
+    const syntaxDiagnostics = parseErrors(view.state)
+      .filter((error) => !srlDiagnostics.some((diagnostic) => rangesOverlap(diagnostic, error)))
+      .map((error): Diagnostic => ({ ...error, severity: 'error' }));
+    return [...syntaxDiagnostics, ...srlDiagnostics];
+  });
+}
+
+function srlSparqlConversionDiagnostics(state: EditorState, options: SrlSparqlConversionLinterOptions): Diagnostic[] {
   const bindAction = options.bindAction ?? true;
   const notExistsAction = options.notExistsAction ?? true;
   const operationAction = options.operationAction ?? true;
   const helpersEnabled = bindAction || notExistsAction || operationAction;
-  return linter((view) => {
-    const binds = sparqlBindConversions(view.state);
-    const notExists = sparqlNotExistsConversions(view.state);
-    const operations = sparqlOperationConversions(view.state);
-    const diagnostics = srlConformanceDiagnostics(view.state).filter((diagnostic) =>
-      !binds.some((bind) => bind.hasBoundGuard && bind.from < diagnostic.from && diagnostic.to <= bind.to)
-    );
-    return diagnostics.map((diagnostic): Diagnostic => {
-      const bind = binds.find((conversion) => conversion.from === diagnostic.from);
-      if (bind && bindAction) return {
-        ...diagnostic,
-        to: bind.to,
-        severity: 'error',
-        message: bind.hasBoundGuard
-          ? 'This SPARQL BIND with FILTER(BOUND(...)) is equivalent to SRL SET.'
-          : 'In SRL, SET is equivalent to SPARQL BIND together with FILTER(BOUND(...)).',
-        actions: [{
-          name: 'Convert SPARQL BIND to SRL SET',
-          apply: (editor) => editor.dispatch({ changes: { from: bind.from, to: bind.to, insert: bind.replacement } }),
-        }],
-      };
-      if (bind) return { ...diagnostic, severity: 'error', message: 'Syntax error.' };
-      const negation = notExists.find((conversion) => diagnostic.from >= conversion.from && diagnostic.to <= conversion.to);
-      if (negation && notExistsAction) return {
-        from: negation.from,
-        to: negation.to,
-        severity: 'error',
-        message: diagnostic.message,
-        actions: [{
-          name: 'Convert SPARQL FILTER NOT EXISTS to SRL NOT',
-          apply: (editor) => editor.dispatch({ changes: { from: negation.from, to: negation.to, insert: negation.replacement } }),
-        }],
-      };
-      if (negation) return { ...diagnostic, severity: 'error', message: 'Syntax error.' };
-      const operation = operations.find((conversion) => conversion.from === diagnostic.from);
-      if (operation && operationAction) return {
-        from: operation.from,
-        to: operation.to,
-        severity: 'error',
-        message: operation.message,
-        actions: [{
-          name: operation.actionName,
-          apply: (editor) => editor.dispatch({ changes: { from: operation.from, to: operation.to, insert: operation.replacement } }),
-        }],
-      };
-      if (operation) return { ...diagnostic, severity: 'error', message: 'Syntax error.' };
-      return { ...diagnostic, severity: 'error', message: helpersEnabled ? diagnostic.message : 'Syntax error.' };
-    });
+  const binds = sparqlBindConversions(state);
+  const notExists = sparqlNotExistsConversions(state);
+  const operations = sparqlOperationConversions(state);
+  const diagnostics = srlConformanceDiagnostics(state).filter((diagnostic) =>
+    !binds.some((bind) => bind.hasBoundGuard && bind.from < diagnostic.from && diagnostic.to <= bind.to)
+  );
+  return diagnostics.map((diagnostic): Diagnostic => {
+    const bind = binds.find((conversion) => conversion.from === diagnostic.from);
+    if (bind && bindAction) return {
+      ...diagnostic,
+      to: bind.to,
+      severity: 'error',
+      message: bind.hasBoundGuard
+        ? 'This SPARQL BIND with FILTER(BOUND(...)) is equivalent to SRL SET.'
+        : 'In SRL, SET is equivalent to SPARQL BIND together with FILTER(BOUND(...)).',
+      actions: [{
+        name: 'Convert SPARQL BIND to SRL SET',
+        apply: (editor) => editor.dispatch({ changes: { from: bind.from, to: bind.to, insert: bind.replacement } }),
+      }],
+    };
+    if (bind) return { ...diagnostic, severity: 'error', message: 'Syntax error.' };
+    const negation = notExists.find((conversion) => diagnostic.from >= conversion.from && diagnostic.to <= conversion.to);
+    if (negation && notExistsAction) return {
+      from: negation.from,
+      to: negation.to,
+      severity: 'error',
+      message: diagnostic.message,
+      actions: [{
+        name: 'Convert SPARQL FILTER NOT EXISTS to SRL NOT',
+        apply: (editor) => editor.dispatch({ changes: { from: negation.from, to: negation.to, insert: negation.replacement } }),
+      }],
+    };
+    if (negation) return { ...diagnostic, severity: 'error', message: 'Syntax error.' };
+    const operation = operations.find((conversion) => conversion.from === diagnostic.from);
+    if (operation && operationAction) return {
+      from: operation.from,
+      to: operation.to,
+      severity: 'error',
+      message: operation.message,
+      actions: [{
+        name: operation.actionName,
+        apply: (editor) => editor.dispatch({ changes: { from: operation.from, to: operation.to, insert: operation.replacement } }),
+      }],
+    };
+    if (operation) return { ...diagnostic, severity: 'error', message: 'Syntax error.' };
+    return { ...diagnostic, severity: 'error', message: helpersEnabled ? diagnostic.message : 'Syntax error.' };
   });
 }

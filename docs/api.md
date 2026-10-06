@@ -31,6 +31,36 @@ Prefix helpers return IRI text without angle brackets. They do not resolve
 relative IRIs or decode escapes. Variable collection does not check scope.
 Use the helpers with an `EditorState` configured for the appropriate language.
 
+## Parse errors
+
+The Turtle and SPARQL packages export `parseErrors(state)` and
+`parseErrorLinter()`; the SRL package re-exports `parseErrors(state)`. Every
+language support function in these packages includes a linter that underlines
+parse errors. The functions have no option to leave it out.
+
+```ts
+interface ParseError {
+  from: number;
+  to: number;
+  message: string;
+}
+```
+
+`parseErrors(state)` returns `ParseError[]` in document order, one for each
+error node in the syntax tree. Error nodes separated only by whitespace or `#`
+comments are merged into one error, so `this is a test` is one error rather than
+four. An error with `from` equal to `to` marks a point where a token is missing;
+its message is `Syntax error.` Other messages quote the unexpected text,
+shortened to 32 characters.
+
+An incomplete parse ends in error nodes that are not in the document, so
+`parseErrors` completes the parse first. It allows one second for this and
+returns an empty array if the parse does not finish in that time.
+
+`srl()` reports parse errors and SRL conformance errors through one linter. It
+leaves out a parse error that overlaps an SRL diagnostic, because the SRL
+message describes the same text.
+
 ## Turtle, TriG, N-Triples, and N-Quads
 
 Import from `@kurrawongai/codemirror-lang-turtle12`.
@@ -45,6 +75,7 @@ Import from `@kurrawongai/codemirror-lang-turtle12`.
 | `turtleHighlighting` | Highlight node prop for manual parser configuration |
 | `turtleCompletionSource(options?, dialect?)` | Standalone completion source; dialect is `'turtle'` (default) or `'trig'` |
 | `documentPrefixes`, `knownPrefixes` | Prefix helpers described above |
+| `parseErrors(state)`, `parseErrorLinter()` | Parse-error helpers described above |
 
 For raw parsing, select `TurtleDoc`, `TrigDoc`, `NTriplesDoc`, or `NQuadsDoc`:
 
@@ -73,6 +104,7 @@ Import from `@kurrawongai/codemirror-lang-sparql12`.
 | `KEYWORDS` | Sorted lowercase keywords derived from generated grammar terms |
 | `KEYWORD_NODE_NAMES` | Sorted keyword node names, such as `KwSELECT` |
 | `documentPrefixes`, `knownPrefixes`, `documentVariables` | Helpers described above |
+| `parseErrors(state)`, `parseErrorLinter()` | Parse-error helpers described above |
 
 `sparql()` takes `CompletionOptions`. The standalone completion source takes
 the additional exported type `CompletionSourceOptions`:
@@ -99,7 +131,7 @@ Import from `@kurrawongai/codemirror-lang-srl`.
 | `dataBlockRanges(state)` | `{ from, to }[]` for `SrlDataBlock` nodes, in document order |
 | `tupleRanges(state)` | `TupleRange[]` for tuples in rule heads and bodies |
 | `variablesInDataBlocks(state)` | `{ from, to, name }[]` for variables in ground data blocks; names include `?` or `$` |
-| `documentPrefixes`, `knownPrefixes`, `documentVariables`, `srlKeywords` | Re-exports from the SPARQL package |
+| `documentPrefixes`, `knownPrefixes`, `documentVariables`, `parseErrors`, `srlKeywords` | Re-exports from the SPARQL package |
 
 The package also exports `SrlOptions` and `TupleRange`:
 

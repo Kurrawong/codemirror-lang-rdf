@@ -50,3 +50,7 @@ export function completions(page: Page, id: string): Promise<string[]> {
 export function docOf(page: Page, id: string): Promise<string> {
   return page.evaluate((id) => window.rdfFixture.docOf(id), id);
 }
+
+export function diagnostics(page: Page, id: string): Promise<{ found: { from: number; to: number; message: string }[]; marks: number }> {
+  return page.evaluate((id) => window.rdfFixture.diagnostics(id), id);
+}
