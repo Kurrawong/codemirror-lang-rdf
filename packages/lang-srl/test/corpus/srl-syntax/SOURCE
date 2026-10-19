@@ -1,12 +1,12 @@
 https://github.com/w3c/data-shapes
-branch: gh-pages
-commit: 9c863967bceaef1a87c24e4dd761eda763823120
+branch: srl-agg-grammar (pull request #1347)
+commit: 3a26f06b76076ffb4b569a9adada6da743914b0a
 path:   shacl12-test-suite/tests/sparql-rl/syntax
-entries: 109 positive, 30 negative
+entries: 134 positive, 38 negative
 
-Vendored from the snapshot the application monorepo already carries under
-packages/srl/test/w3c/syntax, so both parsers are scored against the same
-files. Do not edit by hand.
+Vendored from the head of w3c/data-shapes pull request #1347, which adds
+GROUP aggregates to the SRL grammar, before that pull request was merged.
+Do not edit by hand.
 
 Note on the language: `FOR ?var IN <shape>`, and the `IF … THEN` rule form,
 were removed from the SRL grammar upstream on 2026-08-24 (commits 58fdfc6 and

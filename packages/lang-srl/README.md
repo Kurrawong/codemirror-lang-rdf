@@ -19,7 +19,11 @@ else console.log(result.diagnostics);
 ```
 
 `SET` lowers to `BIND` plus `FILTER(BOUND(...))`; SRL `NOT` lowers to `FILTER
-NOT EXISTS`. SRL's `NOT DATA` and `WHERE DATA` match only the input data, not
+NOT EXISTS`. `GROUP BY ?k { ... } [ ?n := COUNT(*) ]` lowers to the subquery
+`{ SELECT ?k (COUNT(*) AS ?n) WHERE { ... } GROUP BY ?k }`, with a warning when
+the group pattern uses a variable that is bound earlier in the body but is not
+a `GROUP BY` variable: the subquery does not see the earlier value. A `GROUP`
+with neither `BY` variables nor aggregates returns a diagnostic. SRL's `NOT DATA` and `WHERE DATA` match only the input data, not
 inferred triples, and SPARQL cannot tell the two apart. They lower to a
 `GRAPH <{baseGraph}> { ... }` pattern with a warning. The placeholder is
 deliberately not a valid IRI: replace it with a named graph holding the input
@@ -44,9 +48,10 @@ as SPARQL. Before a successful result is returned, it is parsed and checked
 again in the target language.
 
 Parse errors and SRL conformance errors are always reported. Conformance
-errors include SPARQL `BIND`, `EXISTS` and `FILTER NOT EXISTS`, SPARQL-only
-aggregates and built-ins, unsupported property paths, and variables in a
-ground `DATA` block. SRL uses `SET` and `NOT { ... }` for the two directly
+errors include SPARQL `BIND`, `EXISTS` and `FILTER NOT EXISTS`, aggregates
+outside a `GROUP` element, SPARQL-only built-ins, unsupported property paths,
+`SET`, `NOT` or `GROUP` inside a `NOT` body, and variables in a ground `DATA`
+block. SRL uses `SET` and `NOT { ... }` for the two directly
 convertible cases. Enable optional assistance to add conversion actions:
 
 ```js

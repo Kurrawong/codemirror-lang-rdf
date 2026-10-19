@@ -200,8 +200,10 @@ function expandRuleIri(source: string, ruleName: Span): string {
 /**
  * Lower one simple SRL rule or DATA block to SPARQL.
  *
- * `SET ( ?x := expr )` becomes `BIND(expr AS ?x) FILTER(BOUND(?x))` and bare
- * `NOT { ... }` becomes `FILTER NOT EXISTS { ... }`. The source is never
+ * `SET ( ?x := expr )` becomes `BIND(expr AS ?x) FILTER(BOUND(?x))`, bare
+ * `NOT { ... }` becomes `FILTER NOT EXISTS { ... }`, and
+ * `GROUP BY ?k { ... } [ ?n := COUNT(*) ]` becomes
+ * `{ SELECT ?k (COUNT(*) AS ?n) WHERE { ... } GROUP BY ?k }`. The source is never
  * guessed at: SRL constructs without a SPARQL query equivalent return ranges
  * suitable for CodeMirror diagnostics instead.
  */
@@ -256,17 +258,58 @@ export function srlToSparql(source: string, options: SrlToSparqlOptions = {}): C
   if (whereData) warnings.push(baseGraphWarning(whereData.from, whereData.to, 'WHERE DATA', baseGraph));
 
   const changes: { from: number; to: number; insert: string }[] = [];
-  for (const assignment of within(all, body, 'Assignment')) {
+  const groups = within(all, body, 'GroupAggregate');
+  const inGroup = (node: Span) => groups.some((group) => group.from <= node.from && node.to <= group.to);
+  const assignmentChange = (assignment: Span) => {
     const variable = within(all, assignment, 'Var')[0];
     const expression = within(all, assignment, 'Expression')[0];
     if (!variable || !expression) {
       diagnostics.push({ from: assignment.from, to: assignment.to, message: 'This SET assignment cannot be converted.' });
-      continue;
+      return undefined;
     }
-    changes.push({
+    return {
       from: assignment.from,
       to: assignment.to,
       insert: `BIND(${source.slice(expression.from, expression.to)} AS ${source.slice(variable.from, variable.to)}) FILTER(BOUND(${source.slice(variable.from, variable.to)}))`,
+    };
+  };
+  for (const assignment of within(all, body, 'Assignment')) {
+    if (inGroup(assignment)) continue;
+    const change = assignmentChange(assignment);
+    if (change) changes.push(change);
+  }
+  for (const group of groups) {
+    const pattern = within(all, group, 'GroupPattern')[0];
+    const keys = within(all, group, 'ListVars').flatMap((list) => within(all, list, 'Var'));
+    const aggregations = within(all, group, 'AggregationAssignment').map((assignment) => ({
+      variable: within(all, assignment, 'Var')[0],
+      aggregate: within(all, assignment, 'AggregationFunction')[0],
+    }));
+    if (!pattern || aggregations.some(({ variable, aggregate }) => !variable || !aggregate)) {
+      diagnostics.push({ from: group.from, to: group.to, message: 'This GROUP cannot be converted.' });
+      continue;
+    }
+    if (!keys.length && !aggregations.length) {
+      diagnostics.push({ from: group.from, to: group.to, message: 'A GROUP with no BY variables and no aggregates has no SPARQL equivalent.' });
+      continue;
+    }
+    const inner = replace(
+      source.slice(pattern.from, pattern.to),
+      within(all, pattern, 'Assignment').flatMap((assignment) => {
+        const change = assignmentChange(assignment);
+        return change ? [{ ...change, from: change.from - pattern.from, to: change.to - pattern.from }] : [];
+      }),
+    );
+    const keyList = keys.map((key) => source.slice(key.from, key.to)).join(' ');
+    const projection = [
+      keyList,
+      ...aggregations.map(({ variable, aggregate }) =>
+        `(${source.slice(aggregate.from, aggregate.to)} AS ${source.slice(variable.from, variable.to)})`),
+    ].filter(Boolean).join(' ');
+    changes.push({
+      from: group.from,
+      to: group.to,
+      insert: `{ SELECT ${projection} WHERE ${inner}${keyList ? ` GROUP BY ${keyList}` : ''} }`,
     });
   }
   for (const negation of within(all, body, 'Negation')) {
@@ -287,11 +330,31 @@ export function srlToSparql(source: string, options: SrlToSparqlOptions = {}): C
   }
   if (diagnostics.length) return { diagnostics };
 
-  const elements = bodyElements(all, body, ['TriplesBlock', 'Negation', 'Filter', 'Assignment']);
-  const late = lateBoundNegationVars(source, all, elements, (element) => element.name === 'Negation', (element) =>
+  const elements = bodyElements(all, body, ['TriplesBlock', 'Negation', 'Filter', 'Assignment', 'GroupAggregate']);
+  const groupOutputs = (group: Span) => [
+    ...within(all, group, 'ListVars').flatMap((list) => [...varsIn(all, source, list)]),
+    ...within(all, group, 'AggregationAssignment').map((assignment) => varName(source, within(all, assignment, 'Var')[0])),
+  ];
+  const binds = (element: Span) =>
     element.name === 'TriplesBlock' ? [...varsIn(all, source, element)]
       : element.name === 'Assignment' ? within(all, element, 'Var').slice(0, 1).map((node) => varName(source, node))
-        : []);
+        : element.name === 'GroupAggregate' ? groupOutputs(element)
+          : [];
+  const late = lateBoundNegationVars(source, all, elements, (element) => element.name === 'Negation', binds);
+  elements.forEach((element, index) => {
+    if (element.name !== 'GroupAggregate') return;
+    const pattern = within(all, element, 'GroupPattern')[0];
+    const before = new Set(elements.slice(0, index).flatMap(binds));
+    const keys = new Set(within(all, element, 'ListVars').flatMap((list) => [...varsIn(all, source, list)]));
+    const vars = [...varsIn(all, source, pattern)].filter((name) => before.has(name) && !keys.has(name));
+    if (vars.length)
+      warnings.push({
+        from: element.from,
+        to: element.to,
+        message: `${varList(vars)} ${vars.length === 1 ? 'is' : 'are'} bound before this GROUP but ${vars.length === 1 ? 'is' : 'are'} not a GROUP BY variable. `
+          + `The SPARQL subquery is evaluated on its own and does not see the earlier ${vars.length === 1 ? 'value' : 'values'}, so the results can differ.`,
+      });
+  });
   for (const { element, vars } of late)
     warnings.push({
       from: element.from,

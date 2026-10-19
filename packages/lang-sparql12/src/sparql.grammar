@@ -336,10 +336,25 @@ headItem { TupleTemplate | TriplesSameSubject }
 
 BodyPattern { "{" srlGroupBody "}" }
 srlGroupBody { TriplesBlock? (srlPatternItem "."? TriplesBlock?)* }
-srlPatternItem { Negation | Filter | Assignment | TuplePattern }
+srlPatternItem { Negation | Filter | Assignment | GroupAggregate | TuplePattern }
 
 Negation { KwNOT KwDATA? BodyPattern }
 Assignment { KwSET "(" Var AssignOp Expression ")" }
+
+// `GROUP BY ?s { … } [ ?n := COUNT(*) ]`, from w3c/data-shapes pull request
+// #1347. The group pattern follows the spec's production exactly: triples,
+// FILTER and SET, with no NOT or nested GROUP. The aggregates take a
+// variable, not an expression, and only COUNT may be DISTINCT.
+GroupAggregate {
+  KwGROUP (KwBY ListVars)? GroupPattern (Anon | "[" AggregationAssignment+ "]")
+}
+GroupPattern { "{" TriplesBlock? ((Filter | Assignment) "."? TriplesBlock?)* "}" }
+ListVars { Var+ }
+AggregationAssignment { Var AssignOp AggregationFunction }
+AggregationFunction {
+  KwCOUNT "(" KwDISTINCT? (Var | "*") ")" |
+  (KwMIN | KwMAX | KwSUM) "(" Var ")"
+}
 
 SrlDataBlock { KwDATA DataTemplate }
 DataTemplate { "{" TriplesTemplate? "}" }

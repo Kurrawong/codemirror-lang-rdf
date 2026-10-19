@@ -25,7 +25,13 @@ RULE iri? HeadTemplate WHERE DATA? BodyPattern
 ```
 
 Rule bodies contain triples, filters, negation (`NOT DATA? { ... }`),
-assignment (`SET ( ?v := expression )`), and tuple patterns (`TUPLE( ... )`).
+assignment (`SET ( ?v := expression )`), grouping with aggregates
+(`GROUP BY ?k { ... } [ ?n := COUNT(*) ]`), and tuple patterns (`TUPLE( ... )`).
+The `GROUP` syntax follows
+[w3c/data-shapes pull request #1347](https://github.com/w3c/data-shapes/pull/1347),
+which had not been merged into the specification when it was implemented here.
+Its aggregates are `COUNT`, `MIN`, `MAX` and `SUM` over a single variable, plus
+`COUNT(*)`; only `COUNT` accepts `DISTINCT`.
 Rule sets can also contain ground `DATA` blocks and prologue declarations
 between blocks. The older `IF ... THEN` and `FOR ... IN` forms are rejected.
 
@@ -38,7 +44,7 @@ specification document.
 | Corpus | Upstream commit | Local record |
 | --- | --- | --- |
 | RDF 1.2 and SPARQL 1.1/1.2 syntax | `369a90d1a60c021b746df2e411da0ff36258a758` in `w3c/rdf-tests` | [corpus.config.json](../corpus.config.json) |
-| SPARQL-RL syntax | `9c863967bceaef1a87c24e4dd761eda763823120` in `w3c/data-shapes`, branch `gh-pages` | [SRL SOURCE](../packages/lang-srl/test/corpus/srl-syntax/SOURCE) |
+| SPARQL-RL syntax | `3a26f06b76076ffb4b569a9adada6da743914b0a` in `w3c/data-shapes`, branch `srl-agg-grammar` ([pull request #1347](https://github.com/w3c/data-shapes/pull/1347), not yet merged) | [SRL SOURCE](../packages/lang-srl/test/corpus/srl-syntax/SOURCE) |
 
 Language specifications: [Turtle](https://www.w3.org/TR/rdf12-turtle/),
 [TriG](https://www.w3.org/TR/rdf12-trig/),
@@ -59,7 +65,7 @@ must produce at least one error node. The current corpus results are:
 | --- | --- | --- | --- |
 | Turtle, TriG, N-Triples, N-Quads | 165 | 155 | 10 |
 | SPARQL 1.1 and 1.2 | 334 | 298 | 36 |
-| SRL | 139 | 134 | 5 |
+| SRL | 172 | 167 | 5 |
 
 All positive cases parse without errors. The remaining 51 cases are negative
 tests accepted by the grammars. These counts describe the vendored syntax

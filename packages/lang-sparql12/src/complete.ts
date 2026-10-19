@@ -53,8 +53,8 @@ const FUNCTIONS = [
 
 const AGGREGATES = ['COUNT', 'SUM', 'MIN', 'MAX', 'AVG', 'SAMPLE', 'GROUP_CONCAT', 'SEPARATOR'];
 
-/** SRL adds these to the SPARQL list; `DATA`, `NOT`, `WHERE` and `FILTER` it already had. */
-const SRL_KEYWORDS = ['RULE', 'WHERE', 'DATA', 'NOT', 'FILTER', 'SET', 'TUPLE'];
+/** SRL adds these to the SPARQL list; `DATA`, `NOT`, `WHERE` and `FILTER` it already had, and `GROUP BY` too. */
+const SRL_KEYWORDS = ['RULE', 'WHERE', 'DATA', 'NOT', 'FILTER', 'SET', 'GROUP', 'TUPLE'];
 
 export const sparqlKeywords: readonly string[] = [...QUERY_KEYWORDS, ...UPDATE_KEYWORDS];
 export const sparqlFunctions: readonly string[] = [...FUNCTIONS, ...AGGREGATES];

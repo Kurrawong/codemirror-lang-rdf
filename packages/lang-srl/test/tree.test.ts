@@ -84,6 +84,64 @@ describe('body items', () => {
   });
 });
 
+describe('GROUP aggregates', () => {
+  it('reads a grouping with BY variables and aggregate assignments', () => {
+    const text = 'RULE {} WHERE { GROUP BY ?s ?p { ?s ?p ?o } [ ?n := COUNT(*) ?t := SUM(?o) ] }';
+    expect(parsesCleanly(parser, text)).toBe(true);
+    expect(span(text, 'ListVars')).toBe('?s ?p');
+    expect(span(text, 'GroupPattern')).toBe('{ ?s ?p ?o }');
+    expect(allTextOf(parser, text, 'AggregationAssignment')).toEqual(['?n := COUNT(*)', '?t := SUM(?o)']);
+    expect(allTextOf(parser, text, 'AggregationFunction')).toEqual(['COUNT(*)', 'SUM(?o)']);
+  });
+
+  it('reads a grouping with no BY clause and no aggregates', () => {
+    expect(span('RULE {} WHERE { GROUP { ?s ?p ?o } [] }', 'GroupAggregate')).toBe('GROUP { ?s ?p ?o } []');
+    expect(span('RULE {} WHERE { GROUP {} [ ] }', 'Anon')).toBe('[ ]');
+  });
+
+  it('reads FILTER and SET inside the group pattern', () => {
+    const text = 'RULE {} WHERE { GROUP BY ?s { ?s ?p ?o FILTER(?o < 42) SET ( ?z := ?o + 1 ) } [ ?m := MAX(?z) ] }';
+    expect(parsesCleanly(parser, text)).toBe(true);
+  });
+
+  it.each(['COUNT(?o)', 'COUNT(DISTINCT ?o)', 'COUNT(DISTINCT *)', 'MIN(?o)', 'MAX(?o)', 'SUM(?o)'])(
+    'accepts %s',
+    (aggregate) => {
+      expect(parsesCleanly(parser, `RULE {} WHERE { GROUP { ?s ?p ?o } [ ?v := ${aggregate} ] }`)).toBe(true);
+    }
+  );
+
+  it.each([
+    'AVG(?o)',
+    'SAMPLE(?o)',
+    'GROUP_CONCAT(?o)',
+    'MIN(DISTINCT ?o)',
+    'SUM(?o + 1)',
+    'COUNT(?s + ?o)',
+    'MAX(*)',
+  ])('rejects %s', (aggregate) => {
+    expect(parsesCleanly(parser, `RULE {} WHERE { GROUP { ?s ?p ?o } [ ?v := ${aggregate} ] }`)).toBe(false);
+  });
+
+  it.each([
+    ['no group pattern', 'GROUP BY ?s [ ?n := COUNT(*) ]'],
+    ['no aggregation list', 'GROUP BY ?s { ?s ?p ?o }'],
+    ['BY with no variables', 'GROUP BY { ?s ?p ?o } []'],
+    ['NOT in the group pattern', 'GROUP { ?s ?p ?o NOT { ?s ?p 1 } } []'],
+    ['a nested GROUP', 'GROUP { GROUP { ?s ?p ?o } [] } []'],
+  ])('rejects %s', (_, element) => {
+    expect(parsesCleanly(parser, `RULE {} WHERE { ${element} }`)).toBe(false);
+  });
+
+  it('keeps GROUP BY in a SPARQL query apart from the SRL element', () => {
+    const sparql = sparqlParser.configure({ top: 'SparqlUnit' });
+    const text = 'SELECT ?s (COUNT(*) AS ?n) WHERE { ?s ?p ?o } GROUP BY ?s';
+    expect(parsesCleanly(sparql, text)).toBe(true);
+    expect(nodeNames(sparql, text).has('GroupAggregate')).toBe(false);
+    expect(nodeNames(sparql, text).has('GroupClause')).toBe(true);
+  });
+});
+
 describe('the rule-tuples extension', () => {
   it('names a tuple for its position', () => {
     const text = 'RULE { TUPLE( ?a, ?b ) } WHERE { TUPLE( ?a, 1 ) }';
@@ -112,7 +170,7 @@ describe('SRL keywords do not shadow prefixed names', () => {
    * different token — but that is the kind of "obviously fine" that is worth a
    * test, since the whole keyword mechanism depends on it.
    */
-  it.each([':set', ':rule', ':data', ':tuple', ':not'])('reads %s as a local name', (name) => {
+  it.each([':set', ':rule', ':data', ':tuple', ':not', ':group', ':count'])('reads %s as a local name', (name) => {
     const text = `PREFIX : <http://e/>\nRULE {} WHERE { ?s ${name} ?o }`;
     expect(parsesCleanly(parser, text)).toBe(true);
     expect(allTextOf(parser, text, 'PNameLN')).toContain(name);
@@ -124,7 +182,7 @@ describe('SRL keywords do not shadow prefixed names', () => {
     expect(allTextOf(parser, text, 'PNameLN')).toContain(name);
   });
 
-  it.each(['?set', '?rule', '?tuple', '?data'])('reads %s as a variable', (name) => {
+  it.each(['?set', '?rule', '?tuple', '?data', '?group', '?count'])('reads %s as a variable', (name) => {
     const text = `RULE {} WHERE { ${name} ?p ?o }`;
     expect(parsesCleanly(parser, text)).toBe(true);
     expect(allTextOf(parser, text, 'Var1')).toContain(name);

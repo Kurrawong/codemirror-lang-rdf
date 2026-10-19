@@ -191,6 +191,22 @@ WHERE {
   FILTER( ?painting NOT IN ( ex:unknown-work ) )
 }
 
+RULE ex:works-per-painter {
+  ?painter ex:workCount ?count ;
+           ex:largestArea ?largest
+}
+WHERE {
+  ?painter a ex:Painter .
+  GROUP BY ?painter {
+    ?painting ex:painter ?painter ;
+              ex:area ?area .
+    FILTER( ?area > 0 )
+  } [
+    ?count   := COUNT(DISTINCT ?painting)
+    ?largest := MAX(?area)
+  ]
+}
+
 `,
   },
 

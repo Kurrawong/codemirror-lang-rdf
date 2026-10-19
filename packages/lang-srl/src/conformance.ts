@@ -32,6 +32,8 @@ export function srlConformanceDiagnosticsForTree(source: string, tree: Tree): Sr
 
   tree.iterate({
     enter: (node) => {
+      // GROUP's aggregates are SRL; the same keywords elsewhere are SPARQL-only.
+      if (node.name === 'AggregationFunction') return false;
       if (node.name === 'KwBIND') {
         add(node.from, node.to, 'SPARQL BIND is not valid SRL. Use SET instead.');
       } else if (node.name === 'KwCONSTRUCT') {
@@ -73,6 +75,10 @@ export function srlConformanceDiagnosticsForTree(source: string, tree: Tree): Sr
       if (node.name !== 'Negation') return;
       node.node.cursor().iterate((inner) => {
         if (inner.from === node.from && inner.to === node.to) return;
+        if (inner.name === 'GroupAggregate') {
+          add(inner.from, inner.to, 'GROUP is not valid inside an SRL NOT body.');
+          return false;
+        }
         if (inner.name === 'Assignment')
           add(inner.from, inner.to, 'SET is not valid inside an SRL NOT body.');
         if (inner.name === 'Negation')

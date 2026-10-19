@@ -42,6 +42,12 @@ describe('folding', () => {
     expect(foldedText(state, 'NOT {')).toBe('\n    ?s ?p ?o\n  ');
   });
 
+  it('folds a GROUP pattern inside a body', () => {
+    const doc = 'RULE {} WHERE {\n  GROUP BY ?s {\n    ?s ?p ?o\n  } [ ?n := COUNT(*) ]\n}\n';
+    const state = stateFor(doc, srl());
+    expect(foldedText(state, 'GROUP BY ?s {')).toBe('\n    ?s ?p ?o\n  ');
+  });
+
   it('offers no fold on a one-line rule', () => {
     expect(foldableLines(stateFor('RULE {} WHERE {}\n', srl()))).toEqual([]);
   });
@@ -64,6 +70,11 @@ describe('indentation', () => {
     expect(indentAt(state, '<http://s>')).toBe(2);
   });
 
+  it('indents a GROUP pattern cumulatively', () => {
+    const state = stateFor('RULE {} WHERE {\n  GROUP {\n?s ?p ?o\n  } []\n}\n', srl());
+    expect(indentAt(state, '?s')).toBe(4);
+  });
+
   it('indents a negation cumulatively', () => {
     const state = stateFor('RULE {} WHERE {\n  NOT {\n?s ?p ?o\n  }\n}\n', srl());
     expect(indentAt(state, '?s')).toBe(4);
@@ -77,6 +88,9 @@ describe('completion', () => {
     const inBody = completionLabels(await completionsAt('RULE {} WHERE { S', srl()));
     expect(inBody).toContain('SET');
     expect(inBody).toContain('TUPLE');
+    const group = completionLabels(await completionsAt('RULE {} WHERE { GR', srl()));
+    expect(group).toContain('GROUP');
+    expect(group).toContain('GROUP BY');
   });
 
   it('offers SPARQL keywords and functions too', async () => {
@@ -163,6 +177,54 @@ describe('explicit SRL/SPARQL conversion', () => {
     expect(result.text).toContain('CONSTRUCT { ?s :out ?x } WHERE');
     expect(result.text).toContain('BIND(?n + 1 AS ?x) FILTER(BOUND(?x))');
     expect(result.text).toContain('FILTER NOT EXISTS { ?s :hidden true }');
+  });
+
+  it('lowers GROUP to a SPARQL subquery', () => {
+    const result = srlToSparql('RULE { ?s :count ?n } WHERE { ?s a :C . GROUP BY ?s { ?s :p ?o } [ ?n := COUNT(DISTINCT ?o) ?m := MAX(?o) ] }');
+    expect(result.diagnostics).toEqual([]);
+    expect(result.warnings).toBeUndefined();
+    expect(result.text).toBe(
+      'CONSTRUCT { ?s :count ?n } WHERE { ?s a :C . '
+        + '{ SELECT ?s (COUNT(DISTINCT ?o) AS ?n) (MAX(?o) AS ?m) WHERE { ?s :p ?o } GROUP BY ?s } }\n'
+    );
+  });
+
+  it('lowers GROUP without BY, and SET inside the group pattern', () => {
+    const result = srlToSparql('RULE { :all :total ?t } WHERE { GROUP { ?s :p ?o SET ( ?z := ?o + 1 ) } [ ?t := SUM(?z) ] }');
+    expect(result.diagnostics).toEqual([]);
+    expect(result.text).toBe(
+      'CONSTRUCT { :all :total ?t } WHERE { '
+        + '{ SELECT (SUM(?z) AS ?t) WHERE { ?s :p ?o BIND(?o + 1 AS ?z) FILTER(BOUND(?z)) } } }\n'
+    );
+  });
+
+  it('lowers GROUP BY with an empty aggregate list to a grouping-only subquery', () => {
+    const result = srlToSparql('RULE { ?s a :Seen } WHERE { GROUP BY ?s { ?s :p ?o } [] }');
+    expect(result.text).toBe('CONSTRUCT { ?s a :Seen } WHERE { { SELECT ?s WHERE { ?s :p ?o } GROUP BY ?s } }\n');
+  });
+
+  it('refuses a GROUP with neither BY variables nor aggregates', () => {
+    const source = 'RULE {} WHERE { GROUP { ?s :p ?o } [] }';
+    const result = srlToSparql(source);
+    expect(result.text).toBeUndefined();
+    expect(result.diagnostics).toEqual([
+      expect.objectContaining({ from: source.indexOf('GROUP'), message: expect.stringContaining('no SPARQL equivalent') }),
+    ]);
+  });
+
+  it('warns when a GROUP pattern uses a variable bound earlier that is not grouped on', () => {
+    const source = 'RULE { ?s :n ?n } WHERE { ?s :q ?o . GROUP BY ?s { ?s :p ?o } [ ?n := COUNT(*) ] }';
+    const result = srlToSparql(source);
+    expect(result.text).toBeDefined();
+    expect(result.warnings).toEqual([
+      expect.objectContaining({ from: source.indexOf('GROUP'), message: expect.stringContaining('?o is bound before this GROUP') }),
+    ]);
+  });
+
+  it('counts GROUP outputs as bound for a later NOT', () => {
+    const result = srlToSparql('RULE { ?s :n ?n } WHERE { GROUP BY ?s { ?s :p ?o } [ ?n := COUNT(*) ] NOT { ?s :n ?n } }');
+    expect(result.diagnostics).toEqual([]);
+    expect(result.warnings).toBeUndefined();
   });
 
   it('exports a rule as an INSERT update when requested', () => {
@@ -426,6 +488,20 @@ describe('SRL conformance over the shared grammar', () => {
       expect.objectContaining({ message: 'SET is not valid inside an SRL NOT body.' }),
       expect.objectContaining({ message: 'Nested NOT is not valid inside an SRL NOT body.' }),
     ]));
+  });
+
+  it('rejects a GROUP inside an SRL NOT body', () => {
+    const doc = 'RULE {} WHERE { NOT { GROUP { ?s :p ?o SET ( ?x := ?o ) } [ ?n := COUNT(*) ] } }';
+    expect(srlConformanceDiagnostics(stateFor(doc, srl()))).toEqual([
+      expect.objectContaining({ from: doc.indexOf('GROUP'), message: 'GROUP is not valid inside an SRL NOT body.' }),
+    ]);
+  });
+
+  it('allows the GROUP aggregates while still rejecting them in expressions', () => {
+    const doc = 'RULE {} WHERE { GROUP BY ?s { ?s :p ?o } [ ?a := COUNT(DISTINCT ?o) ?b := MIN(?o) ?c := MAX(?o) ?d := SUM(?o) ] FILTER(COUNT(?a) > 0) }';
+    expect(srlConformanceDiagnostics(stateFor(doc, srl()))).toEqual([
+      expect.objectContaining({ from: doc.indexOf('COUNT(?a)'), message: 'SPARQL COUNT is not valid SRL.' }),
+    ]);
   });
 
   it('allows the SRL expression and path subset', () => {

@@ -56,7 +56,7 @@ function foldBetweenBraces(node: SyntaxNode) {
 export const sparqlProps = [
   sparqlHighlighting,
   indentNodeProp.add({
-    'GroupGraphPattern QuadPattern QuadData ConstructTemplate HeadTemplate BodyPattern DataTemplate':
+    'GroupGraphPattern QuadPattern QuadData ConstructTemplate HeadTemplate BodyPattern GroupPattern DataTemplate':
       delimitedIndent({ closing: '}' }),
     'BlankNodePropertyList BlankNodePropertyListPath': delimitedIndent({ closing: ']' }),
     'Collection CollectionPath BrackettedExpression ArgList ExpressionList':
@@ -77,7 +77,7 @@ export const sparqlProps = [
     // the opening brace into the folded range.
     'InlineDataOneVar InlineDataFull': foldBetweenBraces,
     // SRL's own blocks, so a rule and a ground-data block each fold as a unit.
-    'HeadTemplate BodyPattern DataTemplate': foldInside,
+    'HeadTemplate BodyPattern GroupPattern DataTemplate': foldInside,
   }),
 ];
 

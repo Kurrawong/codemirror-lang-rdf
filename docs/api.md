@@ -162,7 +162,7 @@ the background.
 
 Production nodes use specification vocabulary, including `Triples`,
 `PredicateObjectList`, `GroupGraphPattern`, `TripleTerm`, `ReifiedTriple`,
-`QuadPattern`, `Rule`, and `HeadTemplate`.
+`QuadPattern`, `Rule`, `HeadTemplate`, and `GroupAggregate`.
 
 SRL ground data blocks use `SrlDataBlock`; `DataBlock` is reserved for SPARQL
 `VALUES` data. SPARQL expression trees include intermediate productions such
