@@ -16,7 +16,7 @@ SRL requires the SPARQL package. Omit packages you do not use.
 ## Install from a checkout
 
 Build local tarballs to test an unreleased checkout in an application. Requires
-Node.js 22 and pnpm 9.15.0.
+Node.js 26 and pnpm 9.15.0.
 
 From the repository root:
 
