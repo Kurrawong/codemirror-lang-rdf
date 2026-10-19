@@ -4,6 +4,37 @@ CodeMirror 6 language support and Lezer parsers for RDF 1.2, SPARQL 1.2,
 and SRL (SPARQL Rule Language). Includes highlighting, folding, indentation,
 and completion for Turtle, TriG, SPARQL, and SRL.
 
+## Demo
+
+[Try the live editor](https://kurrawong.github.io/codemirror-lang-rdf/)
+
+## Packages
+
+| Package | Languages | npm |
+| --- | --- | --- |
+| [@kurrawongai/codemirror-lang-turtle12](packages/lang-turtle12/README.md) | Turtle, TriG, N-Triples, N-Quads | [npm](https://www.npmjs.com/package/@kurrawongai/codemirror-lang-turtle12) |
+| [@kurrawongai/codemirror-lang-sparql12](packages/lang-sparql12/README.md) | SPARQL query and update | [npm](https://www.npmjs.com/package/@kurrawongai/codemirror-lang-sparql12) |
+| [@kurrawongai/codemirror-lang-srl](packages/lang-srl/README.md) | SRL | [npm](https://www.npmjs.com/package/@kurrawongai/codemirror-lang-srl) |
+
+These are editor parsers, not complete validators, and they accept some invalid
+documents. Each language support underlines parse errors in the editor. SRL
+language support adds targeted conformance diagnostics for the shared SPARQL
+grammar. N-Triples and N-Quads have no completion source.
+
+### SRL features
+
+The SRL package includes syntax-tree-based conversion between SRL `RULE` and
+`DATA` blocks and the corresponding SPARQL `CONSTRUCT`, `INSERT`, or
+`INSERT DATA` forms. It translates SRL `SET`, `NOT` and `GROUP` to their SPARQL
+equivalents and can convert `SET` and `NOT` back where the mapping is well
+defined.
+
+In an SRL editor it also reports SPARQL-only constructs such as `BIND` and
+`FILTER NOT EXISTS` as errors. An opt-in helper adds actions to the diagnostic
+tooltips for converting supported forms to their SRL equivalents, such as
+`SET` and `NOT`. Conversion returns separate source text and never changes
+the editor's language mode.
+
 ## Standards status
 
 This project follows evolving W3C 1.2 specifications. As of 18 September 2026,
@@ -21,37 +52,9 @@ implementation, not the maturity or stability of the underlying standard.
 | [SPARQL 1.2 Update](https://www.w3.org/TR/sparql12-update/) | Working Draft | 12 June 2026 |
 | [SPARQL 1.2 RL](https://www.w3.org/TR/sparql12-rl/) | Working Draft | 2 September 2026 |
 
-## Demo
-
-[Try the live editor](https://kurrawong.github.io/codemirror-lang-rdf/)
-
-| Package | Languages |
-| --- | --- |
-| [@kurrawongai/codemirror-lang-turtle12](packages/lang-turtle12/README.md) | Turtle, TriG, N-Triples, N-Quads |
-| [@kurrawongai/codemirror-lang-sparql12](packages/lang-sparql12/README.md) | SPARQL query and update |
-| [@kurrawongai/codemirror-lang-srl](packages/lang-srl/README.md) | SRL |
-
-These are editor parsers, not complete validators, and they accept some invalid
-documents. Each language support underlines parse errors in the editor. SRL
-language support adds targeted conformance diagnostics for the shared SPARQL
-grammar. N-Triples and N-Quads have no completion source.
-
-### SRL features
-
-The SRL package includes syntax-tree-based conversion between SRL `RULE` and
-`DATA` blocks and the corresponding SPARQL `CONSTRUCT`, `INSERT`, or
-`INSERT DATA` forms. It translates SRL `SET` and `NOT` to their SPARQL
-equivalents and can convert them back where the mapping is well defined.
-
-In an SRL editor it also reports SPARQL-only constructs such as `BIND` and
-`FILTER NOT EXISTS` as errors. An opt-in helper adds actions to the diagnostic
-tooltips for converting supported forms to their SRL equivalents, such as
-`SET` and `NOT`. Conversion returns separate source text and never changes
-the editor's language mode.
-
 ## Try it locally
 
-Requires Node.js 22 and pnpm 9.15.0.
+Requires Node.js 26 and pnpm 9.15.0.
 
 ```sh
 git clone https://github.com/kurrawong/codemirror-lang-rdf.git

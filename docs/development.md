@@ -2,7 +2,7 @@
 
 ## Build and test
 
-Use Node.js 22 and pnpm 9.15.0, matching the CI Node version and the root
+Use Node.js 26 and pnpm 9.15.0, matching the CI Node version and the root
 `packageManager` setting. From the repository root:
 
 ```sh
