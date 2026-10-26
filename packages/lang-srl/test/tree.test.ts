@@ -86,10 +86,11 @@ describe('body items', () => {
 
 describe('GROUP aggregates', () => {
   it('reads a grouping with BY variables and aggregate assignments', () => {
-    const text = 'RULE {} WHERE { GROUP BY ?s ?p { ?s ?p ?o } [ ?n := COUNT(*) ?t := SUM(?o) ] }';
+    const text = 'RULE {} WHERE { GROUP BY ?s ?p { ?s ?p ?o } [ ?n := COUNT(*), ?t := SUM(?o) ] }';
     expect(parsesCleanly(parser, text)).toBe(true);
     expect(span(text, 'ListVars')).toBe('?s ?p');
     expect(span(text, 'GroupPattern')).toBe('{ ?s ?p ?o }');
+    expect(span(text, 'AggregationAssignments')).toBe('?n := COUNT(*), ?t := SUM(?o)');
     expect(allTextOf(parser, text, 'AggregationAssignment')).toEqual(['?n := COUNT(*)', '?t := SUM(?o)']);
     expect(allTextOf(parser, text, 'AggregationFunction')).toEqual(['COUNT(*)', 'SUM(?o)']);
   });
@@ -125,6 +126,9 @@ describe('GROUP aggregates', () => {
 
   it.each([
     ['no group pattern', 'GROUP BY ?s [ ?n := COUNT(*) ]'],
+    ['assignments without a comma between them', 'GROUP { ?s ?p ?o } [ ?n := COUNT(*) ?t := SUM(?o) ]'],
+    ['a trailing comma', 'GROUP { ?s ?p ?o } [ ?n := COUNT(*), ]'],
+    ['a comma with no assignments', 'GROUP { ?s ?p ?o } [ , ]'],
     ['no aggregation list', 'GROUP BY ?s { ?s ?p ?o }'],
     ['BY with no variables', 'GROUP BY { ?s ?p ?o } []'],
     ['NOT in the group pattern', 'GROUP { ?s ?p ?o NOT { ?s ?p 1 } } []'],

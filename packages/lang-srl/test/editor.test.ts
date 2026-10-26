@@ -180,7 +180,7 @@ describe('explicit SRL/SPARQL conversion', () => {
   });
 
   it('lowers GROUP to a SPARQL subquery', () => {
-    const result = srlToSparql('RULE { ?s :count ?n } WHERE { ?s a :C . GROUP BY ?s { ?s :p ?o } [ ?n := COUNT(DISTINCT ?o) ?m := MAX(?o) ] }');
+    const result = srlToSparql('RULE { ?s :count ?n } WHERE { ?s a :C . GROUP BY ?s { ?s :p ?o } [ ?n := COUNT(DISTINCT ?o), ?m := MAX(?o) ] }');
     expect(result.diagnostics).toEqual([]);
     expect(result.warnings).toBeUndefined();
     expect(result.text).toBe(
@@ -498,7 +498,7 @@ describe('SRL conformance over the shared grammar', () => {
   });
 
   it('allows the GROUP aggregates while still rejecting them in expressions', () => {
-    const doc = 'RULE {} WHERE { GROUP BY ?s { ?s :p ?o } [ ?a := COUNT(DISTINCT ?o) ?b := MIN(?o) ?c := MAX(?o) ?d := SUM(?o) ] FILTER(COUNT(?a) > 0) }';
+    const doc = 'RULE {} WHERE { GROUP BY ?s { ?s :p ?o } [ ?a := COUNT(DISTINCT ?o), ?b := MIN(?o), ?c := MAX(?o), ?d := SUM(?o) ] FILTER(COUNT(?a) > 0) }';
     expect(srlConformanceDiagnostics(stateFor(doc, srl()))).toEqual([
       expect.objectContaining({ from: doc.indexOf('COUNT(?a)'), message: 'SPARQL COUNT is not valid SRL.' }),
     ]);

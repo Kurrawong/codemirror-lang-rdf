@@ -342,12 +342,14 @@ Negation { KwNOT KwDATA? BodyPattern }
 Assignment { KwSET "(" Var AssignOp Expression ")" }
 
 // `GROUP BY ?s { … } [ ?n := COUNT(*) ]`, from w3c/data-shapes pull request
-// #1347. The group pattern follows the spec's production exactly: triples,
-// FILTER and SET, with no NOT or nested GROUP. The aggregates take a
-// variable, not an expression, and only COUNT may be DISTINCT.
+// #1347, with the comma-separated assignment list of pull request #1375.
+// The group pattern follows the spec's production exactly: triples, FILTER
+// and SET, with no NOT or nested GROUP. The aggregates take a variable, not
+// an expression, and only COUNT may be DISTINCT.
 GroupAggregate {
-  KwGROUP (KwBY ListVars)? GroupPattern (Anon | "[" AggregationAssignment+ "]")
+  KwGROUP (KwBY ListVars)? GroupPattern (Anon | "[" AggregationAssignments "]")
 }
+AggregationAssignments { (AggregationAssignment ("," AggregationAssignment)*)? }
 GroupPattern { "{" TriplesBlock? ((Filter | Assignment) "."? TriplesBlock?)* "}" }
 ListVars { Var+ }
 AggregationAssignment { Var AssignOp AggregationFunction }
