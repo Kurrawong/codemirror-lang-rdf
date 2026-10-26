@@ -3,13 +3,13 @@
     "Negative syntax tests accepted by the grammar. See docs/conformance.md.",
     "variablesInDataBlocks(state) returns variable ranges for four of these",
     "cases. The application must create and display any diagnostics.",
-    "Tests fail for unlisted mismatches, stale entries, and unknown case names."
+    "test_ests fail for unlisted mismatches, stale entries, and unknown case names."
   ],
   "srl-syntax": {
-    "test_138": "An undeclared prefix. Whether `:s` resolves is a question about the prologue, not about the shape of the document.",
-    "test_155": "A variable as the object of a ground DATA triple. The grammar accepts it; variablesInDataBlocks() returns its span.",
-    "test_156": "A variable as the predicate of a ground DATA triple, as above.",
-    "test_157": "A variable as the subject of a ground DATA triple, as above.",
-    "test_159": "A variable reifier in a ground DATA triple, as above."
+    "test_137": "An undeclared prefix. Whether `:s` resolves is a question about the prologue, not about the shape of the document.",
+    "test_156": "A variable as the object of a ground DATA triple. The grammar accepts it; variablesInDataBlocks() returns its span.",
+    "test_157": "A variable as the predicate of a ground DATA triple, as above.",
+    "test_158": "A variable as the subject of a ground DATA triple, as above.",
+    "test_160": "A variable reifier in a ground DATA triple, as above."
   }
 }

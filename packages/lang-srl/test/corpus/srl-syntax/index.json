@@ -11,52 +11,52 @@
   },
   {
     "name": "test_100",
-    "file": "syntax-template-20.srl",
-    "expect": "positive"
-  },
-  {
-    "name": "test_101",
     "file": "syntax-template-21.srl",
     "expect": "positive"
   },
   {
-    "name": "test_102",
+    "name": "test_101",
     "file": "syntax-template-22.srl",
     "expect": "positive"
   },
   {
-    "name": "test_103",
+    "name": "test_102",
     "file": "syntax-template-23.srl",
     "expect": "positive"
   },
   {
-    "name": "test_104",
+    "name": "test_103",
     "file": "syntax-template-24.srl",
     "expect": "positive"
   },
   {
-    "name": "test_105",
+    "name": "test_104",
     "file": "syntax-template-25.srl",
     "expect": "positive"
   },
   {
-    "name": "test_106",
+    "name": "test_105",
     "file": "syntax-template-26.srl",
     "expect": "positive"
   },
   {
-    "name": "test_107",
+    "name": "test_106",
     "file": "syntax-template-27.srl",
     "expect": "positive"
   },
   {
-    "name": "test_108",
+    "name": "test_107",
     "file": "syntax-pattern-01.srl",
     "expect": "positive"
   },
   {
-    "name": "test_109",
+    "name": "test_108",
     "file": "syntax-pattern-02.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_109",
+    "file": "syntax-pattern-03.srl",
     "expect": "positive"
   },
   {
@@ -66,52 +66,52 @@
   },
   {
     "name": "test_110",
-    "file": "syntax-pattern-03.srl",
-    "expect": "positive"
-  },
-  {
-    "name": "test_111",
     "file": "syntax-pattern-04.srl",
     "expect": "positive"
   },
   {
-    "name": "test_112",
+    "name": "test_111",
     "file": "syntax-pattern-05.srl",
     "expect": "positive"
   },
   {
-    "name": "test_113",
+    "name": "test_112",
     "file": "syntax-pattern-06.srl",
     "expect": "positive"
   },
   {
-    "name": "test_114",
+    "name": "test_113",
     "file": "syntax-pattern-07.srl",
     "expect": "positive"
   },
   {
-    "name": "test_115",
+    "name": "test_114",
     "file": "syntax-pattern-08.srl",
     "expect": "positive"
   },
   {
-    "name": "test_116",
+    "name": "test_115",
     "file": "syntax-pattern-09.srl",
     "expect": "positive"
   },
   {
-    "name": "test_117",
+    "name": "test_116",
     "file": "syntax-pattern-10.srl",
     "expect": "positive"
   },
   {
-    "name": "test_118",
+    "name": "test_117",
     "file": "syntax-pattern-11.srl",
     "expect": "positive"
   },
   {
-    "name": "test_119",
+    "name": "test_118",
     "file": "syntax-pattern-12.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_119",
+    "file": "syntax-pattern-13.srl",
     "expect": "positive"
   },
   {
@@ -121,52 +121,52 @@
   },
   {
     "name": "test_120",
-    "file": "syntax-pattern-13.srl",
-    "expect": "positive"
-  },
-  {
-    "name": "test_121",
     "file": "syntax-pattern-14.srl",
     "expect": "positive"
   },
   {
-    "name": "test_122",
+    "name": "test_121",
     "file": "syntax-pattern-15.srl",
     "expect": "positive"
   },
   {
-    "name": "test_123",
+    "name": "test_122",
     "file": "syntax-pattern-16.srl",
     "expect": "positive"
   },
   {
-    "name": "test_124",
+    "name": "test_123",
     "file": "syntax-pattern-17.srl",
     "expect": "positive"
   },
   {
-    "name": "test_125",
+    "name": "test_124",
     "file": "syntax-pattern-18.srl",
     "expect": "positive"
   },
   {
-    "name": "test_126",
+    "name": "test_125",
     "file": "syntax-pattern-19.srl",
     "expect": "positive"
   },
   {
-    "name": "test_127",
+    "name": "test_126",
     "file": "syntax-pattern-20.srl",
     "expect": "positive"
   },
   {
-    "name": "test_128",
+    "name": "test_127",
     "file": "syntax-pattern-21.srl",
     "expect": "positive"
   },
   {
-    "name": "test_129",
+    "name": "test_128",
     "file": "syntax-pattern-22.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_129",
+    "file": "syntax-pattern-23.srl",
     "expect": "positive"
   },
   {
@@ -176,52 +176,52 @@
   },
   {
     "name": "test_130",
-    "file": "syntax-pattern-23.srl",
-    "expect": "positive"
-  },
-  {
-    "name": "test_131",
     "file": "syntax-pattern-24.srl",
     "expect": "positive"
   },
   {
-    "name": "test_132",
+    "name": "test_131",
     "file": "syntax-pattern-25.srl",
     "expect": "positive"
   },
   {
-    "name": "test_133",
+    "name": "test_132",
     "file": "syntax-pattern-26.srl",
     "expect": "positive"
   },
   {
-    "name": "test_134",
+    "name": "test_133",
     "file": "syntax-pattern-27.srl",
     "expect": "positive"
   },
   {
-    "name": "test_135",
+    "name": "test_134",
     "file": "syntax-rule-bad-01.srl",
     "expect": "negative"
   },
   {
-    "name": "test_136",
+    "name": "test_135",
     "file": "syntax-rule-bad-02.srl",
     "expect": "negative"
   },
   {
-    "name": "test_137",
+    "name": "test_136",
     "file": "syntax-rule-bad-03.srl",
     "expect": "negative"
   },
   {
-    "name": "test_138",
+    "name": "test_137",
     "file": "syntax-rule-bad-04.srl",
     "expect": "negative"
   },
   {
-    "name": "test_139",
+    "name": "test_138",
     "file": "syntax-rule-bad-05.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_139",
+    "file": "syntax-rule-bad-06.srl",
     "expect": "negative"
   },
   {
@@ -231,52 +231,52 @@
   },
   {
     "name": "test_140",
-    "file": "syntax-rule-bad-06.srl",
-    "expect": "negative"
-  },
-  {
-    "name": "test_141",
     "file": "syntax-rule-terms-bad-01.srl",
     "expect": "negative"
   },
   {
-    "name": "test_142",
+    "name": "test_141",
     "file": "syntax-rule-terms-bad-02.srl",
     "expect": "negative"
   },
   {
-    "name": "test_143",
+    "name": "test_142",
     "file": "syntax-rule-terms-bad-03.srl",
     "expect": "negative"
   },
   {
-    "name": "test_144",
+    "name": "test_143",
     "file": "syntax-rule-elements-group-bad-01.srl",
     "expect": "negative"
   },
   {
-    "name": "test_145",
+    "name": "test_144",
     "file": "syntax-rule-elements-group-bad-02.srl",
     "expect": "negative"
   },
   {
-    "name": "test_146",
+    "name": "test_145",
     "file": "syntax-rule-elements-group-bad-03.srl",
     "expect": "negative"
   },
   {
-    "name": "test_147",
+    "name": "test_146",
     "file": "syntax-rule-elements-group-bad-04.srl",
     "expect": "negative"
   },
   {
-    "name": "test_148",
+    "name": "test_147",
     "file": "syntax-rule-elements-group-bad-05.srl",
     "expect": "negative"
   },
   {
-    "name": "test_149",
+    "name": "test_148",
     "file": "syntax-rule-elements-group-bad-06.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_149",
+    "file": "syntax-rule-elements-group-bad-07.srl",
     "expect": "negative"
   },
   {
@@ -286,52 +286,52 @@
   },
   {
     "name": "test_150",
-    "file": "syntax-rule-elements-group-bad-07.srl",
-    "expect": "negative"
-  },
-  {
-    "name": "test_151",
     "file": "syntax-rule-elements-group-bad-08.srl",
     "expect": "negative"
   },
   {
+    "name": "test_151",
+    "file": "syntax-rule-elements-group-bad-09.srl",
+    "expect": "negative"
+  },
+  {
     "name": "test_152",
-    "file": "syntax-data-bad-01.srl",
+    "file": "syntax-rule-elements-group-bad-10.srl",
     "expect": "negative"
   },
   {
     "name": "test_153",
-    "file": "syntax-data-bad-02.srl",
+    "file": "syntax-data-bad-01.srl",
     "expect": "negative"
   },
   {
     "name": "test_154",
-    "file": "syntax-data-bad-03.srl",
+    "file": "syntax-data-bad-02.srl",
     "expect": "negative"
   },
   {
     "name": "test_155",
-    "file": "syntax-data-bad-04.srl",
+    "file": "syntax-data-bad-03.srl",
     "expect": "negative"
   },
   {
     "name": "test_156",
-    "file": "syntax-data-bad-05.srl",
+    "file": "syntax-data-bad-04.srl",
     "expect": "negative"
   },
   {
     "name": "test_157",
-    "file": "syntax-data-bad-06.srl",
+    "file": "syntax-data-bad-05.srl",
     "expect": "negative"
   },
   {
     "name": "test_158",
-    "file": "syntax-data-bad-07.srl",
+    "file": "syntax-data-bad-06.srl",
     "expect": "negative"
   },
   {
     "name": "test_159",
-    "file": "syntax-data-bad-08.srl",
+    "file": "syntax-data-bad-07.srl",
     "expect": "negative"
   },
   {
@@ -341,52 +341,52 @@
   },
   {
     "name": "test_160",
-    "file": "syntax-data-bad-09.srl",
+    "file": "syntax-data-bad-08.srl",
     "expect": "negative"
   },
   {
     "name": "test_161",
-    "file": "syntax-data-bad-10.srl",
+    "file": "syntax-data-bad-09.srl",
     "expect": "negative"
   },
   {
     "name": "test_162",
-    "file": "syntax-data-bad-11.srl",
+    "file": "syntax-data-bad-10.srl",
     "expect": "negative"
   },
   {
     "name": "test_163",
-    "file": "syntax-template-bad-01.srl",
+    "file": "syntax-data-bad-11.srl",
     "expect": "negative"
   },
   {
     "name": "test_164",
-    "file": "syntax-template-bad-02.srl",
+    "file": "syntax-template-bad-01.srl",
     "expect": "negative"
   },
   {
     "name": "test_165",
-    "file": "syntax-template-bad-03.srl",
+    "file": "syntax-template-bad-02.srl",
     "expect": "negative"
   },
   {
     "name": "test_166",
-    "file": "syntax-template-bad-04.srl",
+    "file": "syntax-template-bad-03.srl",
     "expect": "negative"
   },
   {
     "name": "test_167",
-    "file": "syntax-template-bad-05.srl",
+    "file": "syntax-template-bad-04.srl",
     "expect": "negative"
   },
   {
     "name": "test_168",
-    "file": "syntax-template-bad-06.srl",
+    "file": "syntax-template-bad-05.srl",
     "expect": "negative"
   },
   {
     "name": "test_169",
-    "file": "syntax-pattern-bad-01.srl",
+    "file": "syntax-template-bad-06.srl",
     "expect": "negative"
   },
   {
@@ -396,16 +396,21 @@
   },
   {
     "name": "test_170",
-    "file": "syntax-pattern-bad-02.srl",
+    "file": "syntax-pattern-bad-01.srl",
     "expect": "negative"
   },
   {
     "name": "test_171",
-    "file": "syntax-pattern-bad-03.srl",
+    "file": "syntax-pattern-bad-02.srl",
     "expect": "negative"
   },
   {
     "name": "test_172",
+    "file": "syntax-pattern-bad-03.srl",
+    "expect": "negative"
+  },
+  {
+    "name": "test_173",
     "file": "syntax-pattern-bad-04.srl",
     "expect": "negative"
   },
@@ -596,47 +601,47 @@
   },
   {
     "name": "test_51",
-    "file": "syntax-rule-elements-group-17.srl",
-    "expect": "positive"
-  },
-  {
-    "name": "test_52",
     "file": "syntax-reification-01.srl",
     "expect": "positive"
   },
   {
-    "name": "test_53",
+    "name": "test_52",
     "file": "syntax-reification-02.srl",
     "expect": "positive"
   },
   {
-    "name": "test_54",
+    "name": "test_53",
     "file": "syntax-reification-03.srl",
     "expect": "positive"
   },
   {
-    "name": "test_55",
+    "name": "test_54",
     "file": "syntax-reification-04.srl",
     "expect": "positive"
   },
   {
-    "name": "test_56",
+    "name": "test_55",
     "file": "syntax-reification-05.srl",
     "expect": "positive"
   },
   {
-    "name": "test_57",
+    "name": "test_56",
     "file": "syntax-reification-06.srl",
     "expect": "positive"
   },
   {
-    "name": "test_58",
+    "name": "test_57",
     "file": "syntax-reification-07.srl",
     "expect": "positive"
   },
   {
-    "name": "test_59",
+    "name": "test_58",
     "file": "syntax-reification-08.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_59",
+    "file": "syntax-data-01.srl",
     "expect": "positive"
   },
   {
@@ -646,52 +651,52 @@
   },
   {
     "name": "test_60",
-    "file": "syntax-data-01.srl",
-    "expect": "positive"
-  },
-  {
-    "name": "test_61",
     "file": "syntax-data-02.srl",
     "expect": "positive"
   },
   {
-    "name": "test_62",
+    "name": "test_61",
     "file": "syntax-data-03.srl",
     "expect": "positive"
   },
   {
-    "name": "test_63",
+    "name": "test_62",
     "file": "syntax-data-04.srl",
     "expect": "positive"
   },
   {
-    "name": "test_64",
+    "name": "test_63",
     "file": "syntax-data-05.srl",
     "expect": "positive"
   },
   {
-    "name": "test_65",
+    "name": "test_64",
     "file": "syntax-data-06.srl",
     "expect": "positive"
   },
   {
-    "name": "test_66",
+    "name": "test_65",
     "file": "syntax-data-07.srl",
     "expect": "positive"
   },
   {
-    "name": "test_67",
+    "name": "test_66",
     "file": "syntax-data-08.srl",
     "expect": "positive"
   },
   {
-    "name": "test_68",
+    "name": "test_67",
     "file": "syntax-data-09.srl",
     "expect": "positive"
   },
   {
-    "name": "test_69",
+    "name": "test_68",
     "file": "syntax-data-10.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_69",
+    "file": "syntax-data-11.srl",
     "expect": "positive"
   },
   {
@@ -701,52 +706,52 @@
   },
   {
     "name": "test_70",
-    "file": "syntax-data-11.srl",
-    "expect": "positive"
-  },
-  {
-    "name": "test_71",
     "file": "syntax-data-12.srl",
     "expect": "positive"
   },
   {
-    "name": "test_72",
+    "name": "test_71",
     "file": "syntax-data-13.srl",
     "expect": "positive"
   },
   {
-    "name": "test_73",
+    "name": "test_72",
     "file": "syntax-data-14.srl",
     "expect": "positive"
   },
   {
-    "name": "test_74",
+    "name": "test_73",
     "file": "syntax-data-15.srl",
     "expect": "positive"
   },
   {
-    "name": "test_75",
+    "name": "test_74",
     "file": "syntax-data-16.srl",
     "expect": "positive"
   },
   {
-    "name": "test_76",
+    "name": "test_75",
     "file": "syntax-data-17.srl",
     "expect": "positive"
   },
   {
-    "name": "test_77",
+    "name": "test_76",
     "file": "syntax-data-18.srl",
     "expect": "positive"
   },
   {
-    "name": "test_78",
+    "name": "test_77",
     "file": "syntax-data-19.srl",
     "expect": "positive"
   },
   {
-    "name": "test_79",
+    "name": "test_78",
     "file": "syntax-data-20.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_79",
+    "file": "syntax-data-21.srl",
     "expect": "positive"
   },
   {
@@ -756,52 +761,52 @@
   },
   {
     "name": "test_80",
-    "file": "syntax-data-21.srl",
-    "expect": "positive"
-  },
-  {
-    "name": "test_81",
     "file": "syntax-template-01.srl",
     "expect": "positive"
   },
   {
-    "name": "test_82",
+    "name": "test_81",
     "file": "syntax-template-02.srl",
     "expect": "positive"
   },
   {
-    "name": "test_83",
+    "name": "test_82",
     "file": "syntax-template-03.srl",
     "expect": "positive"
   },
   {
-    "name": "test_84",
+    "name": "test_83",
     "file": "syntax-template-04.srl",
     "expect": "positive"
   },
   {
-    "name": "test_85",
+    "name": "test_84",
     "file": "syntax-template-05.srl",
     "expect": "positive"
   },
   {
-    "name": "test_86",
+    "name": "test_85",
     "file": "syntax-template-06.srl",
     "expect": "positive"
   },
   {
-    "name": "test_87",
+    "name": "test_86",
     "file": "syntax-template-07.srl",
     "expect": "positive"
   },
   {
-    "name": "test_88",
+    "name": "test_87",
     "file": "syntax-template-08.srl",
     "expect": "positive"
   },
   {
-    "name": "test_89",
+    "name": "test_88",
     "file": "syntax-template-09.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_89",
+    "file": "syntax-template-10.srl",
     "expect": "positive"
   },
   {
@@ -811,52 +816,52 @@
   },
   {
     "name": "test_90",
-    "file": "syntax-template-10.srl",
-    "expect": "positive"
-  },
-  {
-    "name": "test_91",
     "file": "syntax-template-11.srl",
     "expect": "positive"
   },
   {
-    "name": "test_92",
+    "name": "test_91",
     "file": "syntax-template-12.srl",
     "expect": "positive"
   },
   {
-    "name": "test_93",
+    "name": "test_92",
     "file": "syntax-template-13.srl",
     "expect": "positive"
   },
   {
-    "name": "test_94",
+    "name": "test_93",
     "file": "syntax-template-14.srl",
     "expect": "positive"
   },
   {
-    "name": "test_95",
+    "name": "test_94",
     "file": "syntax-template-15.srl",
     "expect": "positive"
   },
   {
-    "name": "test_96",
+    "name": "test_95",
     "file": "syntax-template-16.srl",
     "expect": "positive"
   },
   {
-    "name": "test_97",
+    "name": "test_96",
     "file": "syntax-template-17.srl",
     "expect": "positive"
   },
   {
-    "name": "test_98",
+    "name": "test_97",
     "file": "syntax-template-18.srl",
     "expect": "positive"
   },
   {
-    "name": "test_99",
+    "name": "test_98",
     "file": "syntax-template-19.srl",
+    "expect": "positive"
+  },
+  {
+    "name": "test_99",
+    "file": "syntax-template-20.srl",
     "expect": "positive"
   }
 ]

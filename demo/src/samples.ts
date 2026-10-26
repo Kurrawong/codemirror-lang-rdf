@@ -202,7 +202,7 @@ WHERE {
               ex:area ?area .
     FILTER( ?area > 0 )
   } [
-    ?count   := COUNT(DISTINCT ?painting)
+    ?count   := COUNT(DISTINCT ?painting),
     ?largest := MAX(?area)
   ]
 }

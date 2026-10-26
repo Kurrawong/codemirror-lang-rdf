@@ -1,11 +1,13 @@
 https://github.com/w3c/data-shapes
-branch: srl-agg-grammar (pull request #1347)
-commit: 3a26f06b76076ffb4b569a9adada6da743914b0a
+branch: srl-aggregation-comma (pull request #1375)
+commit: a3eac70d93f94007f23d99c328f667c0e6a0b271
 path:   shacl12-test-suite/tests/sparql-rl/syntax
-entries: 134 positive, 38 negative
+entries: 133 positive, 40 negative
 
-Vendored from the head of w3c/data-shapes pull request #1347, which adds
-GROUP aggregates to the SRL grammar, before that pull request was merged.
+Vendored from the head of w3c/data-shapes pull request #1375, before that
+pull request was merged. It requires a comma between the aggregation
+assignments of a GROUP, and builds on pull request #1347, merged as
+e40ae54, which added GROUP aggregates to the SRL grammar.
 Do not edit by hand.
 
 Note on the language: `FOR ?var IN <shape>`, and the `IF … THEN` rule form,
