@@ -56,6 +56,9 @@ const AGGREGATES = ['COUNT', 'SUM', 'MIN', 'MAX', 'AVG', 'SAMPLE', 'GROUP_CONCAT
 /** SRL adds these to the SPARQL list; `DATA`, `NOT`, `WHERE` and `FILTER` it already had, and `GROUP BY` too. */
 const SRL_KEYWORDS = ['RULE', 'WHERE', 'DATA', 'NOT', 'FILTER', 'SET', 'GROUP', 'TUPLE'];
 
+/** Keywords of opt-in syntax, offered only when that syntax is enabled. */
+const LATERAL_KEYWORDS = ['LATERAL'];
+
 export const sparqlKeywords: readonly string[] = [...QUERY_KEYWORDS, ...UPDATE_KEYWORDS];
 export const sparqlFunctions: readonly string[] = [...FUNCTIONS, ...AGGREGATES];
 export const srlKeywords: readonly string[] = SRL_KEYWORDS;
@@ -158,6 +161,8 @@ function label(labels: readonly string[], type: string): Completion[] {
 export interface CompletionSourceOptions extends CompletionOptions {
   /** Which keyword set to offer. SRL adds its own and drops the update ones. */
   dialect?: 'sparql' | 'srl';
+  /** Offer `LATERAL` (SEP-0006) among the SPARQL keywords. Ignored for SRL, which has no LATERAL. */
+  lateral?: boolean;
 }
 
 /**
@@ -188,6 +193,7 @@ export function sparqlCompletionSource(options: CompletionSourceOptions = {}) {
       from,
       options: [
         ...label(srl ? [...QUERY_KEYWORDS, ...SRL_KEYWORDS] : sparqlKeywords, 'keyword'),
+        ...label(!srl && options.lateral ? LATERAL_KEYWORDS : [], 'keyword'),
         ...label(sparqlFunctions, 'function'),
         ...label(documentVariables(context.state), 'variable'),
         ...Object.entries(prefixes).map(([l, iri]) => ({

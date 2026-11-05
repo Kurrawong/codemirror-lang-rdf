@@ -31,6 +31,9 @@ parse errors. It accepts some invalid syntax and does not check query
 semantics, such as whether a projected variable is grouped. Use a separate validator before
 executing a query when validation is required.
 
+`LATERAL` ([SEP-0006](https://github.com/w3c/sparql-dev/blob/main/SEP/SEP-0006/sep-0006.md))
+is not in the SPARQL 1.2 Working Draft, so it is opt-in: `sparql({ lateral: true })`.
+
 ## Documentation
 
 - [Usage and completion](https://github.com/kurrawong/codemirror-lang-rdf/blob/main/docs/usage.md)

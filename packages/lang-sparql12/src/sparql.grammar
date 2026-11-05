@@ -17,6 +17,12 @@
 @top SparqlUnit { Prologue (Query | Update)? }
 @top SrlUnit { RuleSet }
 
+// Opt-in syntax beyond the SPARQL 1.2 Working Draft, enabled with
+// `parser.configure({ dialect: 'lateral' })`. With the dialect off, its
+// keywords are not keywords at all: the specializer's answer is discarded, so
+// the word is lexed exactly as it was before the dialect existed.
+@dialects { lateral }
+
 @skip { whitespace | Comment }
 
 // ------------------------------------------------------------------ prologue
@@ -115,13 +121,17 @@ TriplesBlock { TriplesSameSubjectPath ("." TriplesBlock?)? }
 
 graphPatternNotTriples {
   GroupOrUnionGraphPattern | OptionalGraphPattern | MinusGraphPattern |
-  GraphGraphPattern | ServiceGraphPattern | Filter | Bind | InlineData
+  GraphGraphPattern | ServiceGraphPattern | Filter | Bind | InlineData |
+  LateralGraphPattern
 }
 
 OptionalGraphPattern { KwOPTIONAL GroupGraphPattern }
 GraphGraphPattern { KwGRAPH varOrIri GroupGraphPattern }
 ServiceGraphPattern { KwSERVICE KwSILENT? varOrIri GroupGraphPattern }
 MinusGraphPattern { KwMINUS GroupGraphPattern }
+// `A LATERAL { B }` evaluates B once per solution of A (SEP-0006). Only in the
+// `lateral` dialect, which the SRL language never enables.
+LateralGraphPattern { KwLATERAL GroupGraphPattern }
 GroupOrUnionGraphPattern { GroupGraphPattern (KwUNION GroupGraphPattern)* }
 Bind { KwBIND "(" Expression KwAS Var ")" }
 InlineData { KwVALUES DataBlock }
@@ -385,7 +395,8 @@ TupleTemplate { KwTUPLE "(" varOrTerm ("," varOrTerm)* ")" }
   KwCOUNT, KwSUM, KwMIN, KwMAX, KwAVG, KwSAMPLE, KwGROUP_CONCAT, KwSEPARATOR,
   KwTRIPLE, KwISTRIPLE, KwSUBJECT, KwPREDICATE, KwOBJECT,
   KwLANGDIR, KwHASLANG, KwHASLANGDIR, KwSTRLANGDIR,
-  KwRULE, KwSET, KwTUPLE
+  KwRULE, KwSET, KwTUPLE,
+  KwLATERAL[@dialect=lateral]
 }
 
 @tokens {

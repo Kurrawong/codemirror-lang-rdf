@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { KEYWORDS, sparqlLanguage } from '../dist/index.js';
+import { KEYWORDS, sparqlLanguage, sparqlLateralLanguage } from '../dist/index.js';
 import { tagOf, tokenTags } from '../../../test/harness';
 
 /**
@@ -9,6 +9,8 @@ import { tagOf, tokenTags } from '../../../test/harness';
  * at the repository root; this file covers what only SPARQL has.
  */
 const sparql = sparqlLanguage.parser;
+/** Every dialect on, so opt-in keywords such as `LATERAL` are keywords too. */
+const allDialects = sparqlLateralLanguage.parser;
 
 describe('keywords', () => {
   /*
@@ -31,9 +33,10 @@ describe('keywords', () => {
         `SELECT * { FILTER(${kw}(?a)) }`,
         `${kw} <http://x>`,
         `${kw} DATA { <http://s> <http://p> 1 }`,
+        `SELECT * { ?s ?p ?o ${kw} { ?s ?p ?o } }`,
       ];
       const tagged = candidates.some((text) =>
-        tokenTags(sparql, text).some((t) => t.text.toLowerCase() === kw && t.tag === 'keyword')
+        tokenTags(allDialects, text).some((t) => t.text.toLowerCase() === kw && t.tag === 'keyword')
       );
       if (!tagged) untagged.push(kw);
     }

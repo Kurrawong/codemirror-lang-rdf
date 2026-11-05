@@ -96,6 +96,7 @@ Import from `@kurrawongai/codemirror-lang-sparql12`.
 | --- | --- |
 | `sparql(options?)` | SPARQL query and update language support with completion |
 | `sparqlLanguage` | Language with highlight, fold, indent, and language data |
+| `sparqlLateralLanguage` | `sparqlLanguage` with the `lateral` dialect, which accepts `LATERAL` |
 | `parser` | Raw Lezer `LRParser`; top rules are `SparqlUnit` and `SrlUnit` |
 | `sparqlProps` | Shared highlight, fold, and indent node props |
 | `sparqlHighlighting` | Highlight node prop alone |
@@ -106,12 +107,31 @@ Import from `@kurrawongai/codemirror-lang-sparql12`.
 | `documentPrefixes`, `knownPrefixes`, `documentVariables` | Helpers described above |
 | `parseErrors(state)`, `parseErrorLinter()` | Parse-error helpers described above |
 
-`sparql()` takes `CompletionOptions`. The standalone completion source takes
-the additional exported type `CompletionSourceOptions`:
+`sparql()` takes `SparqlOptions`:
+
+```ts
+interface SparqlOptions extends CompletionOptions {
+  lateral?: boolean;
+}
+```
+
+`lateral: true` accepts `A LATERAL { B }` from
+[SEP-0006](https://github.com/w3c/sparql-dev/blob/main/SEP/SEP-0006/sep-0006.md).
+LATERAL is not in the SPARQL 1.2 Working Draft, so it is off by default. With
+it on, the editor parses `LATERAL` as a `LateralGraphPattern` node, highlights
+it as a keyword, folds its group, and offers it in completion. With it off,
+`LATERAL` is a parse error. Either way, `lateral:x` and `?lateral` stay a
+prefixed name and a variable. To parse without an editor, use
+`parser.configure({ top: 'SparqlUnit', dialect: 'lateral' })`. SRL has no
+LATERAL, and the SRL language never enables the dialect.
+
+The standalone completion source takes the additional exported type
+`CompletionSourceOptions`:
 
 ```ts
 interface CompletionSourceOptions extends CompletionOptions {
   dialect?: 'sparql' | 'srl';
+  lateral?: boolean;
 }
 ```
 
