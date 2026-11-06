@@ -12,6 +12,16 @@ import { parser as rawParser } from './sparql.grammar';
 import { sparqlHighlighting } from './highlight';
 import { sparqlCompletionSource } from './complete';
 import type { CompletionOptions } from './complete';
+
+/** Options for `sparql()`. */
+export interface SparqlOptions extends CompletionOptions {
+  /**
+   * Accept `A LATERAL { B }` (SEP-0006), which is not in the SPARQL 1.2
+   * Working Draft: parse it, highlight it, and offer it in completion.
+   * Off by default, and with it off `LATERAL` is a parse error as before.
+   */
+  lateral?: boolean;
+}
 import { parseErrorLinter } from './lint';
 
 export type { CompletionOptions, CompletionSourceOptions, PrefixMap, PrefixSource } from './complete';
@@ -93,9 +103,16 @@ export const sparqlLanguage = LRLanguage.define({
   languageData,
 });
 
-/** SPARQL 1.2, query and update. */
-export function sparql(options: CompletionOptions = {}): LanguageSupport {
-  return new LanguageSupport(sparqlLanguage, [
+/**
+ * SPARQL 1.2 with `A LATERAL { B }` (SEP-0006) accepted: the `lateral`
+ * dialect of the same grammar. `sparql({ lateral: true })` uses it.
+ */
+export const sparqlLateralLanguage = sparqlLanguage.configure({ dialect: 'lateral' });
+
+/** SPARQL 1.2, query and update. `lateral: true` also accepts `LATERAL`. */
+export function sparql(options: SparqlOptions = {}): LanguageSupport {
+  const language = options.lateral ? sparqlLateralLanguage : sparqlLanguage;
+  return new LanguageSupport(language, [
     sparqlLanguage.data.of({ autocomplete: sparqlCompletionSource({ ...options, dialect: 'sparql' }) }),
     parseErrorLinter(),
   ]);
