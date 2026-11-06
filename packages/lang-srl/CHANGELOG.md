@@ -1,5 +1,18 @@
 # @kurrawongai/codemirror-lang-srl
 
+## 0.7.0
+
+### Patch Changes
+
+- 17550a4: Add opt-in `LATERAL` (SEP-0006) to SPARQL: `sparql({ lateral: true })` parses
+  `A LATERAL { B }` as a `LateralGraphPattern`, highlights `LATERAL` as a keyword
+  and offers it in completion. The grammar gains a `lateral` dialect, also
+  exported as `sparqlLateralLanguage`. It is off by default, and `LATERAL` is
+  still a parse error without it. SRL is unchanged and never enables the dialect;
+  its package is bumped because it ships the regenerated shared parser.
+- Updated dependencies [17550a4]
+  - @kurrawongai/codemirror-lang-sparql12@0.7.0
+
 ## 0.6.0
 
 ### Minor Changes
