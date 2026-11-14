@@ -57,6 +57,10 @@ export const rdfHighlightStyle = HighlightStyle.define([
    */
   { tag: t.quote, backgroundColor: 'var(--rdf-region-bg)', borderRadius: '2px' },
 
+  // RDF Patch rows: `A` and `PA` rows are tinted as additions, `D` and `PD` rows as deletions.
+  { tag: t.inserted, backgroundColor: 'rgba(46, 160, 67, 0.15)' },
+  { tag: t.deleted, backgroundColor: 'rgba(248, 81, 73, 0.15)' },
+
   { tag: t.invalid, color: 'var(--danger)' },
 ]);
 

@@ -12,14 +12,14 @@ and completion for Turtle, TriG, SPARQL, and SRL.
 
 | Package | Languages | npm |
 | --- | --- | --- |
-| [@kurrawongai/codemirror-lang-turtle12](packages/lang-turtle12/README.md) | Turtle, TriG, N-Triples, N-Quads | [npm](https://www.npmjs.com/package/@kurrawongai/codemirror-lang-turtle12) |
+| [@kurrawongai/codemirror-lang-turtle12](packages/lang-turtle12/README.md) | Turtle, TriG, N-Triples, N-Quads, RDF Patch | [npm](https://www.npmjs.com/package/@kurrawongai/codemirror-lang-turtle12) |
 | [@kurrawongai/codemirror-lang-sparql12](packages/lang-sparql12/README.md) | SPARQL query and update | [npm](https://www.npmjs.com/package/@kurrawongai/codemirror-lang-sparql12) |
 | [@kurrawongai/codemirror-lang-srl](packages/lang-srl/README.md) | SRL | [npm](https://www.npmjs.com/package/@kurrawongai/codemirror-lang-srl) |
 
 These are editor parsers, not complete validators, and they accept some invalid
 documents. Each language support underlines parse errors in the editor. SRL
 language support adds targeted conformance diagnostics for the shared SPARQL
-grammar. N-Triples and N-Quads have no completion source.
+grammar. N-Triples, N-Quads and RDF Patch have no completion source.
 
 ### SRL features
 
@@ -48,6 +48,7 @@ implementation, not the maturity or stability of the underlying standard.
 | [RDF 1.2 TriG](https://www.w3.org/TR/rdf12-trig/) | Working Draft | 15 September 2026 |
 | [RDF 1.2 N-Triples](https://www.w3.org/TR/rdf12-n-triples/) | Working Draft | 23 July 2026 |
 | [RDF 1.2 N-Quads](https://www.w3.org/TR/rdf12-n-quads/) | Working Draft | 23 July 2026 |
+| [RDF Patch](https://afs.github.io/rdf-delta/rdf-patch.html) | Not a W3C specification (Apache Jena RDF Delta) | Undated |
 | [SPARQL 1.2 Query](https://www.w3.org/TR/sparql12-query/) | Working Draft | 13 September 2026 |
 | [SPARQL 1.2 Update](https://www.w3.org/TR/sparql12-update/) | Working Draft | 12 June 2026 |
 | [SPARQL 1.2 RL](https://www.w3.org/TR/sparql12-rl/) | Working Draft | 2 September 2026 |

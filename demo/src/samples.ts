@@ -95,6 +95,21 @@ _:b0 <http://example.org/note> "blank subjects are fine" .
 `,
   },
 
+  rdfpatch: {
+    label: 'RDF Patch',
+    mediaType: 'application/rdf-patch',
+    doc: `H id <uuid:0686c69d-8f89-4496-acb5-744f0157a8db> .
+H prev <uuid:3ee1a7a8-2bba-4fe4-8a83-4a2c4d1a3fd5> .
+TX .
+PA "ex" <http://example.org/> .
+D <http://example.org/mona-lisa> <http://example.org/height> "77"^^<http://www.w3.org/2001/XMLSchema#integer> .
+A <http://example.org/mona-lisa> <http://example.org/height> "77.0"^^<http://www.w3.org/2001/XMLSchema#decimal> .
+A <http://example.org/mona-lisa> <http://purl.org/dc/terms/title> "Mona Lisa"@en <http://example.org/louvre> .
+A <http://example.org/vasari> <http://example.org/asserts> <<( <http://example.org/mona-lisa> <http://example.org/painter> <http://example.org/leonardo> )>> .
+TC .
+`,
+  },
+
   sparql: {
     label: 'SPARQL 1.2 (query)',
     mediaType: 'application/sparql-query',

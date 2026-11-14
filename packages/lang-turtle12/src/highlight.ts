@@ -71,6 +71,18 @@ export const turtleHighlighting: NodePropSource = styleTags({
   // from arithmetic; it falls back to `operator`.
   '"~"': t.special(t.operator),
 
+  /*
+   * RDF Patch. The op codes are keywords. Every token of an `A` or `PA` row also
+   * carries `inserted`, and every token of a `D` or `PD` row carries `deleted`,
+   * in the same way as `quote` above: a style can colour a patch as a diff, and
+   * a style without those tags sees no change.
+   */
+  'KwH KwTX KwTC KwTA KwPA KwPD KwA KwD': t.keyword,
+  HeaderKey: t.attributeName,
+  PatchPrefix: t.namespace,
+  'QuadAdd/... PrefixAdd/...': t.inserted,
+  'QuadDelete/... PrefixDelete/...': t.deleted,
+
   '";" ","': t.separator,
   '"."': t.punctuation,
 });

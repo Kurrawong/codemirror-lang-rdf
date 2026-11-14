@@ -8,7 +8,7 @@ import { highlightSelectionMatches, searchKeymap } from '@codemirror/search';
 import { highlightTree, tagHighlighter, tags } from '@lezer/highlight';
 import type { Tag } from '@lezer/highlight';
 
-import { nquads, ntriples, trig, turtle } from '@kurrawongai/codemirror-lang-turtle12';
+import { nquads, ntriples, rdfPatch, trig, turtle } from '@kurrawongai/codemirror-lang-turtle12';
 import { parseErrors as documentParseErrors, sparql, sparqlLanguage } from '@kurrawongai/codemirror-lang-sparql12';
 import { dataBlockRanges, ruleRanges, sparqlToSrl, srl, srlConformanceDiagnostics, srlLanguage, srlToSparql, variablesInDataBlocks } from '@kurrawongai/codemirror-lang-srl';
 
@@ -46,6 +46,8 @@ function extensionFor(key: LanguageKey) {
       return ntriples();
     case 'nquads':
       return nquads();
+    case 'rdfpatch':
+      return rdfPatch();
     case 'sparql':
     case 'sparql-conversion':
     case 'sparql-update':

@@ -47,7 +47,7 @@ function errorMessage(text: string): string {
   return `Unexpected “${shown.length > 32 ? `${shown.slice(0, 32)}…` : shown}”.`;
 }
 
-/** Underline every parse error. Included in `turtle()`, `trig()`, `ntriples()` and `nquads()`. */
+/** Underline every parse error. Included in `turtle()`, `trig()`, `ntriples()`, `nquads()` and `rdfPatch()`. */
 export function parseErrorLinter(): Extension {
   return linter((view) => parseErrors(view.state).map((error) => ({ ...error, severity: 'error' })));
 }

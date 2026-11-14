@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { nquadsLanguage, ntriplesLanguage, trigLanguage, turtleLanguage } from '../packages/lang-turtle12/dist/index.js';
+import { nquadsLanguage, ntriplesLanguage, rdfPatchLanguage, trigLanguage, turtleLanguage } from '../packages/lang-turtle12/dist/index.js';
 import { sparqlLanguage } from '../packages/lang-sparql12/dist/index.js';
 import { srlLanguage } from '../packages/lang-srl/dist/index.js';
 import { tagsOf, tokenTags } from './harness';
@@ -26,6 +26,7 @@ const languages = {
   trig: trigLanguage.parser,
   ntriples: ntriplesLanguage.parser,
   nquads: nquadsLanguage.parser,
+  rdfpatch: rdfPatchLanguage.parser,
   sparql: sparqlLanguage.parser,
   srl: srlLanguage.parser,
 } as const;
@@ -61,6 +62,15 @@ function tripleRow(construct: string, tag: TagName, t: string, token: string): R
     },
   };
 }
+
+const PATCH = [
+  'H id <urn:p:1> .',
+  'TX .',
+  'PA ex <http://e/> .',
+  'D <http://s> <http://p> "a" .',
+  'A <http://s> <http://p> "b" .',
+  'TC .',
+].join('\n');
 
 const rows: Row[] = [
   tripleRow('<iri>', 'url', 'ex:s <http://p> ex:o', '<http://p>'),
@@ -114,6 +124,7 @@ const rows: Row[] = [
       trig: { doc: '# hi\nPREFIX ex: <http://e/>', token: '# hi' },
       ntriples: { doc: '# hi\n<http://s> <http://p> <http://o> .', token: '# hi' },
       nquads: { doc: '# hi\n<http://s> <http://p> <http://o> .', token: '# hi' },
+      rdfpatch: { doc: '# hi\nTX .\nTC .', token: '# hi' },
       sparql: { doc: '# hi\nASK { }', token: '# hi' },
       srl: { doc: '# hi\nRULE {} WHERE {}', token: '# hi' },
     },
@@ -171,9 +182,35 @@ const rows: Row[] = [
       turtle: { doc: 'PREFIX ex: <http://e/>\nex:s ex:p ex:o .', token: '.' },
       ntriples: { doc: '<http://s> <http://p> <http://o> .', token: '.' },
       nquads: { doc: '<http://s> <http://p> <http://o> <http://g> .', token: '.' },
+      rdfpatch: { doc: 'TX .\nTC .', token: '.' },
       sparql: { doc: 'ASK { <http://s> <http://p> <http://o> . }', token: '.' },
       srl: { doc: 'RULE {} WHERE { <http://s> <http://p> <http://o> . }', token: '.' },
     },
+  },
+  {
+    construct: 'RDF Patch op code',
+    tag: 'keyword',
+    cases: { rdfpatch: { doc: PATCH, token: 'TX' } },
+  },
+  {
+    construct: 'RDF Patch header key',
+    tag: 'attributeName',
+    cases: { rdfpatch: { doc: PATCH, token: 'id' } },
+  },
+  {
+    construct: 'RDF Patch prefix name',
+    tag: 'namespace',
+    cases: { rdfpatch: { doc: PATCH, token: 'ex' } },
+  },
+  {
+    construct: 'A term in an `A` or `PA` row (also tagged `inserted`)',
+    tag: 'inserted',
+    cases: { rdfpatch: { doc: PATCH, token: '"b"' } },
+  },
+  {
+    construct: 'A term in a `D` or `PD` row (also tagged `deleted`)',
+    tag: 'deleted',
+    cases: { rdfpatch: { doc: PATCH, token: '"a"' } },
   },
   {
     construct: ':= (SRL only)',
