@@ -76,11 +76,16 @@ Choose one language extension for the document:
 | TriG | `@kurrawongai/codemirror-lang-turtle12` | `trig(options?)` |
 | N-Triples | `@kurrawongai/codemirror-lang-turtle12` | `ntriples()` |
 | N-Quads | `@kurrawongai/codemirror-lang-turtle12` | `nquads()` |
+| RDF Patch | `@kurrawongai/codemirror-lang-turtle12` | `rdfPatch()` |
 | SPARQL query or update | `@kurrawongai/codemirror-lang-sparql12` | `sparql(options?)` |
 | SRL | `@kurrawongai/codemirror-lang-srl` | `srl(options?)` |
 
 N-Triples and N-Quads use separate parser entry points that reject Turtle-only
 syntax such as prefixed names and semicolon lists. They have no completion source.
+
+RDF Patch rows use N-Quads terms. Tokens in `A` and `PA` rows carry the
+`inserted` tag, and tokens in `D` and `PD` rows carry `deleted`. Add rules for
+those tags to show a patch as a diff; see [Highlight tags](highlight-tags.md).
 
 ## Supply prefixes for completion
 

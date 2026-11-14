@@ -1,6 +1,6 @@
 # Highlight tags
 
-All six languages use the tags below from `@lezer/highlight`. Applications
+All seven languages use the tags below from `@lezer/highlight`. Applications
 can use one `HighlightStyle` across the packages. The packages do not define
 colours.
 
@@ -10,9 +10,9 @@ documented and tested tag sets agree.
 
 | Construct | Tag |
 | --- | --- |
-| Keywords and built-in function names | `keyword` |
+| Keywords, built-in function names, and RDF Patch op codes | `keyword` |
 | `<iri>` | `url` |
-| `prefix:local`, and `prefix:` in a declaration | `namespace` |
+| `prefix:local`, `prefix:` in a declaration, and the prefix name in an RDF Patch `PA` or `PD` row | `namespace` |
 | `?var`, `$var` | `variableName` |
 | `_:b`, `[]` | `propertyName` |
 | String literals | `string` |
@@ -28,6 +28,9 @@ documented and tested tag sets agree.
 | `{\|`, `\|}` (annotation block) | `special(brace)` |
 | `~` (reifier) | `special(operator)` |
 | Tokens within reified triples, triple terms, and annotation blocks | `quote`, in addition to their own tags |
+| Tokens in an RDF Patch `A` or `PA` row | `inserted`, in addition to their own tags |
+| Tokens in an RDF Patch `D` or `PD` row | `deleted`, in addition to their own tags |
+| RDF Patch header key (`id` in `H id <...> .`) | `attributeName` |
 | `:=`, arithmetic and comparison operators | `operator` |
 | `;`, `,` | `separator` |
 | `.` | `punctuation` |

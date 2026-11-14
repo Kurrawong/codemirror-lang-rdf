@@ -49,7 +49,20 @@ const statementFold = (node: SyntaxNode, state: EditorState) => {
 };
 
 /**
- * Highlighting, folding and indentation, shared by all four dialects.
+ * Fold an RDF Patch transaction from the end of its `TX .` row to the start of
+ * its `TC .` or `TA .` row, so both rows stay visible.
+ */
+const transactionFold = (node: SyntaxNode, state: EditorState) => {
+  const begin = node.getChild('TxBegin');
+  const end = node.getChild('TxCommit') ?? node.getChild('TxAbort');
+  if (!begin || !end) return null;
+  const from = state.doc.lineAt(begin.to).to;
+  const to = state.doc.lineAt(end.from).from - 1;
+  return to > from ? { from, to } : null;
+};
+
+/**
+ * Highlighting, folding and indentation, shared by all five dialects.
  *
  * Exported so a consumer can re-configure the parser with props of their own —
  * extra `styleTags`, say, to tag the three RDF 1.2 constructs' regions apart
@@ -67,6 +80,7 @@ export const turtleProps = [
     ReifiedTriple: delimitedIndent({ closing: '>>' }),
   }),
   foldNodeProp.add({
+    Transaction: transactionFold,
     BlankNodePropertyList: foldInside,
     Collection: foldInside,
     WrappedGraph: foldInside,
@@ -81,9 +95,17 @@ const languageData = {
   indentOnInput: /^\s*[\]})]$/,
 };
 
+const LANGUAGE_NAMES: Record<string, string> = {
+  TurtleDoc: 'turtle',
+  TrigDoc: 'trig',
+  NTriplesDoc: 'ntriples',
+  NQuadsDoc: 'nquads',
+  RdfPatchDoc: 'rdfpatch',
+};
+
 function define(top: string) {
   return LRLanguage.define({
-    name: top === 'TurtleDoc' ? 'turtle' : top === 'TrigDoc' ? 'trig' : top === 'NTriplesDoc' ? 'ntriples' : 'nquads',
+    name: LANGUAGE_NAMES[top],
     parser: rawParser.configure({ top, props: turtleProps }),
     languageData,
   });
@@ -93,6 +115,7 @@ export const turtleLanguage = define('TurtleDoc');
 export const trigLanguage = define('TrigDoc');
 export const ntriplesLanguage = define('NTriplesDoc');
 export const nquadsLanguage = define('NQuadsDoc');
+export const rdfPatchLanguage = define('RdfPatchDoc');
 
 function support(language: LRLanguage, options: CompletionOptions, dialect: 'turtle' | 'trig') {
   return new LanguageSupport(language, [
@@ -125,4 +148,15 @@ export function ntriples(): LanguageSupport {
 /** RDF 1.2 N-Quads. */
 export function nquads(): LanguageSupport {
   return new LanguageSupport(nquadsLanguage, parseErrorLinter());
+}
+
+/**
+ * RDF Patch (https://afs.github.io/rdf-delta/rdf-patch.html).
+ *
+ * Rows take N-Quads terms. `A` and `PA` rows are tagged `inserted`, and `D` and
+ * `PD` rows `deleted`, so a style can show a patch as a diff. A transaction
+ * folds between its `TX .` and `TC .` rows.
+ */
+export function rdfPatch(): LanguageSupport {
+  return new LanguageSupport(rdfPatchLanguage, parseErrorLinter());
 }

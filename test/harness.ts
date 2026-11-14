@@ -121,6 +121,9 @@ const TAG_NAMES = [
   'separator',
   'punctuation',
   'quote',
+  'inserted',
+  'deleted',
+  'attributeName',
   'invalid',
 ] as const;
 
@@ -155,7 +158,7 @@ export interface TaggedToken {
  * the whole construct. Tests that ask "what is this token?" want the other one,
  * so `tagOf` skips these; `tagsOf` returns everything.
  */
-const REGION_TAGS = new Set<string>(['quote']);
+const REGION_TAGS = new Set<string>(['quote', 'inserted', 'deleted']);
 
 export function tokenTags(parser: LRParser, text: string): TaggedToken[] {
   const highlighter = tagHighlighter([

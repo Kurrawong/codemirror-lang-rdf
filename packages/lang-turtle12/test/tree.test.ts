@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { parser } from '../dist/index.js';
-import { shapeOf } from '../../../test/harness';
+const turtleParser = parser;
+import { parsesCleanly, shapeOf } from '../../../test/harness';
 
 /**
  * Tree-shape tests: what a consumer walking the tree by spec vocabulary sees.
@@ -181,5 +182,52 @@ describe('N-Triples and N-Quads', () => {
     expect(shape('NQuadsDoc', '<http://s> <http://p> "x"@en--rtl <http://g> .')).toBe(
       'NQuadsDoc(NQuad(IRIRef,IRIRef,RDFLiteral(String,LangDir),GraphLabel(IRIRef)))'
     );
+  });
+});
+
+describe('RDF Patch', () => {
+  const patch = (text: string) => shape('RdfPatchDoc', text);
+
+  it('reads headers, a transaction, and add and delete rows', () => {
+    const text = [
+      'H id <urn:p:1> .',
+      'H prev <urn:p:0> .',
+      'TX .',
+      'D <http://s> <http://p> "old"@en .',
+      'A <http://s> <http://p> "new" <http://g> .',
+      'TC .',
+    ].join('\n');
+    expect(patch(text)).toBe(
+      'RdfPatchDoc(Header(KwH,HeaderKey,IRIRef),Header(KwH,HeaderKey,IRIRef),' +
+        'Transaction(TxBegin(KwTX),QuadDelete(KwD,IRIRef,IRIRef,RDFLiteral(String,LangDir)),' +
+        'QuadAdd(KwA,IRIRef,IRIRef,RDFLiteral(String),GraphLabel(IRIRef)),TxCommit(KwTC)))'
+    );
+  });
+
+  it('reads a prefix name quoted or unquoted', () => {
+    expect(patch('PA "ex" <http://e/> .\nPA ex <http://e/> .\nPD "" .')).toBe(
+      'RdfPatchDoc(PrefixAdd(KwPA,String,IRIRef),PrefixAdd(KwPA,PatchPrefix,IRIRef),PrefixDelete(KwPD,String))'
+    );
+  });
+
+  it('reads both spellings of a blank node, and a triple term', () => {
+    expect(patch('A _:b0 <http://p> <_:b1> .')).toBe('RdfPatchDoc(QuadAdd(KwA,BlankNodeLabel,IRIRef,IRIRef))');
+    expect(patch('A <http://s> <http://p> <<( <http://a> <http://b> "x" )>> .')).toBe(
+      'RdfPatchDoc(QuadAdd(KwA,IRIRef,IRIRef,NTripleTerm(IRIRef,IRIRef,RDFLiteral(String))))'
+    );
+  });
+
+  it('reads an aborted transaction', () => {
+    expect(patch('TX .\nA <http://s> <http://p> <http://o> .\nTA .')).toBe(
+      'RdfPatchDoc(Transaction(TxBegin(KwTX),QuadAdd(KwA,IRIRef,IRIRef,IRIRef),TxAbort(KwTA)))'
+    );
+  });
+
+  it('rejects a prefixed name, a lowercase op code, and a row without its dot', () => {
+    const parser = turtleParser.configure({ top: 'RdfPatchDoc' });
+    expect(parsesCleanly(parser, 'A ex:s <http://p> <http://o> .')).toBe(false);
+    expect(parsesCleanly(parser, 'a <http://s> <http://p> <http://o> .')).toBe(false);
+    expect(parsesCleanly(parser, 'A <http://s> <http://p> <http://o>')).toBe(false);
+    expect(parsesCleanly(parser, 'TX .\nA <http://s> <http://p> <http://o> .')).toBe(false);
   });
 });

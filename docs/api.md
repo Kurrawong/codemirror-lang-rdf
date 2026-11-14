@@ -61,15 +61,15 @@ returns an empty array if the parse does not finish in that time.
 leaves out a parse error that overlaps an SRL diagnostic, because the SRL
 message describes the same text.
 
-## Turtle, TriG, N-Triples, and N-Quads
+## Turtle, TriG, N-Triples, N-Quads, and RDF Patch
 
 Import from `@kurrawongai/codemirror-lang-turtle12`.
 
 | Export | Behaviour |
 | --- | --- |
 | `turtle(options?)`, `trig(options?)` | Language support with completion |
-| `ntriples()`, `nquads()` | Language support without completion |
-| `turtleLanguage`, `trigLanguage`, `ntriplesLanguage`, `nquadsLanguage` | Languages with highlight, fold, indent, and language data |
+| `ntriples()`, `nquads()`, `rdfPatch()` | Language support without completion |
+| `turtleLanguage`, `trigLanguage`, `ntriplesLanguage`, `nquadsLanguage`, `rdfPatchLanguage` | Languages with highlight, fold, indent, and language data |
 | `parser` | Raw Lezer `LRParser`, without editor props |
 | `turtleProps` | Shared highlight, fold, and indent node props |
 | `turtleHighlighting` | Highlight node prop for manual parser configuration |
@@ -77,7 +77,7 @@ Import from `@kurrawongai/codemirror-lang-turtle12`.
 | `documentPrefixes`, `knownPrefixes` | Prefix helpers described above |
 | `parseErrors(state)`, `parseErrorLinter()` | Parse-error helpers described above |
 
-For raw parsing, select `TurtleDoc`, `TrigDoc`, `NTriplesDoc`, or `NQuadsDoc`:
+For raw parsing, select `TurtleDoc`, `TrigDoc`, `NTriplesDoc`, `NQuadsDoc`, or `RdfPatchDoc`:
 
 ```js
 import { parser } from '@kurrawongai/codemirror-lang-turtle12';
@@ -87,6 +87,22 @@ const tree = parser.configure({ top: 'NTriplesDoc' })
 ```
 
 For parsing with editor props, use the corresponding language's `.parser`.
+
+### RDF Patch syntax tree
+
+| Row | Node |
+| --- | --- |
+| `H key value .` | `Header(KwH, HeaderKey, value)` |
+| `TX .` ... `TC .` or `TA .` | `Transaction(TxBegin, ..., TxCommit or TxAbort)` |
+| `PA prefix <iri> .` | `PrefixAdd(KwPA, PatchPrefix or String, IRIRef)` |
+| `PD prefix .` | `PrefixDelete(KwPD, PatchPrefix or String)` |
+| `A s p o g? .` | `QuadAdd(KwA, terms..., GraphLabel?)` |
+| `D s p o g? .` | `QuadDelete(KwD, terms..., GraphLabel?)` |
+
+Rows take N-Quads terms. A prefixed name in an `A` or `D` row is a parse error,
+because `PA` changes the prefixes of the target dataset and does not abbreviate
+later rows. Headers may appear at the top level before each transaction.
+A transaction folds between its `TX .` and `TC .` rows.
 
 ## SPARQL
 

@@ -39,7 +39,7 @@ enabled and mark type-only imports with `import type`.
 pnpm demo
 ```
 
-Open the printed local URL. The demo includes six language samples, folding,
+Open the printed local URL. The demo includes seven language samples, folding,
 completion, three palettes, a parse-error count, and a syntax-tree inspector.
 The inspector shows the tag and node path at the cursor; selecting a tree
 node selects its text.
@@ -59,8 +59,10 @@ and does not require a server. The palette implementation is in
 
 ## Grammar structure
 
-The [Turtle grammar](../packages/lang-turtle12/src/turtle.grammar) has four
-entry points: `TurtleDoc`, `TrigDoc`, `NTriplesDoc`, and `NQuadsDoc`.
+The [Turtle grammar](../packages/lang-turtle12/src/turtle.grammar) has five
+entry points: `TurtleDoc`, `TrigDoc`, `NTriplesDoc`, `NQuadsDoc`, and
+`RdfPatchDoc`. RDF Patch rows reuse the N-Quads term productions. Its op codes
+are specialisations of one word token, so they are case-sensitive.
 
 The [SPARQL grammar](../packages/lang-sparql12/src/sparql.grammar) has
 `SparqlUnit` and `SrlUnit` entry points. SRL reuses its term, path, expression,

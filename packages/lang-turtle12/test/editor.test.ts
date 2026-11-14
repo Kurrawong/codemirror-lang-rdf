@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { nquads, ntriples, trig, turtle } from '../dist/index.js';
+import { nquads, ntriples, rdfPatch, trig, turtle } from '../dist/index.js';
 import {
   completionLabels,
   completionsAt,
@@ -27,6 +27,13 @@ describe('language wiring', () => {
 });
 
 describe('folding', () => {
+  it('folds an RDF Patch transaction between its TX and TC rows', () => {
+    const doc = 'H id <urn:p:1> .\nTX .\nD <http://s> <http://p> "a" .\nA <http://s> <http://p> "b" .\nTC .\n';
+    const state = stateFor(doc, rdfPatch());
+    expect(foldedText(state, 'TX')).toBe('\nD <http://s> <http://p> "a" .\nA <http://s> <http://p> "b" .');
+    expect(foldableLines(state)).toEqual([2]);
+  });
+
   it('folds a blank-node property list', () => {
     const state = stateFor('ex:s ex:p [\n  ex:q ex:r ;\n  ex:q2 ex:r2\n] .\n', turtle());
     expect(foldedText(state, 'ex:s ex:p [')).toBe('\n  ex:q ex:r ;\n  ex:q2 ex:r2\n');
