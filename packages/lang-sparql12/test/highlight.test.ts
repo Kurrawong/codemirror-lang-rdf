@@ -133,6 +133,8 @@ describe('brackets and operators', () => {
     ['ASK { FILTER(!?a) }', '!'],
     ['ASK { ?s ^ex:p ?o }', '^'],
     ['ASK { ?s ex:p|ex:q ?o }', '|'],
+    ['ASK { ?s ex:p/ex:q ?o }', '/'],
+    ['ASK { FILTER(?a / ?b > 1) }', '/'],
   ])('tags the operator in %j: %s', (text, token) => {
     expect(tagOf(sparql, text, token)).toBe('operator');
   });

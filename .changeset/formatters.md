@@ -12,3 +12,7 @@ unchanged with the first error when the document has a parse error. Comments,
 prefix order and the text of every token are kept. Each package also exports a
 CodeMirror command (`formatTurtleDocument`, `formatSparqlDocument`,
 `formatSrlDocument`) that formats the editor's document in one transaction.
+
+The SPARQL grammar now declares the property path operator `/` as a token, so
+it has a node in the syntax tree, as `|` and `^` do, and is highlighted as an
+operator. Division is still `MulOp`.
