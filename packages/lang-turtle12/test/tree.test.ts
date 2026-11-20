@@ -204,6 +204,16 @@ describe('N-Triples and N-Quads', () => {
       expect(parsesCleanly(nt, text)).toBe(false);
   });
 
+  it('accepts only a double-quoted one-line string and a full datatype IRI', () => {
+    const nt = parser.configure({ top: 'NTriplesDoc' });
+    expect(shape('NTriplesDoc', '<http://s> <http://p> "x"^^<http://dt> .')).toBe(
+      'NTriplesDoc(NTriple(IRIRef,IRIRef,RDFLiteral(String,Datatype(IRIRef))))'
+    );
+    for (const literal of ["'x'", '"""x"""', "'''x'''", '"x"^^ex:dt'])
+      expect(parsesCleanly(nt, `<http://s> <http://p> ${literal} .`)).toBe(false);
+    expect(parsesCleanly(nt, '<http://s> <http://p> <<( <http://a> <http://b> \'x\' )>> .')).toBe(false);
+  });
+
   it('rejects a prefixed name as predicate', () => {
     expect(parsesCleanly(parser.configure({ top: 'NTriplesDoc' }), '_:a :p <http://o> .')).toBe(false);
     expect(parsesCleanly(parser.configure({ top: 'NQuadsDoc' }), '_:abc:def <http://p> <http://o> .')).toBe(false);
@@ -271,5 +281,17 @@ describe('RDF Patch', () => {
     expect(parsesCleanly(parser, 'a <http://s> <http://p> <http://o> .')).toBe(false);
     expect(parsesCleanly(parser, 'A <http://s> <http://p> <http://o>')).toBe(false);
     expect(parsesCleanly(parser, 'TX .\nA <http://s> <http://p> <http://o> .')).toBe(false);
+  });
+
+  it('takes literals in N-Triples syntax, in rows and headers', () => {
+    // The specification writes terms "in N-triples syntax": "..." strings and
+    // full datatype IRIs only. A quoted prefix name is not a term.
+    const parser = turtleParser.configure({ top: 'RdfPatchDoc' });
+    for (const literal of ["'x'", '"""x"""', '"x"^^ex:dt']) {
+      expect(parsesCleanly(parser, `A <http://s> <http://p> ${literal} .`)).toBe(false);
+      expect(parsesCleanly(parser, `H note ${literal} .`)).toBe(false);
+    }
+    expect(parsesCleanly(parser, 'H note "x"^^<http://dt> .')).toBe(true);
+    expect(parsesCleanly(parser, "PA 'ex' <http://e/> .")).toBe(true);
   });
 });

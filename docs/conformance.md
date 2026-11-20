@@ -9,8 +9,9 @@ constraints, scoping rules, or restrictions in the language specifications.
 Turtle and TriG include RDF 1.2 triple terms (`<<( s p o )>>`), reified triples
 (`<< s p o ~reifier >>`), annotation blocks (`{| ... |}`), reifiers (`~`),
 directional language tags (`@en--ltr`), and `VERSION`. N-Triples and N-Quads
-use their own restricted productions, including the case-sensitive
-`VERSION "..."` line that RDF 1.2 allows before the first triple. Prefixed
+use their own restricted productions: full IRIs, `"..."` strings only, and the
+case-sensitive `VERSION "..."` line that RDF 1.2 allows before the first
+triple. RDF Patch rows and headers use the N-Triples literal rules. Prefixed
 names, blank node labels and variables accept the full `PN_CHARS_BASE` range,
 including `#x10000-#xEFFFF`.
 
@@ -73,11 +74,11 @@ at least one error node. The current corpus results are:
 
 | Suite | Total files | Matching the expected result | Invalid inputs accepted |
 | --- | --- | --- | --- |
-| Turtle, TriG, N-Triples, N-Quads | 2,192 | 2,132 | 60 |
+| Turtle, TriG, N-Triples, N-Quads | 2,192 | 2,136 | 56 |
 | SPARQL 1.0, 1.1 and 1.2 | 1,239 | 1,174 | 65 |
 | SRL | 173 | 168 | 5 |
 
-All positive files parse without errors. The remaining 130 files are negative
+All positive files parse without errors. The remaining 126 files are negative
 tests accepted by the grammars. These counts describe the vendored files, not
 full language conformance or query evaluation.
 
@@ -90,7 +91,7 @@ the per-directory counts makes a change in the vendored files visible in review.
 
 ### Turtle family
 
-The [60 exceptions](../packages/lang-turtle12/test/corpus/expected-fail.json)
+The [56 exceptions](../packages/lang-turtle12/test/corpus/expected-fail.json)
 cover:
 
 - Escapes that are well formed but name a surrogate or other invalid code
@@ -99,8 +100,6 @@ cover:
   or direction.
 - Relative IRIs in N-Triples and N-Quads.
 - Prefixes used without a declaration.
-- Single-quoted and long strings in N-Triples and N-Quads, which allow only
-  `"..."`. These entry points share Turtle's string token.
 
 ### SPARQL
 
