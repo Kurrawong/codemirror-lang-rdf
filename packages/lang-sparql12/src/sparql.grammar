@@ -260,7 +260,10 @@ AdditiveExpression {
   )*
 }
 MultiplicativeExpression { UnaryExpression (MulOp UnaryExpression)* }
-UnaryExpression { (NotOp | ArithOp) primaryExpression | primaryExpression }
+// SPARQL 1.2 [135]: `!` nests, so `!!?v` parses; a sign does not. SRL's
+// grammar still has `'!' PrimaryExpression`, but SRL shares this production, so
+// it accepts `!!` too.
+UnaryExpression { NotOp UnaryExpression | ArithOp primaryExpression | primaryExpression }
 primaryExpression {
   BrackettedExpression | BuiltInCall | IriOrFunction |
   RDFLiteral | NumericLiteral | BooleanLiteral | Var | ExprTripleTerm
@@ -457,7 +460,7 @@ TupleTemplate { KwTUPLE "(" varOrTerm ("," varOrTerm)* ")" }
     $[À-Ö] | $[Ø-ö] | $[ø-˿] |
     $[Ͱ-ͽ] | $[Ϳ-῿] | $[‌-‍] |
     $[⁰-↏] | $[Ⰰ-⿯] | $[、-퟿] |
-    $[豈-﷏] | $[ﷰ-�]
+    $[豈-﷏] | $[ﷰ-�] | $[\u{10000}-\u{effff}]
   }
   PN_CHARS_U { PN_CHARS_BASE | "_" }
   PN_CHARS { PN_CHARS_U | "-" | $[0-9] | $[·] | $[̀-ͯ] | $[‿-⁀] }

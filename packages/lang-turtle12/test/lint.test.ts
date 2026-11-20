@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import type { LanguageSupport } from '@codemirror/language';
 import { nquads, ntriples, parseErrors, parser, trig, turtle } from '../dist/index.js';
-import { errorRanges, readCorpus } from '../../../test/harness';
+import { errorRanges, readW3cCorpus } from '../../../test/harness';
 import { stateFor } from '../../../test/editor';
 
 const corpus = join(dirname(fileURLToPath(import.meta.url)), 'corpus');
@@ -29,19 +29,22 @@ describe('parseErrors', () => {
 });
 
 describe('parseErrors agrees with the parser on the W3C corpus', () => {
-  const groups: { group: string; top: string; language: () => LanguageSupport }[] = [
-    { group: 'turtle12', top: 'TurtleDoc', language: turtle },
-    { group: 'trig12', top: 'TrigDoc', language: trig },
-    { group: 'ntriples12', top: 'NTriplesDoc', language: ntriples },
-    { group: 'nquads12', top: 'NQuadsDoc', language: nquads },
-  ];
+  const languages: Record<string, { top: string; language: () => LanguageSupport }> = {
+    turtle: { top: 'TurtleDoc', language: turtle },
+    trig: { top: 'TrigDoc', language: trig },
+    ntriples: { top: 'NTriplesDoc', language: ntriples },
+    nquads: { top: 'NQuadsDoc', language: nquads },
+  };
 
-  it.each(groups)('$group', ({ group, top, language }) => {
-    const groupParser = parser.configure({ top });
-    const disagreements = readCorpus(join(corpus, group)).filter((entry) => {
-      const text = readFileSync(join(corpus, group, entry.file), 'utf8');
-      return (errorRanges(groupParser, text).length > 0) !== (parseErrors(stateFor(text, language())).length > 0);
-    });
-    expect(disagreements.map((entry) => entry.name)).toEqual([]);
+  it.each(Object.keys(languages))('%s', (lang) => {
+    const { top, language } = languages[lang];
+    const langParser = parser.configure({ top });
+    const disagreements = readW3cCorpus(corpus)
+      .filter((entry) => entry.lang === lang)
+      .filter((entry) => {
+        const text = readFileSync(join(corpus, entry.file), 'utf8');
+        return (errorRanges(langParser, text).length > 0) !== (parseErrors(stateFor(text, language())).length > 0);
+      });
+    expect(disagreements.map((entry) => entry.file)).toEqual([]);
   });
 });

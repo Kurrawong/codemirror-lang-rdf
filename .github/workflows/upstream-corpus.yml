@@ -1,0 +1,54 @@
+name: Upstream corpus
+
+# Runs the conformance tests against w3c/rdf-tests HEAD instead of the pinned
+# commit. CI on pull requests stays on the pin, so its results do not change
+# when upstream does; this job reports a new upstream test that the grammars
+# disagree with, before someone outside the project finds it. A failure here
+# means: re-pin with `pnpm run vendor-corpus --update`, then fix the grammar or
+# add an expected-fail entry with its reason.
+
+on:
+  schedule:
+    - cron: '17 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+
+      - name: Vendor w3c/rdf-tests HEAD
+        run: pnpm run vendor-corpus --update
+
+      - name: Summarise the change from the pin
+        run: |
+          {
+            echo "## w3c/rdf-tests HEAD"
+            echo
+            echo '```'
+            git diff --stat -- corpus.config.json 'packages/*/test/corpus' | tail -n 1
+            git status --short -- 'packages/*/test/corpus' | grep -c '^??' | sed 's/^/new files: /'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # `-u` accepts the new per-group counts, which change whenever upstream
+      # adds a test. What still fails is a disagreement: a file the grammar
+      # parses wrongly, or an expected-fail entry that is stale or gone.
+      - name: Conformance tests against upstream HEAD
+        run: >-
+          pnpm exec vitest run -u
+          packages/lang-turtle12/test/conformance.test.ts
+          packages/lang-turtle12/test/lint.test.ts
+          packages/lang-sparql12/test/conformance.test.ts
+          packages/lang-sparql12/test/lint.test.ts

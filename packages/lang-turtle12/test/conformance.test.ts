@@ -2,36 +2,41 @@ import { describe, expect, it } from 'vitest';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { parser } from '../dist/index.js';
-import { runConformance, readExpectedFail } from '../../../test/harness';
+import { readW3cExpectedFail, runW3cConformance, w3cCounts } from '../../../test/harness';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const corpus = join(here, 'corpus');
-const expectedFailFile = join(corpus, 'expected-fail.json');
 
-const groups = [
-  { group: 'turtle12', top: 'TurtleDoc', size: 74 },
-  { group: 'trig12', top: 'TrigDoc', size: 35 },
-  { group: 'ntriples12', top: 'NTriplesDoc', size: 29 },
-  { group: 'nquads12', top: 'NQuadsDoc', size: 27 },
-] as const;
+const parsers = {
+  turtle: parser.configure({ top: 'TurtleDoc' }),
+  trig: parser.configure({ top: 'TrigDoc' }),
+  ntriples: parser.configure({ top: 'NTriplesDoc' }),
+  nquads: parser.configure({ top: 'NQuadsDoc' }),
+};
 
-describe.each(groups)('W3C $group syntax suite', ({ group, top, size }) => {
-  const results = runConformance(parser.configure({ top }), join(corpus, group));
-  const expectedFail = readExpectedFail(expectedFailFile, group);
+/*
+ * The corpus is every Turtle, TriG, N-Triples and N-Quads file that a
+ * w3c/rdf-tests manifest references, in both the RDF and the SPARQL suites. A
+ * negative syntax test must produce an error node; every other file, including
+ * evaluation-test inputs and expected results, must not.
+ */
+describe('W3C rdf-tests corpus', () => {
+  const results = runW3cConformance(parsers, corpus);
+  const expectedFail = readW3cExpectedFail(join(corpus, 'expected-fail.json'));
 
   /*
-   * The suite's size is asserted outright. Without it, a vendoring mistake that
-   * dropped half the corpus would read as a green build rather than a smaller
-   * one, and the score below would be meaningless.
+   * The counts are a snapshot, so a vendoring change that drops or adds files
+   * shows up in review as a changed snapshot instead of a quietly smaller or
+   * larger corpus.
    */
-  it(`covers the whole vendored group (${size} entries)`, () => {
-    expect(results.length).toBe(size);
+  it('vendors the expected entries per group', () => {
+    expect(w3cCounts(results)).toMatchSnapshot();
   });
 
-  it('agrees with every entry it claims to decide', () => {
+  it('agrees with every entry not on the expected-fail list', () => {
     const unexpected = results
-      .filter((r) => !r.agreed && !expectedFail.has(r.entry.name))
-      .map((r) => `${r.entry.expect} ${r.entry.name} (${r.entry.file})`);
+      .filter((r) => !r.agreed && !expectedFail.has(r.entry.file))
+      .map((r) => `${r.entry.expect} ${r.entry.lang} ${r.entry.file}`);
     expect(unexpected).toEqual([]);
   });
 
@@ -41,13 +46,18 @@ describe.each(groups)('W3C $group syntax suite', ({ group, top, size }) => {
    * a place where working tests go to be ignored.
    */
   it('has no stale expected-fail entries', () => {
-    const stale = results.filter((r) => r.agreed && expectedFail.has(r.entry.name)).map((r) => r.entry.name);
+    const stale = results.filter((r) => r.agreed && expectedFail.has(r.entry.file)).map((r) => r.entry.file);
     expect(stale).toEqual([]);
   });
 
   it('lists no expected-fail entry that is not in the corpus', () => {
-    const names = new Set(results.map((r) => r.entry.name));
-    expect([...expectedFail].filter((n) => !names.has(n))).toEqual([]);
+    const files = new Set(results.map((r) => r.entry.file));
+    expect([...expectedFail.keys()].filter((f) => !files.has(f))).toEqual([]);
+  });
+
+  it('expects no positive entry to fail', () => {
+    const positive = results.filter((r) => r.entry.expect === 'positive' && expectedFail.has(r.entry.file));
+    expect(positive.map((r) => r.entry.file)).toEqual([]);
   });
 });
 

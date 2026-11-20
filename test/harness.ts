@@ -67,6 +67,64 @@ export function runConformance(parser: LRParser, dir: string): ConformanceResult
 }
 
 /**
+ * One file in a corpus vendored from w3c/rdf-tests by
+ * `scripts/vendor-corpus.mjs`. `file` is its path in that repository, which is
+ * also its path under the package's `test/corpus` directory. `group` is the
+ * directory of the first manifest that references it, and `tests` lists every
+ * manifest entry that does.
+ */
+export interface W3cEntry {
+  file: string;
+  lang: string;
+  expect: 'positive' | 'negative';
+  group: string;
+  tests: string[];
+}
+
+export interface W3cResult {
+  entry: W3cEntry;
+  agreed: boolean;
+  errors: string[];
+}
+
+export function readW3cCorpus(dir: string): W3cEntry[] {
+  const index = join(dir, 'index.json');
+  if (!existsSync(index)) throw new Error(`no vendored corpus at ${dir}: run pnpm vendor-corpus`);
+  return JSON.parse(readFileSync(index, 'utf8')) as W3cEntry[];
+}
+
+/** The expected-fail list of a w3c/rdf-tests corpus, as file path to reason. */
+export function readW3cExpectedFail(file: string): Map<string, string> {
+  const all = JSON.parse(readFileSync(file, 'utf8')) as Record<string, unknown>;
+  return new Map(Object.entries(all).filter((e): e is [string, string] => !e[0].startsWith('$')));
+}
+
+export function runW3cConformance(parsers: Record<string, LRParser>, dir: string): W3cResult[] {
+  return readW3cCorpus(dir).map((entry) => {
+    const parser = parsers[entry.lang];
+    if (!parser) throw new Error(`no parser for language ${entry.lang} (${entry.file})`);
+    const errors = errorRanges(parser, readFileSync(join(dir, entry.file), 'utf8'));
+    const agreed = entry.expect === 'positive' ? errors.length === 0 : errors.length > 0;
+    return { entry, agreed, errors };
+  });
+}
+
+/** Positive and negative entry counts per group and language, for a snapshot. */
+export function w3cCounts(results: W3cResult[]): Record<string, string> {
+  const counts: Record<string, { positive: number; negative: number }> = {};
+  for (const { entry } of results) {
+    const key = `${entry.group} ${entry.lang}`;
+    counts[key] ??= { positive: 0, negative: 0 };
+    counts[key][entry.expect]++;
+  }
+  return Object.fromEntries(
+    Object.entries(counts)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, c]) => [key, `${c.positive} positive, ${c.negative} negative`])
+  );
+}
+
+/**
  * A compact rendering of the named nodes in a parse, e.g.
  * `TurtleDoc(Triples(PrefixedName(PNameLN),…))`.
  *
