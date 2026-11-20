@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { syntaxTree } from '@codemirror/language';
 import { parseErrors, parser, sparql } from '../dist/index.js';
-import { errorRanges, readCorpus } from '../../../test/harness';
+import { errorRanges, readW3cCorpus } from '../../../test/harness';
 import { stateFor } from '../../../test/editor';
 
 const corpus = join(dirname(fileURLToPath(import.meta.url)), 'corpus');
@@ -67,23 +67,12 @@ describe('parseErrors', () => {
 
 describe('parseErrors agrees with the parser on the W3C corpus', () => {
   const sparqlParser = parser.configure({ top: 'SparqlUnit' });
-  const groups = [
-    'sparql11-query',
-    'sparql11-update',
-    'sparql11-fed',
-    'sparql12-syntax',
-    'sparql12-triple-terms-positive',
-    'sparql12-triple-terms-negative',
-    'sparql12-version',
-    'sparql12-lang-basedir',
-    'sparql12-codepoint-escapes',
-  ];
 
-  it.each(groups)('%s', (group) => {
-    const disagreements = readCorpus(join(corpus, group)).filter((entry) => {
-      const text = readFileSync(join(corpus, group, entry.file), 'utf8');
+  it('every vendored query and update', () => {
+    const disagreements = readW3cCorpus(corpus).filter((entry) => {
+      const text = readFileSync(join(corpus, entry.file), 'utf8');
       return (errorRanges(sparqlParser, text).length > 0) !== (errorsIn(text).length > 0);
     });
-    expect(disagreements.map((entry) => entry.name)).toEqual([]);
+    expect(disagreements.map((entry) => entry.file)).toEqual([]);
   });
 });

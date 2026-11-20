@@ -253,6 +253,19 @@ describe('expressions', () => {
     expect(span('ASK { FILTER(?x - 1 > 2) }', 'ArithOp')).toBe('-');
   });
 
+  it('nests ! but not a sign', () => {
+    // SPARQL 1.2 [135]: '!' UnaryExpression | '+' PrimaryExpression | '-' PrimaryExpression.
+    expect(parsesCleanly(sparql, 'SELECT ?e WHERE { BIND(!!?v AS ?e) }')).toBe(true);
+    expect(parsesCleanly(sparql, 'SELECT ?e WHERE { BIND(!-?v AS ?e) }')).toBe(true);
+    expect(parsesCleanly(sparql, 'SELECT ?e WHERE { BIND(-!?v AS ?e) }')).toBe(false);
+    expect(parsesCleanly(sparql, 'SELECT ?e WHERE { BIND(- -?v AS ?e) }')).toBe(false);
+  });
+
+  it('accepts a variable name above U+FFFF', () => {
+    expect(parsesCleanly(sparql, 'SELECT ?\u{10000} WHERE { ?\u{10000} ?p ?o }')).toBe(true);
+    expect(parsesCleanly(sparql, 'SELECT * WHERE { ?s ?p p\u{EFFFF}:x }')).toBe(true);
+  });
+
   it('reads IN and NOT IN', () => {
     expect(parsesCleanly(sparql, 'ASK { FILTER(?a IN (1,2)) }')).toBe(true);
     expect(parsesCleanly(sparql, 'ASK { FILTER(?a NOT IN (1,2)) }')).toBe(true);

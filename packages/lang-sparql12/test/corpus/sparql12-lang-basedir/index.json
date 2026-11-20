@@ -1,7 +1,0 @@
-[
-  {
-    "name": "langdir-literal-invalid",
-    "file": "langdir-literal-invalid.rq",
-    "expect": "negative"
-  }
-]

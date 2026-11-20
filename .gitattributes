@@ -1,0 +1,4 @@
+# Vendored test files are stored byte for byte. Some upstream files use CRLF
+# line endings, and a conversion would make the CI corpus check, which
+# re-vendors at the pin and diffs, fail on a machine with core.autocrlf set.
+packages/*/test/corpus/** -text

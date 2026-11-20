@@ -9,7 +9,10 @@ constraints, scoping rules, or restrictions in the language specifications.
 Turtle and TriG include RDF 1.2 triple terms (`<<( s p o )>>`), reified triples
 (`<< s p o ~reifier >>`), annotation blocks (`{| ... |}`), reifiers (`~`),
 directional language tags (`@en--ltr`), and `VERSION`. N-Triples and N-Quads
-use their own restricted productions.
+use their own restricted productions, including the case-sensitive
+`VERSION "..."` line that RDF 1.2 allows before the first triple. Prefixed
+names, blank node labels and variables accept the full `PN_CHARS_BASE` range,
+including `#x10000-#xEFFFF`.
 
 SPARQL supports query and update syntax, including property paths, federation,
 aggregates, and update sequences. The 1.2 additions include the term forms
@@ -45,8 +48,13 @@ specification document.
 
 | Corpus | Upstream commit | Local record |
 | --- | --- | --- |
-| RDF 1.2 and SPARQL 1.1/1.2 syntax | `369a90d1a60c021b746df2e411da0ff36258a758` in `w3c/rdf-tests` | [corpus.config.json](../corpus.config.json) |
+| RDF 1.1 and 1.2, SPARQL 1.0, 1.1 and 1.2 | `56076c0efec4c353efcae2971be8f6005294ac64` in `w3c/rdf-tests` | [corpus.config.json](../corpus.config.json) |
 | SPARQL-RL syntax | `a3eac70d93f94007f23d99c328f667c0e6a0b271` in `w3c/data-shapes`, branch `srl-aggregation-comma` ([pull request #1375](https://github.com/w3c/data-shapes/pull/1375), not yet merged) | [SRL SOURCE](../packages/lang-srl/test/corpus/srl-syntax/SOURCE) |
+
+The `w3c/rdf-tests` corpus is every Turtle, TriG, N-Triples, N-Quads, query and
+update file referenced from that repository's root manifests. Besides syntax
+tests, it includes the inputs and expected results of evaluation tests, which
+must parse. RDF/XML, CSV, TSV and JSON files are not parsed.
 
 Language specifications: [Turtle](https://www.w3.org/TR/rdf12-turtle/),
 [TriG](https://www.w3.org/TR/rdf12-trig/),
@@ -60,45 +68,56 @@ of the corpus pins.
 
 ## Results
 
-A positive syntax test must parse without error nodes. A negative syntax test
-must produce at least one error node. The current corpus results are:
+A positive entry must parse without error nodes. A negative entry must produce
+at least one error node. The current corpus results are:
 
-| Suite | Total cases | Matching the expected result | Invalid inputs accepted |
+| Suite | Total files | Matching the expected result | Invalid inputs accepted |
 | --- | --- | --- | --- |
-| Turtle, TriG, N-Triples, N-Quads | 165 | 155 | 10 |
-| SPARQL 1.1 and 1.2 | 334 | 298 | 36 |
+| Turtle, TriG, N-Triples, N-Quads | 2,192 | 2,132 | 60 |
+| SPARQL 1.0, 1.1 and 1.2 | 1,239 | 1,174 | 65 |
 | SRL | 173 | 168 | 5 |
 
-All positive cases parse without errors. The remaining 51 cases are negative
-tests accepted by the grammars. These counts describe the vendored syntax
-tests, not full language conformance or query evaluation.
+All positive files parse without errors. The remaining 130 files are negative
+tests accepted by the grammars. These counts describe the vendored files, not
+full language conformance or query evaluation.
 
-Each package's `expected-fail.json` records the exceptions. Tests fail for an
-unlisted mismatch, a listed case that now matches, or an exception absent from
-its corpus group. Tests also check the expected size of each group.
+Each package's `expected-fail.json` records the exceptions, keyed by upstream
+path. Tests fail for an unlisted mismatch, a listed file that now matches, a
+listed file absent from the corpus, or a listed positive file. A snapshot of
+the per-directory counts makes a change in the vendored files visible in review.
 
 ## Known limitations
 
 ### Turtle family
 
-The [10 exceptions](../packages/lang-turtle12/test/corpus/expected-fail.json)
-cover invalid Unicode surrogate escapes, language/direction requirements for
-typed literals, and a relative IRI in N-Triples. The grammar does not perform
-the corresponding value checks.
+The [60 exceptions](../packages/lang-turtle12/test/corpus/expected-fail.json)
+cover:
+
+- Escapes that are well formed but name a surrogate or other invalid code
+  point, or that decode to a character IRIs forbid.
+- `rdf:langString` or `rdf:dirLangString` as a datatype without a language tag
+  or direction.
+- Relative IRIs in N-Triples and N-Quads.
+- Prefixes used without a declaration.
+- Single-quoted and long strings in N-Triples and N-Quads, which allow only
+  `"..."`. These entry points share Turtle's string token.
 
 ### SPARQL
 
-The [36 exceptions](../packages/lang-sparql12/test/corpus/expected-fail.json)
+The [65 exceptions](../packages/lang-sparql12/test/corpus/expected-fail.json)
 cover:
 
 - Query constraints: grouping and binding scope, duplicate aliases and
   variables, `VALUES` row widths, nested aggregates, and blank-node labels
-  reused across update operations.
+  reused across basic graph patterns or update operations.
 - Invalid Unicode code points and surrogate escapes.
-- Variables or blank nodes in restricted update templates.
+- Variables or blank nodes in restricted update templates and `DATA` blocks,
+  including the blank node an annotation without a named reifier creates.
 - Annotations after property paths, including optional, alternative, and
   one-or-more paths. The grammar accepts these forms even where the syntax
   suite requires rejection.
+- `?x<?a&&?b>?y`, where the specification's longest-match lexer reads
+  `<?a&&?b>` as an IRI. Lezer lexes by context, so `<` is an operator there.
 
 ### SRL
 
@@ -106,6 +125,9 @@ The [five exceptions](../packages/lang-srl/test/corpus/expected-fail.json)
 are an undeclared prefix and four uses of variables in ground `DATA` blocks.
 `variablesInDataBlocks(state)` returns the variable ranges for an application
 to diagnose. Prefix resolution still requires a separate check.
+
+SRL shares SPARQL's expression productions, so it accepts `!!?v` as SPARQL 1.2
+does. The SRL grammar still has `'!' PrimaryExpression`, which allows one `!`.
 
 ### Large blocks of triples in SPARQL and SRL
 

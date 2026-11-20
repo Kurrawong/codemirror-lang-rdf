@@ -1,76 +1,142 @@
 {
   "source": {
     "url": "https://github.com/w3c/rdf-tests",
-    "commit": "369a90d1a60c021b746df2e411da0ff36258a758"
+    "commit": "56076c0efec4c353efcae2971be8f6005294ac64"
   },
+  "roots": [
+    "rdf/manifest.ttl",
+    "sparql/manifest.ttl"
+  ],
+  "packages": {
+    "turtle": "packages/lang-turtle12/test/corpus",
+    "trig": "packages/lang-turtle12/test/corpus",
+    "ntriples": "packages/lang-turtle12/test/corpus",
+    "nquads": "packages/lang-turtle12/test/corpus",
+    "sparql": "packages/lang-sparql12/test/corpus"
+  },
+  "extensions": {
+    ".ttl": "turtle",
+    ".trig": "trig",
+    ".nt": "ntriples",
+    ".nq": "nquads",
+    ".rq": "sparql",
+    ".ru": "sparql"
+  },
+  "ignoredExtensions": [
+    ".rdf",
+    ".srx",
+    ".srj",
+    ".tsv",
+    ".csv",
+    ".json",
+    ".jsonld"
+  ],
+  "skippedApprovals": [
+    "NotApproved",
+    "Withdrawn",
+    "Rejected"
+  ],
   "testTypes": {
-    "rdft:TestTurtlePositiveSyntax": "positive",
-    "rdft:TestTurtleNegativeSyntax": "negative",
-    "rdft:TestTrigPositiveSyntax": "positive",
-    "rdft:TestTrigNegativeSyntax": "negative",
-    "rdft:TestNTriplesPositiveSyntax": "positive",
-    "rdft:TestNTriplesNegativeSyntax": "negative",
-    "rdft:TestNQuadsPositiveSyntax": "positive",
-    "rdft:TestNQuadsNegativeSyntax": "negative",
-    "mf:PositiveSyntaxTest": "positive",
-    "mf:NegativeSyntaxTest": "negative",
-    "mf:PositiveSyntaxTest11": "positive",
-    "mf:NegativeSyntaxTest11": "negative",
-    "mf:PositiveUpdateSyntaxTest11": "positive",
-    "mf:NegativeUpdateSyntaxTest11": "negative"
-  },
-  "groups": [
-    {
-      "from": "rdf/rdf12/rdf-turtle/syntax",
-      "to": "packages/lang-turtle12/test/corpus/turtle12"
+    "rdft:TestTurtlePositiveSyntax": {
+      "expect": "positive",
+      "lang": "turtle"
     },
-    {
-      "from": "rdf/rdf12/rdf-trig/syntax",
-      "to": "packages/lang-turtle12/test/corpus/trig12"
+    "rdft:TestTurtleNegativeSyntax": {
+      "expect": "negative",
+      "lang": "turtle"
     },
-    {
-      "from": "rdf/rdf12/rdf-n-triples/syntax",
-      "to": "packages/lang-turtle12/test/corpus/ntriples12"
+    "rdft:TestTurtleEval": {
+      "expect": "positive",
+      "lang": "turtle"
     },
-    {
-      "from": "rdf/rdf12/rdf-n-quads/syntax",
-      "to": "packages/lang-turtle12/test/corpus/nquads12"
+    "rdft:TestTrigPositiveSyntax": {
+      "expect": "positive",
+      "lang": "trig"
     },
-    {
-      "from": "sparql/sparql11/syntax-query",
-      "to": "packages/lang-sparql12/test/corpus/sparql11-query"
+    "rdft:TestTrigNegativeSyntax": {
+      "expect": "negative",
+      "lang": "trig"
     },
-    {
-      "from": "sparql/sparql11/syntax-update-1",
-      "to": "packages/lang-sparql12/test/corpus/sparql11-update"
+    "rdft:TestTrigEval": {
+      "expect": "positive",
+      "lang": "trig"
     },
-    {
-      "from": "sparql/sparql11/syntax-fed",
-      "to": "packages/lang-sparql12/test/corpus/sparql11-fed"
+    "rdft:TestNTriplesPositiveSyntax": {
+      "expect": "positive",
+      "lang": "ntriples"
     },
-    {
-      "from": "sparql/sparql12/syntax",
-      "to": "packages/lang-sparql12/test/corpus/sparql12-syntax"
+    "rdft:TestNTriplesNegativeSyntax": {
+      "expect": "negative",
+      "lang": "ntriples"
     },
-    {
-      "from": "sparql/sparql12/syntax-triple-terms-positive",
-      "to": "packages/lang-sparql12/test/corpus/sparql12-triple-terms-positive"
+    "rdft:TestNTriplesPositiveC14N": {
+      "expect": "positive",
+      "lang": "ntriples"
     },
-    {
-      "from": "sparql/sparql12/syntax-triple-terms-negative",
-      "to": "packages/lang-sparql12/test/corpus/sparql12-triple-terms-negative"
+    "rdft:TestNQuadsPositiveSyntax": {
+      "expect": "positive",
+      "lang": "nquads"
     },
-    {
-      "from": "sparql/sparql12/version",
-      "to": "packages/lang-sparql12/test/corpus/sparql12-version"
+    "rdft:TestNQuadsNegativeSyntax": {
+      "expect": "negative",
+      "lang": "nquads"
     },
-    {
-      "from": "sparql/sparql12/lang-basedir",
-      "to": "packages/lang-sparql12/test/corpus/sparql12-lang-basedir"
+    "rdft:TestNQuadsPositiveC14N": {
+      "expect": "positive",
+      "lang": "nquads"
     },
-    {
-      "from": "sparql/sparql12/codepoint-escapes",
-      "to": "packages/lang-sparql12/test/corpus/sparql12-codepoint-escapes"
+    "rdft:TestXMLEval": {
+      "expect": "positive"
+    },
+    "rdft:TestXMLNegativeSyntax": {
+      "expect": "positive"
+    },
+    "mf:PositiveEntailmentTest": {
+      "expect": "positive"
+    },
+    "mf:NegativeEntailmentTest": {
+      "expect": "positive"
+    },
+    "mf:PositiveSyntaxTest": {
+      "expect": "positive",
+      "lang": "sparql"
+    },
+    "mf:NegativeSyntaxTest": {
+      "expect": "negative",
+      "lang": "sparql"
+    },
+    "mf:PositiveSyntaxTest11": {
+      "expect": "positive",
+      "lang": "sparql"
+    },
+    "mf:NegativeSyntaxTest11": {
+      "expect": "negative",
+      "lang": "sparql"
+    },
+    "mf:PositiveUpdateSyntaxTest": {
+      "expect": "positive",
+      "lang": "sparql"
+    },
+    "mf:NegativeUpdateSyntaxTest": {
+      "expect": "negative",
+      "lang": "sparql"
+    },
+    "mf:PositiveUpdateSyntaxTest11": {
+      "expect": "positive",
+      "lang": "sparql"
+    },
+    "mf:NegativeUpdateSyntaxTest11": {
+      "expect": "negative",
+      "lang": "sparql"
+    },
+    "mf:QueryEvaluationTest": {
+      "expect": "positive"
+    },
+    "mf:UpdateEvaluationTest": {
+      "expect": "positive"
+    },
+    "mf:CSVResultFormatTest": {
+      "expect": "positive"
     }
-  ]
+  }
 }

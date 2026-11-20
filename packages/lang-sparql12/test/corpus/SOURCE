@@ -1,0 +1,9 @@
+https://github.com/w3c/rdf-tests
+commit: 56076c0efec4c353efcae2971be8f6005294ac64
+roots: rdf/manifest.ttl, sparql/manifest.ttl
+manifests read: 98
+entries: 1045 positive, 194 negative
+tests skipped for their approval status: 0
+
+Vendored by scripts/vendor-corpus.mjs. Do not edit by hand.
+Licensed under the W3C Test Suite License and the W3C 3-clause BSD License.

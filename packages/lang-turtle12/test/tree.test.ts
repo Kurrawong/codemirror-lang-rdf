@@ -183,6 +183,48 @@ describe('N-Triples and N-Quads', () => {
       'NQuadsDoc(NQuad(IRIRef,IRIRef,RDFLiteral(String,LangDir),GraphLabel(IRIRef)))'
     );
   });
+
+  it('reads VERSION as the first statement, with Turtle\'s node names', () => {
+    expect(shape('NTriplesDoc', 'VERSION "1.2"\n<http://s> <http://p> <http://o> .')).toBe(
+      'NTriplesDoc(Version(KwVersion,VersionSpecifier),NTriple(IRIRef,IRIRef,IRIRef))'
+    );
+    expect(shape('NQuadsDoc', 'VERSION "1.2"\n<http://s> <http://p> <http://o> <http://g> .')).toBe(
+      'NQuadsDoc(Version(KwVersion,VersionSpecifier),NQuad(IRIRef,IRIRef,IRIRef,GraphLabel(IRIRef)))'
+    );
+  });
+
+  it('rejects the VERSION forms that only Turtle has, and VERSION after a triple', () => {
+    const nt = parser.configure({ top: 'NTriplesDoc' });
+    for (const text of [
+      'version "1.2"',
+      '@version "1.2" .',
+      'VERSION """1.2"""',
+      '<http://s> <http://p> <http://o> .\nVERSION "1.2"',
+    ])
+      expect(parsesCleanly(nt, text)).toBe(false);
+  });
+
+  it('rejects a prefixed name as predicate', () => {
+    expect(parsesCleanly(parser.configure({ top: 'NTriplesDoc' }), '_:a :p <http://o> .')).toBe(false);
+    expect(parsesCleanly(parser.configure({ top: 'NQuadsDoc' }), '_:abc:def <http://p> <http://o> .')).toBe(false);
+  });
+});
+
+describe('PN_CHARS_BASE above U+FFFF', () => {
+  // [163s] ends with #x10000-#xEFFFF. Lezer reads these as surrogate pairs.
+  const turtle = parser.configure({ top: 'TurtleDoc' });
+
+  it('accepts the first and last code points in prefixes, local names and blank node labels', () => {
+    for (const c of ['\u{10000}', '\u{EFFFF}']) {
+      expect(parsesCleanly(turtle, `@prefix p${c}: <http://a/> .`)).toBe(true);
+      expect(parsesCleanly(turtle, `@prefix p: <http://a/> .\np:${c} p:b p:c .`)).toBe(true);
+      expect(parsesCleanly(turtle, `_:b${c} <http://a/p> <http://a/o> .`)).toBe(true);
+    }
+  });
+
+  it('rejects the code point after the range', () => {
+    expect(parsesCleanly(turtle, '@prefix p: <http://a/> .\np:\u{F0000} p:b p:c .')).toBe(false);
+  });
 });
 
 describe('RDF Patch', () => {

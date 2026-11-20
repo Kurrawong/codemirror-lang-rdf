@@ -2,62 +2,46 @@ import { describe, expect, it } from 'vitest';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { parser } from '../dist/index.js';
-import { readExpectedFail, runConformance } from '../../../test/harness';
+import { readW3cExpectedFail, runW3cConformance, w3cCounts } from '../../../test/harness';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const corpus = join(here, 'corpus');
-const expectedFailFile = join(corpus, 'expected-fail.json');
-const sparql = parser.configure({ top: 'SparqlUnit' });
 
 /*
- * The SPARQL 1.1 syntax suites are here as well as the 1.2 ones: a 1.2 grammar
- * that stopped parsing 1.1 would be a regression the 1.2 suite alone cannot
- * see, and 1.1 is what almost every query in the wild still is.
+ * The corpus is every query and update that a w3c/rdf-tests manifest
+ * references, from the SPARQL 1.0, 1.1 and 1.2 suites. A negative syntax test
+ * must produce an error node; every other file, including the queries and
+ * updates of evaluation tests, must not. The 1.0 and 1.1 suites are here
+ * because a 1.2 grammar that stopped parsing them would be a regression the
+ * 1.2 suite alone cannot see.
  */
-const groups = [
-  { group: 'sparql11-query', size: 94 },
-  { group: 'sparql11-update', size: 54 },
-  { group: 'sparql11-fed', size: 3 },
-  { group: 'sparql12-syntax', size: 6 },
-  { group: 'sparql12-triple-terms-positive', size: 95 },
-  { group: 'sparql12-triple-terms-negative', size: 63 },
-  { group: 'sparql12-version', size: 9 },
-  { group: 'sparql12-lang-basedir', size: 1 },
-  { group: 'sparql12-codepoint-escapes', size: 9 },
-] as const;
+describe('W3C rdf-tests corpus', () => {
+  const results = runW3cConformance({ sparql: parser.configure({ top: 'SparqlUnit' }) }, corpus);
+  const expectedFail = readW3cExpectedFail(join(corpus, 'expected-fail.json'));
 
-describe.each(groups)('W3C $group syntax suite', ({ group, size }) => {
-  const results = runConformance(sparql, join(corpus, group));
-  const expectedFail = readExpectedFail(expectedFailFile, group);
-
-  it(`covers the whole vendored group (${size} entries)`, () => {
-    expect(results.length).toBe(size);
+  it('vendors the expected entries per group', () => {
+    expect(w3cCounts(results)).toMatchSnapshot();
   });
 
-  it('agrees with every entry it claims to decide', () => {
+  it('agrees with every entry not on the expected-fail list', () => {
     const unexpected = results
-      .filter((r) => !r.agreed && !expectedFail.has(r.entry.name))
-      .map((r) => `${r.entry.expect} ${r.entry.name} (${r.entry.file})`);
+      .filter((r) => !r.agreed && !expectedFail.has(r.entry.file))
+      .map((r) => `${r.entry.expect} ${r.entry.file}`);
     expect(unexpected).toEqual([]);
   });
 
   it('has no stale expected-fail entries', () => {
-    const stale = results.filter((r) => r.agreed && expectedFail.has(r.entry.name)).map((r) => r.entry.name);
+    const stale = results.filter((r) => r.agreed && expectedFail.has(r.entry.file)).map((r) => r.entry.file);
     expect(stale).toEqual([]);
   });
 
   it('lists no expected-fail entry that is not in the corpus', () => {
-    const names = new Set(results.map((r) => r.entry.name));
-    expect([...expectedFail].filter((n) => !names.has(n))).toEqual([]);
+    const files = new Set(results.map((r) => r.entry.file));
+    expect([...expectedFail.keys()].filter((f) => !files.has(f))).toEqual([]);
   });
-});
 
-describe('every 1.2 positive triple-term test parses', () => {
-  /*
-   * Called out separately from the loop above because it is the point of the
-   * package: these 95 files are the reason a 1.1 grammar was not enough.
-   */
-  it('has no expected-fail entries at all', () => {
-    expect([...readExpectedFail(expectedFailFile, 'sparql12-triple-terms-positive')]).toEqual([]);
+  it('expects no positive entry to fail', () => {
+    const positive = results.filter((r) => r.entry.expect === 'positive' && expectedFail.has(r.entry.file));
+    expect(positive.map((r) => r.entry.file)).toEqual([]);
   });
 });
