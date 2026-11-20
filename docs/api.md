@@ -61,6 +61,75 @@ returns an empty array if the parse does not finish in that time.
 leaves out a parse error that overlaps an SRL diagnostic, because the SRL
 message describes the same text.
 
+## Formatting
+
+Each package exports a formatter function and a CodeMirror command:
+
+| Package | Function | Command |
+| --- | --- | --- |
+| `codemirror-lang-turtle12` | `formatTurtle(text, { dialect?, indent? })` | `formatTurtleDocument` |
+| `codemirror-lang-sparql12` | `formatSparql(text, { lateral?, indent? })` | `formatSparqlDocument` |
+| `codemirror-lang-srl` | `formatSrl(text, { indent? })` | `formatSrlDocument` |
+
+The functions do not use `@codemirror/view` and run in Node. Each returns a
+`FormatResult`:
+
+```ts
+interface FormatResult {
+  text: string;
+  changes: { from: number; to: number; insert: string }[];
+  error: { from: number; to: number; message: string } | null;
+}
+```
+
+`changes` are the edits, in input offsets, that turn the input into `text`.
+`indent` is the text of one indent level and defaults to two spaces.
+`dialect` is `'turtle'` (default) or `'trig'`; use `'trig'` for a document with
+`GRAPH` blocks, which the Turtle grammar reads as an error. `lateral: true`
+parses with the `lateral` dialect described under [SPARQL](#sparql).
+`formatSrl` has no `tuples` option, because `tuples` does not change what
+parses.
+
+A formatter changes only the whitespace between tokens, and trailing spaces at
+the end of a comment. Comments, the order of prefixes and the text of every
+token are kept, so `1.0`, `LIMIT 0001` and `VALUES ?x { UNDEF }` come back as
+written. Where the formatter starts a new line and the input had a blank line
+at that point, it writes one blank line, except directly after an opening
+brace or bracket and before a closing one. If the input has a parse error, the function returns the input
+unchanged with `error` set to the first error node and `changes` empty. It does
+the same if the output does not parse to the same tokens as the input; this
+check guards against a layout rule that would join two tokens.
+
+The layout:
+
+- Turtle and TriG: one directive per line and each subject on its own line.
+  After a `;` the next predicate goes on a new line one level deeper, and after
+  a `,` the next object goes one level deeper again. `[ ]` and `{| |}` stay on
+  one line unless their content has a `;` list, a `,` list or a comment.
+  A TriG graph block indents its statements.
+- SPARQL: one prologue declaration per line. Each clause (`SELECT`,
+  `CONSTRUCT`, `WHERE`, `GROUP BY`, `HAVING`, `ORDER BY`, `LIMIT`, `OFFSET`,
+  `VALUES`) and each update operation starts a line. Each `{ }` group indents
+  one level, and each pattern in a group starts a line. `} UNION {` stays on one
+  line. A `VALUES` table with more than one row puts each row on its own line.
+  Triple patterns follow the Turtle layout. Expressions stay on one line, with
+  one space around operators and none inside parentheses or between a function
+  name and its `(`.
+- SRL: the SPARQL layout, with each `RULE`, `DATA` block and rule `WHERE` on its
+  own line and the rule head and body indented one level.
+
+N-Triples, N-Quads and RDF Patch have no formatter.
+
+The commands are `StateCommand`s for a keymap. Each one formats the whole
+document in one transaction with the user event `format`, using the editor's
+`indentUnit`. It returns `false` and changes nothing when the editor's language
+is not one it formats or when the document has a parse error.
+
+`formatTurtle` and `formatSparql` lay out a document with `turtleLayout` and
+`sparqlLayout`, which are also exported. `sparqlFormatter(parser)` returns a
+formatter with the SPARQL layout over any configuration of the SPARQL
+parser; `formatSrl` is `sparqlFormatter` over `SrlUnit`.
+
 ## Turtle, TriG, N-Triples, N-Quads, and RDF Patch
 
 Import from `@kurrawongai/codemirror-lang-turtle12`.
@@ -76,6 +145,7 @@ Import from `@kurrawongai/codemirror-lang-turtle12`.
 | `turtleCompletionSource(options?, dialect?)` | Standalone completion source; dialect is `'turtle'` (default) or `'trig'` |
 | `documentPrefixes`, `knownPrefixes` | Prefix helpers described above |
 | `parseErrors(state)`, `parseErrorLinter()` | Parse-error helpers described above |
+| `formatTurtle`, `formatTurtleDocument`, `turtleLayout` | Formatter, command and layout rules described above |
 
 For raw parsing, select `TurtleDoc`, `TrigDoc`, `NTriplesDoc`, `NQuadsDoc`, or `RdfPatchDoc`:
 
@@ -122,6 +192,7 @@ Import from `@kurrawongai/codemirror-lang-sparql12`.
 | `KEYWORD_NODE_NAMES` | Sorted keyword node names, such as `KwSELECT` |
 | `documentPrefixes`, `knownPrefixes`, `documentVariables` | Helpers described above |
 | `parseErrors(state)`, `parseErrorLinter()` | Parse-error helpers described above |
+| `formatSparql`, `formatSparqlDocument`, `sparqlFormatter`, `sparqlLayout` | Formatter, command and layout rules described above |
 
 `sparql()` takes `SparqlOptions`:
 
@@ -167,6 +238,7 @@ Import from `@kurrawongai/codemirror-lang-srl`.
 | `dataBlockRanges(state)` | `{ from, to }[]` for `SrlDataBlock` nodes, in document order |
 | `tupleRanges(state)` | `TupleRange[]` for tuples in rule heads and bodies |
 | `variablesInDataBlocks(state)` | `{ from, to, name }[]` for variables in ground data blocks; names include `?` or `$` |
+| `formatSrl(text, options?)`, `formatSrlDocument` | Formatter and command described above |
 | `documentPrefixes`, `knownPrefixes`, `documentVariables`, `parseErrors`, `srlKeywords` | Re-exports from the SPARQL package |
 
 The package also exports `SrlOptions` and `TupleRange`:

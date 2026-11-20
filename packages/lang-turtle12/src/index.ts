@@ -160,3 +160,6 @@ export function nquads(): LanguageSupport {
 export function rdfPatch(): LanguageSupport {
   return new LanguageSupport(rdfPatchLanguage, parseErrorLinter());
 }
+
+export { formatTurtle, formatTurtleDocument, turtleLayout } from './format';
+export type { FormatChange, FormatError, FormatOptions, FormatResult, TurtleFormatOptions } from './format';

@@ -1,5 +1,7 @@
 import {
   LRLanguage,
+  indentUnit,
+  language,
   LanguageSupport,
   delimitedIndent,
   foldInside,
@@ -8,6 +10,7 @@ import {
 } from '@codemirror/language';
 import type { LRParser } from '@lezer/lr';
 import type { SyntaxNode } from '@lezer/common';
+import type { StateCommand } from '@codemirror/state';
 import { parser as rawParser } from './sparql.grammar';
 import { sparqlHighlighting } from './highlight';
 import { sparqlCompletionSource } from './complete';
@@ -23,6 +26,7 @@ export interface SparqlOptions extends CompletionOptions {
   lateral?: boolean;
 }
 import { parseErrorLinter } from './lint';
+import { formatSparql } from './format';
 
 export type { CompletionOptions, CompletionSourceOptions, PrefixMap, PrefixSource } from './complete';
 export {
@@ -37,6 +41,8 @@ export {
 export { sparqlHighlighting } from './highlight';
 export { KEYWORDS, KEYWORD_NODE_NAMES } from './keywords';
 export { parseErrorLinter, parseErrors } from './lint';
+export { formatSparql, sparqlFormatter, sparqlLayout } from './format';
+export type { FormatChange, FormatError, FormatOptions, FormatResult, LayoutRules, Space, SparqlFormatOptions, Token } from './format';
 export type { ParseError } from './lint';
 
 /**
@@ -117,3 +123,20 @@ export function sparql(options: SparqlOptions = {}): LanguageSupport {
     parseErrorLinter(),
   ]);
 }
+
+/**
+ * Format the whole document in one transaction, with the indent unit of the
+ * editor. Returns `false`, and changes nothing, when the editor's language is
+ * not SPARQL or when the document has a parse error.
+ */
+export const formatSparqlDocument: StateCommand = ({ state, dispatch }) => {
+  const current = state.facet(language);
+  if (current !== sparqlLanguage && current !== sparqlLateralLanguage) return false;
+  const result = formatSparql(state.doc.toString(), {
+    lateral: current === sparqlLateralLanguage,
+    indent: state.facet(indentUnit),
+  });
+  if (result.error) return false;
+  if (result.changes.length) dispatch(state.update({ changes: result.changes, userEvent: 'format' }));
+  return true;
+};

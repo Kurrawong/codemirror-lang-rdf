@@ -119,6 +119,26 @@ suppressed inside parsed comments, strings, version specifiers, and IRIs.
 The additional check for unfinished strings is line-local, so an unfinished
 multiline string can still receive suggestions on later lines.
 
+## Format a document
+
+Bind the package's format command in a keymap. This example formats a SPARQL
+editor on Shift-Alt-F:
+
+```js
+import { keymap } from '@codemirror/view';
+import { sparql, formatSparqlDocument } from '@kurrawongai/codemirror-lang-sparql12';
+
+const extensions = [
+  sparql(),
+  keymap.of([{ key: 'Shift-Alt-f', run: formatSparqlDocument }]),
+];
+```
+
+Use `formatTurtleDocument` for Turtle and TriG and `formatSrlDocument` for SRL.
+A command leaves a document with a parse error unchanged. To format text
+outside an editor, call `formatTurtle`, `formatSparql` or `formatSrl`; see
+[Formatting](api.md#formatting) for the options and the layout.
+
 ## Handle SRL diagnostics
 
 `srl({ tuples: false })` omits `TUPLE` from completion. Tuple syntax still
