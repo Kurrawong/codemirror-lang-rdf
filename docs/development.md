@@ -87,7 +87,7 @@ as the invalid case motivating a change.
 
 ## Test coverage
 
-- Conformance tests compare parser error nodes with the pinned syntax corpora.
+- Conformance tests compare parser error nodes with the pinned W3C test corpora.
 - Tree tests assert expected production names and structure.
 - Editor tests exercise completion, indentation, and folding in an `EditorState`.
 - Chromium tests exercise rendered highlighting and editing workflows.
@@ -105,13 +105,28 @@ pnpm run vendor-corpus
 ```
 
 This fetches `w3c/rdf-tests` at the commit in
-[corpus.config.json](../corpus.config.json) and replaces the configured corpus
-directories. Git and network access are required. CI checks that this command
-does not change the committed corpora.
+[corpus.config.json](../corpus.config.json), reads `rdf/manifest.ttl` and
+`sparql/manifest.ttl`, and follows every `mf:include` from them. It copies
+every Turtle, TriG, N-Triples, N-Quads, query and update file that a test entry
+references into `test/corpus/` of the package that parses it, at its upstream
+path, and writes the list to `test/corpus/index.json`. Git and network access
+are required. CI checks that this command does not change the committed
+corpora.
 
-`pnpm run vendor-corpus --update` updates the pin to the fetched repository's
-HEAD. Review the config, `SOURCE` files, case indexes, suite-size assertions,
-and expected-failure lists, then run the tests before committing the update.
+The `mf:action` of a negative syntax test is a negative entry. Every other
+referenced file is a positive entry: positive syntax tests, and also the
+inputs and expected results of evaluation tests, because those must parse for
+the test to mean anything. The script stops on a test type or file extension
+that the config does not list, so a new kind of upstream test is added to the
+config deliberately.
+
+`pnpm run vendor-corpus --update` updates the pin to upstream HEAD. Review the
+`SOURCE` files, `index.json` and the count snapshots in
+`test/__snapshots__/conformance.test.ts.snap`, run the tests, and fix the
+grammar or add an `expected-fail.json` entry with its reason for each new
+disagreement. The `Upstream corpus` workflow runs these tests against HEAD
+every Monday, so a new upstream test that the grammars disagree with fails
+there first.
 
 `--from /path/to/rdf-tests` uses an existing checkout at its current HEAD.
 Without `--update`, it does not change or enforce the configured pin for that
