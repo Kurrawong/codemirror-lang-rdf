@@ -5,16 +5,18 @@ import { EditorState } from '@codemirror/state';
 import { indentUnit } from '@codemirror/language';
 import { formatTurtle, formatTurtleDocument, parser, trig, turtle } from '../dist/index.js';
 import { checkCorpus } from '../../../test/format';
+import { readW3cCorpus } from '../../../test/harness';
 
-const here = dirname(fileURLToPath(import.meta.url));
+const corpus = join(dirname(fileURLToPath(import.meta.url)), 'corpus');
 
 describe.each([
-  { group: 'turtle12', dialect: 'turtle', top: 'TurtleDoc' },
-  { group: 'trig12', dialect: 'trig', top: 'TrigDoc' },
-] as const)('formatting the W3C $group suite', ({ group, dialect, top }) => {
-  const { checked, problems } = checkCorpus(parser.configure({ top }), join(here, 'corpus', group), (text) =>
-    formatTurtle(text, { dialect }),
-  );
+  { dialect: 'turtle', top: 'TurtleDoc' },
+  { dialect: 'trig', top: 'TrigDoc' },
+] as const)('formatting the $dialect files of the W3C rdf-tests corpus', ({ dialect, top }) => {
+  const files = readW3cCorpus(corpus)
+    .filter((e) => e.lang === dialect && e.expect === 'positive')
+    .map((e) => e.file);
+  const { checked, problems } = checkCorpus(parser.configure({ top }), corpus, files, (text) => formatTurtle(text, { dialect }));
 
   it('checks some documents', () => expect(checked).toBeGreaterThan(10));
   it('changes only whitespace and is idempotent', () => expect(problems).toEqual([]));

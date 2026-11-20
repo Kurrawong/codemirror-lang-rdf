@@ -5,7 +5,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { LRParser } from '@lezer/lr';
-import { parsesCleanly, readCorpus } from './harness';
+import { parsesCleanly } from './harness';
 
 export interface Formatted {
   text: string;
@@ -33,25 +33,32 @@ export interface Problem {
   problem: string;
 }
 
-/** Every positive document in `dir` that `parser` accepts, and what went wrong formatting it. */
-export function checkCorpus(parser: LRParser, dir: string, format: (text: string) => Formatted): { checked: number; problems: Problem[] } {
+/**
+ * Format each of `files`, paths relative to `dir`, that `parser` accepts, and
+ * report what went wrong. A file the parser rejects is skipped.
+ */
+export function checkCorpus(
+  parser: LRParser,
+  dir: string,
+  files: string[],
+  format: (text: string) => Formatted,
+): { checked: number; problems: Problem[] } {
   const problems: Problem[] = [];
   let checked = 0;
-  for (const entry of readCorpus(dir)) {
-    if (entry.expect !== 'positive') continue;
-    const input = readFileSync(join(dir, entry.file), 'utf8');
+  for (const file of files) {
+    const input = readFileSync(join(dir, file), 'utf8');
     if (!parsesCleanly(parser, input)) continue;
     checked++;
     const first = format(input);
     if (first.error) {
-      problems.push({ file: entry.file, problem: `error: ${first.error.message}` });
+      problems.push({ file, problem: `error: ${first.error.message}` });
       continue;
     }
-    if (squeeze(first.text) !== squeeze(input)) problems.push({ file: entry.file, problem: 'changed more than whitespace' });
+    if (squeeze(first.text) !== squeeze(input)) problems.push({ file, problem: 'changed more than whitespace' });
     else if (tokensOf(parser, first.text).join('\n') !== tokensOf(parser, input).join('\n'))
-      problems.push({ file: entry.file, problem: 'tokens differ' });
+      problems.push({ file, problem: 'tokens differ' });
     const second = format(first.text);
-    if (second.text !== first.text) problems.push({ file: entry.file, problem: 'not idempotent' });
+    if (second.text !== first.text) problems.push({ file, problem: 'not idempotent' });
   }
   return { checked, problems };
 }

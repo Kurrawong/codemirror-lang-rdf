@@ -4,11 +4,16 @@ import { dirname, join } from 'node:path';
 import { EditorState } from '@codemirror/state';
 import { formatSrl, formatSrlDocument, parser, srl } from '../dist/index.js';
 import { checkCorpus } from '../../../test/format';
+import { readCorpus } from '../../../test/harness';
 
 const here = dirname(fileURLToPath(import.meta.url));
 
 describe('formatting the SPARQL-RL syntax suite', () => {
-  const { checked, problems } = checkCorpus(parser, join(here, 'corpus', 'srl-syntax'), (text) => formatSrl(text));
+  const dir = join(here, 'corpus', 'srl-syntax');
+  const files = readCorpus(dir)
+    .filter((e) => e.expect === 'positive')
+    .map((e) => e.file);
+  const { checked, problems } = checkCorpus(parser, dir, files, (text) => formatSrl(text));
 
   it('checks some documents', () => expect(checked).toBeGreaterThan(10));
   it('changes only whitespace and is idempotent', () => expect(problems).toEqual([]));

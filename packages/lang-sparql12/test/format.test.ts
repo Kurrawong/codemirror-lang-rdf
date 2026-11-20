@@ -4,22 +4,18 @@ import { dirname, join } from 'node:path';
 import { EditorState } from '@codemirror/state';
 import { formatSparql, formatSparqlDocument, parser, sparql } from '../dist/index.js';
 import { checkCorpus } from '../../../test/format';
+import { readW3cCorpus } from '../../../test/harness';
 
-const here = dirname(fileURLToPath(import.meta.url));
+const corpus = join(dirname(fileURLToPath(import.meta.url)), 'corpus');
 const sparqlParser = parser.configure({ top: 'SparqlUnit' });
 
-// sparql12-lang-basedir and sparql12-codepoint-escapes have no positive syntax tests.
-describe.each([
-  'sparql11-query',
-  'sparql11-update',
-  'sparql11-fed',
-  'sparql12-syntax',
-  'sparql12-triple-terms-positive',
-  'sparql12-version',
-])('formatting the W3C %s suite', (group) => {
-  const { checked, problems } = checkCorpus(sparqlParser, join(here, 'corpus', group), (text) => formatSparql(text));
+describe('formatting the queries and updates of the W3C rdf-tests corpus', () => {
+  const files = readW3cCorpus(corpus)
+    .filter((e) => e.expect === 'positive')
+    .map((e) => e.file);
+  const { checked, problems } = checkCorpus(sparqlParser, corpus, files, (text) => formatSparql(text));
 
-  it('checks at least one document', () => expect(checked).toBeGreaterThan(0));
+  it('checks some documents', () => expect(checked).toBeGreaterThan(100));
   it('changes only whitespace and is idempotent', () => expect(problems).toEqual([]));
 });
 
