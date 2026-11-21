@@ -1,8 +1,8 @@
-import { LRLanguage, LanguageSupport, syntaxTree } from '@codemirror/language';
-import type { EditorState } from '@codemirror/state';
+import { LRLanguage, LanguageSupport, indentUnit, language, syntaxTree } from '@codemirror/language';
+import type { EditorState, StateCommand } from '@codemirror/state';
 import type { LRParser } from '@lezer/lr';
-import { parser as sparqlParser, sparqlProps, sparqlCompletionSource } from '@kurrawongai/codemirror-lang-sparql12';
-import type { CompletionOptions } from '@kurrawongai/codemirror-lang-sparql12';
+import { parser as sparqlParser, sparqlFormatter, sparqlProps, sparqlCompletionSource } from '@kurrawongai/codemirror-lang-sparql12';
+import type { CompletionOptions, FormatOptions, FormatResult } from '@kurrawongai/codemirror-lang-sparql12';
 import { srlLinter } from './conversion-lint';
 
 export { SRL_BASE_GRAPH_PLACEHOLDER, sparqlToSrl, srlToSparql } from './convert';
@@ -10,7 +10,7 @@ export type { ConversionDiagnostic, ConversionResult, SparqlToSrlOptions, SrlExp
 export { sparqlBindConversions, sparqlNotExistsConversions, sparqlOperationConversions, srlConformanceDiagnostics, srlSparqlConversionLinter } from './conversion-lint';
 export type { SparqlBindConversion, SparqlNotExistsConversion, SparqlOperationConversion, SrlConformanceDiagnostic, SrlSparqlConversionLinterOptions } from './conversion-lint';
 
-export type { CompletionOptions, ParseError, PrefixMap, PrefixSource } from '@kurrawongai/codemirror-lang-sparql12';
+export type { CompletionOptions, FormatChange, FormatError, FormatOptions, FormatResult, ParseError, PrefixMap, PrefixSource } from '@kurrawongai/codemirror-lang-sparql12';
 export { documentPrefixes, documentVariables, knownPrefixes, parseErrors, srlKeywords } from '@kurrawongai/codemirror-lang-sparql12';
 
 export interface SrlOptions extends CompletionOptions {
@@ -154,3 +154,34 @@ export function srl(options: SrlOptions = {}): LanguageSupport {
     }),
   ]);
 }
+
+const formatSrlText = sparqlFormatter(parser);
+
+/**
+ * Lay out an SRL rule set by changing only the whitespace between tokens,
+ * with the SPARQL layout below the rule body. Each `RULE`, `DATA` block and
+ * `WHERE` starts a line, and the rule head and body indent one level.
+ * `:=` and `TUPLE( … )` are kept as written.
+ *
+ * There is no `tuples` option: the flag on `srl()` does not change what
+ * parses, so a tuple rule formats the same either way.
+ *
+ * A document with a parse error comes back unchanged, with `error` set to the
+ * first error.
+ */
+export function formatSrl(text: string, options: FormatOptions = {}): FormatResult {
+  return formatSrlText(text, options);
+}
+
+/**
+ * Format the whole document in one transaction, with the indent unit of the
+ * editor. Returns `false`, and changes nothing, when the editor's language is
+ * not SRL or when the document has a parse error.
+ */
+export const formatSrlDocument: StateCommand = ({ state, dispatch }) => {
+  if (state.facet(language) !== srlLanguage) return false;
+  const result = formatSrl(state.doc.toString(), { indent: state.facet(indentUnit) });
+  if (result.error) return false;
+  if (result.changes.length) dispatch(state.update({ changes: result.changes, userEvent: 'format' }));
+  return true;
+};

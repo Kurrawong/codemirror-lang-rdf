@@ -31,7 +31,7 @@ documented and tested tag sets agree.
 | Tokens in an RDF Patch `A` or `PA` row | `inserted`, in addition to their own tags |
 | Tokens in an RDF Patch `D` or `PD` row | `deleted`, in addition to their own tags |
 | RDF Patch header key (`id` in `H id <...> .`) | `attributeName` |
-| `:=`, arithmetic and comparison operators | `operator` |
+| `:=`, arithmetic and comparison operators, property path operators (`/`, `\|`, `^`, `?`, `*`, `+`) | `operator` |
 | `;`, `,` | `separator` |
 | `.` | `punctuation` |
 | Comments | `comment` |

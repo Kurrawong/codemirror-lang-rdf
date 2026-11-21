@@ -480,7 +480,9 @@ TupleTemplate { KwTUPLE "(" varOrTerm ("," varOrTerm)* ")" }
   NotOp { "!" }
   AssignOp { ":=" }
 
-  "<<" ">>" "<<(" ")>>" "{|" "|}" "^^" "~" "^" "|" "?"
+  // "/" is listed so that the property path operator has a node, as "|" and
+  // "^" do. Division is MulOp.
+  "<<" ">>" "<<(" ")>>" "{|" "|}" "^^" "~" "^" "|" "?" "/"
   "{" "}" "[" "]" "(" ")" ";" "," "." "*" "+" "="
 
   // More specific patterns first: Lezer token precedence overrides longest

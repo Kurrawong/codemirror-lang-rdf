@@ -74,7 +74,7 @@ export const sparqlHighlighting: NodePropSource = styleTags({
   '"[" "]"': t.squareBracket,
   '"(" ")" Nil': t.paren,
 
-  'OrOp AndOp CompareOp ArithOp MulOp NotOp AssignOp "^" "|" "?" "*" "+" "="': t.operator,
+  'OrOp AndOp CompareOp ArithOp MulOp NotOp AssignOp "^" "|" "/" "?" "*" "+" "="': t.operator,
   // The reifier marker, told from arithmetic; it falls back to `operator`.
   '"~"': t.special(t.operator),
 
