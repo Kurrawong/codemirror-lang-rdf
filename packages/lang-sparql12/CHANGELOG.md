@@ -1,5 +1,26 @@
 # @kurrawongai/codemirror-lang-sparql12
 
+## 0.8.0
+
+### Minor Changes
+
+- e5b9bb6: Add formatters that change only the whitespace between tokens:
+  `formatTurtle(text, { dialect, indent })` for Turtle and TriG,
+  `formatSparql(text, { lateral, indent })` and `formatSrl(text, { indent })`.
+  Each returns the new text and the edits that produce it, and returns the input
+  unchanged with the first error when the document has a parse error. Comments,
+  prefix order and the text of every token are kept. Each package also exports a
+  CodeMirror command (`formatTurtleDocument`, `formatSparqlDocument`,
+  `formatSrlDocument`) that formats the editor's document in one transaction.
+
+  The SPARQL grammar now declares the property path operator `/` as a token, so
+  it has a node in the syntax tree, as `|` and `^` do, and is highlighted as an
+  operator. Division is still `MulOp`.
+
+### Patch Changes
+
+- 5c1bd92: Accept characters from U+10000 to U+EFFFF in prefixed names, blank node labels and variables, as `PN_CHARS_BASE` allows. Accept nested negation such as `!!?v`, following SPARQL 1.2 rule 135. SRL shares the expression grammar, so it accepts `!!` too. Fixes [#21](https://github.com/Kurrawong/codemirror-lang-rdf/issues/21).
+
 ## 0.7.0
 
 ### Minor Changes
