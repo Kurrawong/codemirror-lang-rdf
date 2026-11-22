@@ -1,5 +1,26 @@
 # @kurrawongai/codemirror-lang-turtle12
 
+## 0.5.0
+
+### Minor Changes
+
+- e5b9bb6: Add formatters that change only the whitespace between tokens:
+  `formatTurtle(text, { dialect, indent })` for Turtle and TriG,
+  `formatSparql(text, { lateral, indent })` and `formatSrl(text, { indent })`.
+  Each returns the new text and the edits that produce it, and returns the input
+  unchanged with the first error when the document has a parse error. Comments,
+  prefix order and the text of every token are kept. Each package also exports a
+  CodeMirror command (`formatTurtleDocument`, `formatSparqlDocument`,
+  `formatSrlDocument`) that formats the editor's document in one transaction.
+
+  The SPARQL grammar now declares the property path operator `/` as a token, so
+  it has a node in the syntax tree, as `|` and `^` do, and is highlighted as an
+  operator. Division is still `MulOp`.
+
+### Patch Changes
+
+- 5c1bd92: Accept characters from U+10000 to U+EFFFF in prefixed names and blank node labels, as `PN_CHARS_BASE` allows. Accept `VERSION "..."` before the first triple in N-Triples and N-Quads; the nodes are named `Version` and `KwVersion`, as in Turtle. Reject a prefixed name as the predicate of an N-Triples or N-Quads triple. In N-Triples, N-Quads and RDF Patch rows and headers, reject single-quoted and long strings and a prefixed name as a datatype, as N-Triples syntax requires. Fixes [#21](https://github.com/Kurrawong/codemirror-lang-rdf/issues/21).
+
 ## 0.4.0
 
 ### Minor Changes
