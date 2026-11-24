@@ -121,12 +121,12 @@ describe('what an application needs from the tree', () => {
    * need a server round trip, so the gutter stops lagging a keystroke behind.
    */
   it('reports each rule as its own range', () => {
-    const doc = 'RULE {} WHERE {}\nRULE <http://r> {} WHERE DATA {}\n';
+    const doc = 'RULE {} WHERE {}\nRULE <http://r> {} WHERE GROUND {}\n';
     const state = stateFor(doc, srl());
     const ranges = ruleRanges(state);
     expect(ranges.length).toBe(2);
     expect(doc.slice(ranges[0].from, ranges[0].to)).toBe('RULE {} WHERE {}');
-    expect(doc.slice(ranges[1].from, ranges[1].to)).toBe('RULE <http://r> {} WHERE DATA {}');
+    expect(doc.slice(ranges[1].from, ranges[1].to)).toBe('RULE <http://r> {} WHERE GROUND {}');
   });
 
   it('reports each DATA block as its own range', () => {
@@ -163,8 +163,8 @@ describe('what an application needs from the tree', () => {
   });
 
   it('does not mistake a rule body variable for a DATA block one', () => {
-    const state = stateFor('RULE {} WHERE DATA { ?s ?p ?o }', srl());
-    // `WHERE DATA { … }` is a rule body, not a ground data block.
+    const state = stateFor('RULE {} WHERE GROUND { ?s ?p ?o }', srl());
+    // `WHERE GROUND { … }` is a rule body, not a ground data block.
     expect(variablesInDataBlocks(state)).toEqual([]);
     expect(dataBlockRanges(state)).toEqual([]);
   });
@@ -357,14 +357,6 @@ describe('explicit SRL/SPARQL conversion', () => {
       text: 'RULE { ?x :ok true } WHERE GROUND { ?x a :C . NOT { ?x :bad ?y } }\n',
       diagnostics: [],
     });
-  });
-
-  it('lowers the older NOT DATA and WHERE DATA spellings the same way, and names them as written', () => {
-    const source = 'RULE { ?x :km ?k } WHERE DATA { ?x :miles ?m . NOT data { ?x :km ?old } }';
-    const result = srlToSparql(source);
-    expect(result.diagnostics).toEqual([]);
-    expect(result.text).toBe(srlToSparql(source.replace('DATA', 'GROUND').replace('data', 'GROUND')).text);
-    expect(result.warnings?.map((warning) => warning.message)).toEqual([expect.stringContaining('WHERE DATA was converted')]);
   });
 
   it('still refuses a base-graph GRAPH pattern mixed with other patterns', () => {

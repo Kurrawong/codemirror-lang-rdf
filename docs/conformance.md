@@ -28,9 +28,8 @@ SRL uses this rule form:
 RULE iri? HeadTemplate WHERE GROUND? BodyPattern
 ```
 
-`GROUND` follows w3c/data-shapes commit 004346d (2026-11-19). The grammar
-also accepts `DATA` in its place after `WHERE` and after `NOT`, the keyword's
-name before that commit.
+`GROUND` follows w3c/data-shapes commit 004346d (2026-11-19). The older
+`WHERE DATA` and `NOT DATA` are syntax errors.
 
 Rule bodies contain triples, filters, negation (`NOT GROUND? { ... }`),
 assignment (`SET ( ?v := expression )`), grouping with aggregates

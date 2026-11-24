@@ -175,18 +175,6 @@ function varList(vars: string[]): string {
   return vars.map((name) => `?${name}`).join(', ');
 }
 
-/**
- * `GROUND` after `WHERE` or `NOT`. `DATA` is its name before w3c/data-shapes
- * commit 004346d, and the grammar still accepts it there.
- */
-function isGroundKeyword(node: Span): boolean {
-  return node.name === 'KwGROUND' || node.name === 'KwDATA';
-}
-
-function keywordText(source: string, node: Span): string {
-  return source.slice(node.from, node.to).toUpperCase();
-}
-
 function baseGraphWarning(from: number, to: number, keyword: string, baseGraph: string): ConversionDiagnostic {
   return {
     from,
@@ -266,8 +254,8 @@ export function srlToSparql(source: string, options: SrlToSparqlOptions = {}): C
 
   const baseGraph = options.baseGraph ?? SRL_BASE_GRAPH_PLACEHOLDER;
   const warnings: ConversionDiagnostic[] = [];
-  const whereData = all.find((node) => isGroundKeyword(node) && rule.from < node.from && node.to <= body.from);
-  if (whereData) warnings.push(baseGraphWarning(whereData.from, whereData.to, `WHERE ${keywordText(source, whereData)}`, baseGraph));
+  const whereData = all.find((node) => node.name === 'KwGROUND' && rule.from < node.from && node.to <= body.from);
+  if (whereData) warnings.push(baseGraphWarning(whereData.from, whereData.to, 'WHERE GROUND', baseGraph));
 
   const changes: { from: number; to: number; insert: string }[] = [];
   const groups = within(all, body, 'GroupAggregate');
@@ -331,9 +319,9 @@ export function srlToSparql(source: string, options: SrlToSparqlOptions = {}): C
       continue;
     }
     const inner = source.slice(nested.from, nested.to);
-    const notData = all.find((node) => isGroundKeyword(node) && negation.from < node.from && node.to <= nested.from);
+    const notData = all.find((node) => node.name === 'KwGROUND' && negation.from < node.from && node.to <= nested.from);
     // Inside WHERE GROUND everything already matches the base graph.
-    if (notData && !whereData) warnings.push(baseGraphWarning(negation.from, nested.from, `NOT ${keywordText(source, notData)}`, baseGraph));
+    if (notData && !whereData) warnings.push(baseGraphWarning(negation.from, nested.from, 'NOT GROUND', baseGraph));
     changes.push({
       from: negation.from,
       to: negation.to,

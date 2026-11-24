@@ -52,6 +52,12 @@ describe('the removed rule forms', () => {
     expect(parsesCleanly(parser, 'IF { ?s ?p ?o } THEN { ?s ?p ?o }')).toBe(false);
   });
 
+  it('does not accept WHERE DATA or NOT DATA, the names before GROUND', () => {
+    expect(parsesCleanly(parser, 'RULE { } WHERE DATA { ?s ?p ?o }')).toBe(false);
+    expect(parsesCleanly(parser, 'RULE { } WHERE { ?s ?p ?o NOT DATA { ?s ?q ?o } }')).toBe(false);
+    expect(parsesCleanly(parser, 'RULE { } WHERE GROUND { ?s ?p ?o NOT GROUND { ?s ?q ?o } }')).toBe(true);
+  });
+
   it('does not accept a FOR clause', () => {
     expect(parsesCleanly(parser, 'RULE FOR ?x IN <http://s> { } WHERE { }')).toBe(false);
   });

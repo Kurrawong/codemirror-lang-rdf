@@ -30,8 +30,8 @@ deliberately not a valid IRI: replace it with a named graph holding the input
 data, and query that data together with the inferred triples as the default
 graph. Pass `{ baseGraph: '<http://example.org/input>' }` to either function to
 use a real graph IRI; `sparqlToSrl` reads that `GRAPH` form back as `NOT GROUND`
-or `WHERE GROUND`. The grammar also accepts `NOT DATA` and `WHERE DATA`, the
-names of these keywords before w3c/data-shapes commit 004346d.
+or `WHERE GROUND`. Before w3c/data-shapes commit 004346d these keywords were
+`NOT DATA` and `WHERE DATA`, which are syntax errors now.
 
 A successful result may carry `warnings`: ranges where the output needs
 checking. Besides the base graph, conversion warns about a negation that

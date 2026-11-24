@@ -340,7 +340,7 @@ BlankNode { BlankNodeLabel | Anon }
 
 RuleSet { (BaseDecl | PrefixDecl | VersionDecl | Rule | SrlDataBlock)* }
 
-Rule { KwRULE iri? HeadTemplate KwWHERE groundMark? BodyPattern }
+Rule { KwRULE iri? HeadTemplate KwWHERE KwGROUND? BodyPattern }
 
 // A dot-separated list rather than `ConstructTriples | TupleTemplate` repeated:
 // ConstructTriples consumes its own dots, so the two together are ambiguous.
@@ -351,13 +351,9 @@ BodyPattern { "{" srlGroupBody "}" }
 srlGroupBody { TriplesBlock? (srlPatternItem "."? TriplesBlock?)* }
 srlPatternItem { Negation | Filter | Assignment | GroupAggregate | TuplePattern }
 
-Negation { KwNOT groundMark? BodyPattern }
-
-// `GROUND` after `WHERE` or `NOT`, from w3c/data-shapes commit 004346d
-// (2026-11-19). `DATA` is the keyword's name before that commit, and is still
-// accepted in the same two places.
-groundMark { KwGROUND | KwDATA }
-
+// `NOT GROUND` and `WHERE GROUND` were `NOT DATA` and `WHERE DATA` before
+// w3c/data-shapes commit 004346d (2026-11-19).
+Negation { KwNOT KwGROUND? BodyPattern }
 Assignment { KwSET "(" Var AssignOp Expression ")" }
 
 // `GROUP BY ?s { … } [ ?n := COUNT(*) ]`, from w3c/data-shapes pull request
