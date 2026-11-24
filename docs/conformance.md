@@ -25,10 +25,13 @@ checks built-in argument counts where encoded in their productions.
 SRL uses this rule form:
 
 ```text
-RULE iri? HeadTemplate WHERE DATA? BodyPattern
+RULE iri? HeadTemplate WHERE GROUND? BodyPattern
 ```
 
-Rule bodies contain triples, filters, negation (`NOT DATA? { ... }`),
+`GROUND` follows w3c/data-shapes commit 004346d (2026-11-19). The older
+`WHERE DATA` and `NOT DATA` are syntax errors.
+
+Rule bodies contain triples, filters, negation (`NOT GROUND? { ... }`),
 assignment (`SET ( ?v := expression )`), grouping with aggregates
 (`GROUP BY ?k { ... } [ ?n := COUNT(*) ]`), and tuple patterns (`TUPLE( ... )`).
 The `GROUP` syntax follows
@@ -50,7 +53,7 @@ specification document.
 | Corpus | Upstream commit | Local record |
 | --- | --- | --- |
 | RDF 1.1 and 1.2, SPARQL 1.0, 1.1 and 1.2 | `56076c0efec4c353efcae2971be8f6005294ac64` in `w3c/rdf-tests` | [corpus.config.json](../corpus.config.json) |
-| SPARQL-RL syntax | `a3eac70d93f94007f23d99c328f667c0e6a0b271` in `w3c/data-shapes`, branch `srl-aggregation-comma` ([pull request #1375](https://github.com/w3c/data-shapes/pull/1375), not yet merged) | [SRL SOURCE](../packages/lang-srl/test/corpus/srl-syntax/SOURCE) |
+| SPARQL-RL syntax | `eacdef4528d66ee116f0ac9118d968c5717c7233` in `w3c/data-shapes`, branch `gh-pages` | [SRL SOURCE](../packages/lang-srl/test/corpus/srl-syntax/SOURCE) |
 
 The `w3c/rdf-tests` corpus is every Turtle, TriG, N-Triples, N-Quads, query and
 update file referenced from that repository's root manifests. Besides syntax
@@ -120,10 +123,12 @@ cover:
 
 ### SRL
 
-The [five exceptions](../packages/lang-srl/test/corpus/expected-fail.json)
-are an undeclared prefix and four uses of variables in ground `DATA` blocks.
+The [eight exceptions](../packages/lang-srl/test/corpus/expected-fail.json)
+are an undeclared prefix, four uses of variables in ground `DATA` blocks, a
+`GROUP` inside a `NOT`, and an aggregate function in a `FILTER` and in a `SET`.
 `variablesInDataBlocks(state)` returns the variable ranges for an application
-to diagnose. Prefix resolution still requires a separate check.
+to diagnose. `srlConformanceDiagnostics(state)` reports the last three. Prefix
+resolution still requires a separate check.
 
 SRL shares SPARQL's expression productions, so it accepts `!!?v` as SPARQL 1.2
 does. The SRL grammar still has `'!' PrimaryExpression`, which allows one `!`.

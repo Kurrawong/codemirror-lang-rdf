@@ -23,14 +23,15 @@ NOT EXISTS`. `GROUP BY ?k { ... } [ ?n := COUNT(*) ]` lowers to the subquery
 `{ SELECT ?k (COUNT(*) AS ?n) WHERE { ... } GROUP BY ?k }`, with a warning when
 the group pattern uses a variable that is bound earlier in the body but is not
 a `GROUP BY` variable: the subquery does not see the earlier value. A `GROUP`
-with neither `BY` variables nor aggregates returns a diagnostic. SRL's `NOT DATA` and `WHERE DATA` match only the input data, not
+with neither `BY` variables nor aggregates returns a diagnostic. SRL's `NOT GROUND` and `WHERE GROUND` match only the input data, not
 inferred triples, and SPARQL cannot tell the two apart. They lower to a
 `GRAPH <{baseGraph}> { ... }` pattern with a warning. The placeholder is
 deliberately not a valid IRI: replace it with a named graph holding the input
 data, and query that data together with the inferred triples as the default
 graph. Pass `{ baseGraph: '<http://example.org/input>' }` to either function to
-use a real graph IRI; `sparqlToSrl` reads that `GRAPH` form back as `NOT DATA`
-or `WHERE DATA`.
+use a real graph IRI; `sparqlToSrl` reads that `GRAPH` form back as `NOT GROUND`
+or `WHERE GROUND`. Before w3c/data-shapes commit 004346d these keywords were
+`NOT DATA` and `WHERE DATA`, which are syntax errors now.
 
 A successful result may carry `warnings`: ranges where the output needs
 checking. Besides the base graph, conversion warns about a negation that

@@ -12,8 +12,8 @@ describe('W3C SPARQL-RL syntax suite', () => {
   const results = runConformance(parser, join(corpus, group));
   const expectedFail = readExpectedFail(join(corpus, 'expected-fail.json'), group);
 
-  it('covers the whole vendored group (173 entries)', () => {
-    expect(results.length).toBe(173);
+  it('covers the whole vendored group (212 entries)', () => {
+    expect(results.length).toBe(212);
   });
 
   it('agrees with every entry it claims to decide', () => {
@@ -50,6 +50,12 @@ describe('the removed rule forms', () => {
    */
   it('does not accept the IF … THEN form', () => {
     expect(parsesCleanly(parser, 'IF { ?s ?p ?o } THEN { ?s ?p ?o }')).toBe(false);
+  });
+
+  it('does not accept WHERE DATA or NOT DATA, the names before GROUND', () => {
+    expect(parsesCleanly(parser, 'RULE { } WHERE DATA { ?s ?p ?o }')).toBe(false);
+    expect(parsesCleanly(parser, 'RULE { } WHERE { ?s ?p ?o NOT DATA { ?s ?q ?o } }')).toBe(false);
+    expect(parsesCleanly(parser, 'RULE { } WHERE GROUND { ?s ?p ?o NOT GROUND { ?s ?q ?o } }')).toBe(true);
   });
 
   it('does not accept a FOR clause', () => {

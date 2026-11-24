@@ -10,6 +10,9 @@
     "test_156": "A variable as the object of a ground DATA triple. The grammar accepts it; variablesInDataBlocks() returns its span.",
     "test_157": "A variable as the predicate of a ground DATA triple, as above.",
     "test_158": "A variable as the subject of a ground DATA triple, as above.",
-    "test_160": "A variable reifier in a ground DATA triple, as above."
+    "test_160": "A variable reifier in a ground DATA triple, as above.",
+    "test_208": "A GROUP inside a NOT. The grammar accepts it; srlConformanceDiagnostics() reports it.",
+    "test_210": "An aggregate function in a FILTER. The grammar shares SPARQL's expressions; srlConformanceDiagnostics() reports it.",
+    "test_211": "An aggregate function in a SET, as above."
   }
 }

@@ -35,7 +35,7 @@ export const SRL_BASE_GRAPH_PLACEHOLDER = '<{baseGraph}>';
 export interface SrlToSparqlOptions {
   /** `construct` is a query; `insert` produces a SPARQL Update. */
   form?: SrlExportForm;
-  /** The graph `NOT DATA` and `WHERE DATA` match against. Defaults to `SRL_BASE_GRAPH_PLACEHOLDER`. */
+  /** The graph `NOT GROUND` and `WHERE GROUND` match against. Defaults to `SRL_BASE_GRAPH_PLACEHOLDER`. */
   baseGraph?: string;
 }
 
@@ -254,8 +254,8 @@ export function srlToSparql(source: string, options: SrlToSparqlOptions = {}): C
 
   const baseGraph = options.baseGraph ?? SRL_BASE_GRAPH_PLACEHOLDER;
   const warnings: ConversionDiagnostic[] = [];
-  const whereData = all.find((node) => node.name === 'KwDATA' && rule.from < node.from && node.to <= body.from);
-  if (whereData) warnings.push(baseGraphWarning(whereData.from, whereData.to, 'WHERE DATA', baseGraph));
+  const whereData = all.find((node) => node.name === 'KwGROUND' && rule.from < node.from && node.to <= body.from);
+  if (whereData) warnings.push(baseGraphWarning(whereData.from, whereData.to, 'WHERE GROUND', baseGraph));
 
   const changes: { from: number; to: number; insert: string }[] = [];
   const groups = within(all, body, 'GroupAggregate');
@@ -319,9 +319,9 @@ export function srlToSparql(source: string, options: SrlToSparqlOptions = {}): C
       continue;
     }
     const inner = source.slice(nested.from, nested.to);
-    const notData = all.find((node) => node.name === 'KwDATA' && negation.from < node.from && node.to <= nested.from);
-    // Inside WHERE DATA everything already matches the base graph.
-    if (notData && !whereData) warnings.push(baseGraphWarning(negation.from, nested.from, 'NOT DATA', baseGraph));
+    const notData = all.find((node) => node.name === 'KwGROUND' && negation.from < node.from && node.to <= nested.from);
+    // Inside WHERE GROUND everything already matches the base graph.
+    if (notData && !whereData) warnings.push(baseGraphWarning(negation.from, nested.from, 'NOT GROUND', baseGraph));
     changes.push({
       from: negation.from,
       to: negation.to,
@@ -457,7 +457,7 @@ export function sparqlToSrl(source: string, options: SparqlToSrlOptions = {}): C
     changes.push({
       from: filter.from,
       to: filter.to,
-      insert: notData ? `NOT DATA ${source.slice(notData.from, notData.to)}` : `NOT ${source.slice(pattern.from, pattern.to)}`,
+      insert: notData ? `NOT GROUND ${source.slice(notData.from, notData.to)}` : `NOT ${source.slice(pattern.from, pattern.to)}`,
     });
   }
   for (const bind of within(all, body, 'Bind')) {
@@ -498,6 +498,6 @@ export function sparqlToSrl(source: string, options: SparqlToSrlOptions = {}): C
 
   const prologue = source.slice(0, operation.from);
   const converted = replace(source.slice(body.from, body.to), changes.map((change) => ({ ...change, from: change.from - body.from, to: change.to - body.from })));
-  const text = `${prologue}RULE ${source.slice(templates[0].from, templates[0].to)} WHERE ${whereData ? 'DATA ' : ''}${converted}\n`;
+  const text = `${prologue}RULE ${source.slice(templates[0].from, templates[0].to)} WHERE ${whereData ? 'GROUND ' : ''}${converted}\n`;
   return withWarnings(checkedSrlResult(text, operation), warnings);
 }

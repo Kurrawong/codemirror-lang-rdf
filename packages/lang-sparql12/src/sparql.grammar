@@ -333,14 +333,14 @@ BlankNode { BlankNodeLabel | Anon }
 
 // ------------------------------------------------------------------------ SRL
 //
-// SRL: `RULE iri? HeadTemplate 'WHERE' 'DATA'? BodyPattern`, plus ground
+// SRL: `RULE iri? HeadTemplate 'WHERE' 'GROUND'? BodyPattern`, plus ground
 // `DATA` blocks, plus the rule-tuples extension. There is no `IF`/`THEN` and no
 // `FOR`/`IN` clause: both were removed from the grammar upstream
 // (w3c/data-shapes commits 58fdfc6 and cfbcd3c, 2026-08-24).
 
 RuleSet { (BaseDecl | PrefixDecl | VersionDecl | Rule | SrlDataBlock)* }
 
-Rule { KwRULE iri? HeadTemplate KwWHERE KwDATA? BodyPattern }
+Rule { KwRULE iri? HeadTemplate KwWHERE KwGROUND? BodyPattern }
 
 // A dot-separated list rather than `ConstructTriples | TupleTemplate` repeated:
 // ConstructTriples consumes its own dots, so the two together are ambiguous.
@@ -351,7 +351,9 @@ BodyPattern { "{" srlGroupBody "}" }
 srlGroupBody { TriplesBlock? (srlPatternItem "."? TriplesBlock?)* }
 srlPatternItem { Negation | Filter | Assignment | GroupAggregate | TuplePattern }
 
-Negation { KwNOT KwDATA? BodyPattern }
+// `NOT GROUND` and `WHERE GROUND` were `NOT DATA` and `WHERE DATA` before
+// w3c/data-shapes commit 004346d (2026-11-19).
+Negation { KwNOT KwGROUND? BodyPattern }
 Assignment { KwSET "(" Var AssignOp Expression ")" }
 
 // `GROUP BY ?s { … } [ ?n := COUNT(*) ]`, from w3c/data-shapes pull request
@@ -398,7 +400,7 @@ TupleTemplate { KwTUPLE "(" varOrTerm ("," varOrTerm)* ")" }
   KwCOUNT, KwSUM, KwMIN, KwMAX, KwAVG, KwSAMPLE, KwGROUP_CONCAT, KwSEPARATOR,
   KwTRIPLE, KwISTRIPLE, KwSUBJECT, KwPREDICATE, KwOBJECT,
   KwLANGDIR, KwHASLANG, KwHASLANGDIR, KwSTRLANGDIR,
-  KwRULE, KwSET, KwTUPLE,
+  KwRULE, KwSET, KwTUPLE, KwGROUND,
   KwLATERAL[@dialect=lateral]
 }
 
