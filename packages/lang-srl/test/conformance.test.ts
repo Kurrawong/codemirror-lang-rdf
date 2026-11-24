@@ -12,8 +12,8 @@ describe('W3C SPARQL-RL syntax suite', () => {
   const results = runConformance(parser, join(corpus, group));
   const expectedFail = readExpectedFail(join(corpus, 'expected-fail.json'), group);
 
-  it('covers the whole vendored group (173 entries)', () => {
-    expect(results.length).toBe(173);
+  it('covers the whole vendored group (212 entries)', () => {
+    expect(results.length).toBe(212);
   });
 
   it('agrees with every entry it claims to decide', () => {

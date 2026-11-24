@@ -317,13 +317,13 @@ describe('explicit SRL/SPARQL conversion', () => {
     expect(result.diagnostics.length).toBeGreaterThan(0);
   });
 
-  it('lowers NOT DATA to a base-graph placeholder that is not a valid IRI, with a warning', () => {
-    const source = 'RULE { ?x :km ?k } WHERE { ?x :miles ?m . NOT DATA { ?x :km ?old } SET ( ?k := ?m * 2 ) }';
+  it('lowers NOT GROUND to a base-graph placeholder that is not a valid IRI, with a warning', () => {
+    const source = 'RULE { ?x :km ?k } WHERE { ?x :miles ?m . NOT GROUND { ?x :km ?old } SET ( ?k := ?m * 2 ) }';
     const result = srlToSparql(source);
     expect(result.diagnostics).toEqual([]);
     expect(result.text).toContain(`FILTER NOT EXISTS { GRAPH ${SRL_BASE_GRAPH_PLACEHOLDER} { ?x :km ?old } }`);
     expect(result.warnings).toEqual([
-      expect.objectContaining({ from: source.indexOf('NOT DATA'), message: expect.stringContaining('NOT DATA was converted to GRAPH <{baseGraph}>') }),
+      expect.objectContaining({ from: source.indexOf('NOT GROUND'), message: expect.stringContaining('NOT GROUND was converted to GRAPH <{baseGraph}>') }),
     ]);
     const tree = sparqlParser.configure({ top: 'SparqlUnit' }).parse(result.text!);
     let parseErrors = 0;
@@ -331,32 +331,40 @@ describe('explicit SRL/SPARQL conversion', () => {
     expect(parseErrors).toBeGreaterThan(0);
   });
 
-  it('lowers WHERE DATA by matching the whole body in the base graph', () => {
-    const result = srlToSparql('RULE { ?x :km ?k } WHERE DATA { ?x :miles ?m . NOT DATA { ?x :km ?old } NOT { ?x :z ?z } SET ( ?k := ?m * 2 ) }');
+  it('lowers WHERE GROUND by matching the whole body in the base graph', () => {
+    const result = srlToSparql('RULE { ?x :km ?k } WHERE GROUND { ?x :miles ?m . NOT GROUND { ?x :km ?old } NOT { ?x :z ?z } SET ( ?k := ?m * 2 ) }');
     expect(result.diagnostics).toEqual([]);
     expect(result.text).toBe('CONSTRUCT { ?x :km ?k } WHERE { GRAPH <{baseGraph}> { ?x :miles ?m . FILTER NOT EXISTS { ?x :km ?old } '
       + 'FILTER NOT EXISTS { ?x :z ?z } BIND(?m * 2 AS ?k) FILTER(BOUND(?k)) } }\n');
-    expect(result.warnings?.map((warning) => warning.message)).toEqual([expect.stringContaining('WHERE DATA was converted')]);
+    expect(result.warnings?.map((warning) => warning.message)).toEqual([expect.stringContaining('WHERE GROUND was converted')]);
   });
 
   it('uses a supplied base graph IRI in both directions', () => {
     const options = { baseGraph: '<http://example.org/input>' };
-    const srl = 'RULE { ?x :ok true } WHERE { ?x a :C . NOT DATA { ?x :bad ?y } }';
+    const srl = 'RULE { ?x :ok true } WHERE { ?x a :C . NOT GROUND { ?x :bad ?y } }';
     const sparql = srlToSparql(srl, options);
     expect(sparql.text).toBe('CONSTRUCT { ?x :ok true } WHERE { ?x a :C . FILTER NOT EXISTS { GRAPH <http://example.org/input> { ?x :bad ?y } } }\n');
     expect(sparqlToSrl(sparql.text!, options)).toEqual({ text: `${srl}\n`, diagnostics: [] });
     expect(sparqlToSrl(sparql.text!).diagnostics[0]).toMatchObject({ message: 'GraphGraphPattern cannot be represented in SRL.' });
   });
 
-  it('raises the base-graph placeholder back to NOT DATA and WHERE DATA', () => {
+  it('raises the base-graph placeholder back to NOT GROUND and WHERE GROUND', () => {
     expect(sparqlToSrl('CONSTRUCT { ?x :ok true } WHERE { ?x a :C . FILTER NOT EXISTS { GRAPH <{baseGraph}> { ?x :bad ?y } } }')).toEqual({
-      text: 'RULE { ?x :ok true } WHERE { ?x a :C . NOT DATA { ?x :bad ?y } }\n',
+      text: 'RULE { ?x :ok true } WHERE { ?x a :C . NOT GROUND { ?x :bad ?y } }\n',
       diagnostics: [],
     });
     expect(sparqlToSrl('CONSTRUCT { ?x :ok true } WHERE { GRAPH <{baseGraph}> { ?x a :C . FILTER NOT EXISTS { ?x :bad ?y } } }')).toEqual({
-      text: 'RULE { ?x :ok true } WHERE DATA { ?x a :C . NOT { ?x :bad ?y } }\n',
+      text: 'RULE { ?x :ok true } WHERE GROUND { ?x a :C . NOT { ?x :bad ?y } }\n',
       diagnostics: [],
     });
+  });
+
+  it('lowers the older NOT DATA and WHERE DATA spellings the same way, and names them as written', () => {
+    const source = 'RULE { ?x :km ?k } WHERE DATA { ?x :miles ?m . NOT data { ?x :km ?old } }';
+    const result = srlToSparql(source);
+    expect(result.diagnostics).toEqual([]);
+    expect(result.text).toBe(srlToSparql(source.replace('DATA', 'GROUND').replace('data', 'GROUND')).text);
+    expect(result.warnings?.map((warning) => warning.message)).toEqual([expect.stringContaining('WHERE DATA was converted')]);
   });
 
   it('still refuses a base-graph GRAPH pattern mixed with other patterns', () => {

@@ -54,7 +54,7 @@ const FUNCTIONS = [
 const AGGREGATES = ['COUNT', 'SUM', 'MIN', 'MAX', 'AVG', 'SAMPLE', 'GROUP_CONCAT', 'SEPARATOR'];
 
 /** SRL adds these to the SPARQL list; `DATA`, `NOT`, `WHERE` and `FILTER` it already had, and `GROUP BY` too. */
-const SRL_KEYWORDS = ['RULE', 'WHERE', 'DATA', 'NOT', 'FILTER', 'SET', 'GROUP', 'TUPLE'];
+const SRL_KEYWORDS = ['RULE', 'WHERE', 'GROUND', 'DATA', 'NOT', 'FILTER', 'SET', 'GROUP', 'TUPLE'];
 
 /** Keywords of opt-in syntax, offered only when that syntax is enabled. */
 const LATERAL_KEYWORDS = ['LATERAL'];
